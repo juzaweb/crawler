@@ -11,7 +11,7 @@
 namespace Juzaweb\Crawler;
 
 use Juzaweb\CMS\Abstracts\Action;
-use Juzaweb\Backend\Facades\HookAction;
+use Juzaweb\CMS\Facades\HookAction;
 
 class CrawlerAction extends Action
 {
