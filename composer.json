@@ -2,13 +2,8 @@
     "name": "juzaweb/crawler",
     "description": "",
     "extra": {
-        "laravel": {
-            "providers": [
-                "Juzaweb\\Crawler\\Providers\\AutoloadServiceProvider"
-            ]
-        },
         "juzaweb": {
-            "name": "juzaweb/crawler",
+            "name": "Crawler",
             "domain": "crawler",
             "cms_min": "1.0.9",
             "version": "1.0",

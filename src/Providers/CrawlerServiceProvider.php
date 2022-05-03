@@ -2,6 +2,9 @@
 
 namespace Juzaweb\Crawler\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
+use Juzaweb\Crawler\Commands\CrawContentCommand;
+use Juzaweb\Crawler\Commands\CrawLinkCommand;
 use Juzaweb\Crawler\CrawlerAction;
 use Juzaweb\CMS\Facades\ActionRegister;
 use Juzaweb\CMS\Support\ServiceProvider;
@@ -16,8 +19,20 @@ class CrawlerServiceProvider extends ServiceProvider
             ]
         );
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'crawler');
-        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'crawler');
+        $this->commands(
+            [
+                CrawLinkCommand::class,
+                CrawContentCommand::class
+            ]
+        );
+
+        $this->app->booted(
+            function () {
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->command('crawler:content')->everyMinute();
+                $schedule->command('crawler:link')->everyFiveMinutes();
+            }
+        );
     }
 
     /**
@@ -27,6 +42,6 @@ class CrawlerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->register(RouteServiceProvider::class);
+        //$this->app->register(RouteServiceProvider::class);
     }
 }
