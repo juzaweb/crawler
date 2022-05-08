@@ -2,20 +2,22 @@
 
 use Illuminate\Support\Facades\Log;
 
-function remove_bbcode($text)
-{
-    /* Remove BBCode */
-    $text = preg_replace('~\[img\](.*?)\[/img\]~s', '', $text);
-    
-    $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
-    $text = preg_replace($pattern, ' ', $text);
-    
-    /* Remove Url */
-    $text = preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '', $text);
-    
-    $text = str_replace(["\n", "\t"], '', $text);
-    
-    return trim($text);
+if (!function_exists('remove_bbcode')) {
+    function remove_bbcode($text)
+    {
+        /* Remove BBCode */
+        $text = preg_replace('~\[img\](.*?)\[/img\]~s', '', $text);
+
+        $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
+        $text = preg_replace($pattern, ' ', $text);
+
+        /* Remove Url */
+        $text = preg_replace('/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '', $text);
+
+        $text = str_replace(["\n", "\t"], '', $text);
+
+        return trim($text);
+    }
 }
 
 function map_crawler_params($text, $params = [])
@@ -23,7 +25,7 @@ function map_crawler_params($text, $params = [])
     foreach ($params as $key => $param) {
         $text = str_replace('['. $key .']', $param, $text);
     }
-    
+
     return $text;
 }
 
@@ -45,7 +47,7 @@ function clear_markvn($str)
         'U'=>'Ú|Ù|Ủ|Ũ|Ụ|Ư|Ứ|Ừ|Ử|Ữ|Ự',
         'Y'=>'Ý|Ỳ|Ỷ|Ỹ|Ỵ',
     );
-    
+
     foreach ($unicode as $nonUnicode => $uni) {
         $str = preg_replace(
             "/($uni)/i",
@@ -53,7 +55,7 @@ function clear_markvn($str)
             $str
         );
     }
-    
+
     $str = strtolower(preg_replace('/[^a-zA-Z0-9\ ]/', '', $str));
     $str = preg_replace('/\s\s+/', ' ', trim($str));
     return $str;
@@ -64,10 +66,10 @@ function base_domain($url)
     if (!is_url($url)) {
         return false;
     }
-    
+
     $domain = explode('/', $url)[2];
     $domain = str_replace('www.', '', $domain);
-    
+
     return $domain;
 }
 
