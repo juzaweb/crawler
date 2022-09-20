@@ -34,11 +34,10 @@ class PostImport
         );
     }
 
-    public function import($data, $siteId)
+    public function import($data)
     {
         $this->data = $data;
-        $this->siteId = $siteId;
-        
+
         $conn = DB::getDefaultConnection();
 
         if ($thumbnail = Arr::get($data, 'thumbnail')) {
@@ -235,9 +234,12 @@ class PostImport
     protected function downloadThumbnail($thumbnail)
     {
         try {
-            $content = $this->client->get($thumbnail, [
-                'timeout' => 10
-            ])
+            $content = $this->client->get(
+                $thumbnail,
+                [
+                    'timeout' => 10
+                ]
+            )
                 ->getBody()
                 ->getContents();
 

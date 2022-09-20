@@ -2,6 +2,7 @@
 
 namespace Juzaweb\Crawler\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Juzaweb\CMS\Models\Model;
 
 /**
@@ -55,7 +56,7 @@ class CrawLink extends Model
         'error' => 'array',
     ];
 
-    public static function getAllStatus()
+    public static function getAllStatus(): array
     {
         return [
             self::STATUS_ACTIVE => 'Active',
@@ -65,8 +66,8 @@ class CrawLink extends Model
             self::STATUS_PROCESSING => 'Processing',
         ];
     }
-    
-    public function template()
+
+    public function template(): BelongsTo
     {
         return $this->belongsTo(
             CrawTemplate::class,

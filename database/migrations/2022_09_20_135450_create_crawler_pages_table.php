@@ -5,8 +5,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCrawlerPagesTable extends Migration
-{
+return new class extends Migration {
+
     public function up()
     {
         Schema::create(
@@ -16,23 +16,23 @@ class CreateCrawlerPagesTable extends Migration
                 $table->string('list_url', 200);
                 $table->string('list_url_page', 200)->nullable();
                 $table->string('element_item');
-                $table->unsignedBigInteger('template_id')->index();
+                $table->unsignedBigInteger('website_id')->index();
                 $table->json('category_ids');
                 $table->integer('next_page')->default(1);
                 $table->string('status', 10)->default('active');
-                $table->timestamp('crawler_date')->default('2020-01-01 00:00:00');
+                $table->timestamp('crawler_date')->nullable();
                 $table->timestamps();
 
-                $table->foreign('template_id')
+                $table->foreign('website_id')
                     ->references('id')
-                    ->on('crawler_templates')
+                    ->on('crawler_websites')
                     ->onDelete('cascade');
             }
         );
     }
-    
+
     public function down()
     {
         Schema::dropIfExists('crawler_pages');
     }
-}
+};

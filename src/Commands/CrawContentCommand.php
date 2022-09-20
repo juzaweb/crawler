@@ -11,7 +11,6 @@ use Juzaweb\Crawler\Helpers\PostImport;
 use Juzaweb\Crawler\Models\CrawContent;
 use Juzaweb\Crawler\Models\CrawLink;
 use Juzaweb\Crawler\Models\CrawTemplate;
-use Juzaweb\EmailMarketing\Traits\CommandSlotTrait;
 
 class CrawContentCommand extends Command
 {
@@ -77,10 +76,12 @@ class CrawContentCommand extends Command
             $components = $leech->leech();
 
             if (empty($components)) {
-                $link->update([
-                    'status' => CrawLink::STATUS_ERROR,
-                    'error' => ['Cannot get components.'],
-                ]);
+                $link->update(
+                    [
+                        'status' => CrawLink::STATUS_ERROR,
+                        'error' => ['Cannot get components.'],
+                    ]
+                );
 
                 DB::commit();
                 return;

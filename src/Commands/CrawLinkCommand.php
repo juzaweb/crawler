@@ -14,12 +14,12 @@ use Juzaweb\Crawler\Models\CrawTemplate;
 class CrawLinkCommand extends Command
 {
     protected $signature = 'crawler:link';
-    
+
     public function handle()
     {
         $date = Carbon::now();
         $date->subMinutes(20);
-        
+
         $query = CrawTemplate::withoutGlobalScopes()
             ->where('auto_leech', '=', 1)
             ->where('status', '=', CrawTemplate::STATUS_ACTIVE)
@@ -42,7 +42,7 @@ class CrawLinkCommand extends Command
             )
             ->inRandomOrder()
             ->limit(1);
-        
+
         $links = $query->get();
 
         foreach ($links as $link) {
@@ -51,16 +51,16 @@ class CrawLinkCommand extends Command
                 ->where('crawler_date', '<', $date)
                 ->inRandomOrder()
                 ->first();
-            
+
             if (empty($page)) {
                 continue;
             }
-    
+
             $itemUrls = $this->getItemLinks(
                 $page->list_url,
                 $page->element_item
             );
-            
+
             if ($page->list_url_page) {
                 if ($page->next_page > 1) {
                     $crawler_url = str_replace(
@@ -86,7 +86,7 @@ class CrawLinkCommand extends Command
                     $itemUrls = array_unique($itemUrls);
                 }
             }
-            
+
             if (empty($itemUrls)) {
                 Log::error('Craw link ' . ($crawler_url ?? $page->list_url) . ' empty links.');
                 continue;
@@ -142,13 +142,13 @@ class CrawLinkCommand extends Command
 
         return self::SUCCESS;
     }
-    
-    public function getItemLinks($list_url, $element_item_url)
+
+    public function getItemLinks($list_url, $element_item_url): array
     {
         $split = explode('|', $element_item_url);
         $element = $split[0];
         $attr = $split[1] ?? 'href';
-        
+
         $crawler_list = new LeechListItems($list_url, $element, $attr);
         return $crawler_list->getItems();
     }
