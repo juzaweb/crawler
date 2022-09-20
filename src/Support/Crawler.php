@@ -10,7 +10,78 @@
 
 namespace Juzaweb\Crawler\Support;
 
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\DB;
+use Juzaweb\Crawler\Models\CrawlerPage;
+use Juzaweb\Crawler\Models\CrawLink;
+
 class Crawler
 {
+    public function crawLinks(CrawlerPage $page): bool
+    {
+        $template = $page->website->template->getTemplateClass();
 
+        $contents = $this->getClient()->get($page->url)->getBody()->getContents();
+
+        $html = str_get_html($contents);
+
+        $urls = $html->find($template->getLinkElement());
+
+        if (empty($urls)) {
+            return false;
+        }
+
+        $items = [];
+        foreach ($urls as $url) {
+            $ourl = $url->getAttribute(
+                $template->getLinkElementAttribute()
+            );
+
+            $items[] = [
+                'url' => trim(get_full_url($ourl, $url)),
+                'website_id' => $page->website->id,
+                'page_id' => $page->id,
+                'category_ids' => $page->category_ids,
+            ];
+        }
+
+        $urls = CrawLink::whereIn('url', $items)
+            ->pluck('url')
+            ->toArray();
+
+        $data = collect($items)
+            ->filter(
+                function ($url) use ($urls) {
+                    return is_url($url) && !in_array($url, $urls);
+                }
+            )->toArray();
+
+        DB::beginTransaction();
+        try {
+            DB::table(CrawLink::getTableName())->insert($data);
+
+            $next_page = ($page->url_page && $page->next_page > 0)
+                ? $page->next_page + 1
+                : ($page->next_page > 0 ? 1 : 0);
+
+            $page->update(
+                [
+                    'crawler_date' => now(),
+                    'next_page' => $next_page,
+                ]
+            );
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return true;
+    }
+
+    protected function getClient(): Client
+    {
+        return new Client(['timeout' => 10]);
+    }
 }

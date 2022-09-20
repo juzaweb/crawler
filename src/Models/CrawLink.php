@@ -10,12 +10,12 @@ use Juzaweb\CMS\Models\Model;
  *
  * @property int $id
  * @property string $url
- * @property int $template_id
+ * @property int $website_id
  * @property int $status
  * @property string|null $error
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Juzaweb\Crawler\Models\CrawTemplate|null $template
+ * @property-read \Juzaweb\Crawler\Models\CrawlerTemplate|null $template
  * @method static \Illuminate\Database\Eloquent\Builder|CrawLink newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CrawLink newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CrawLink query()
@@ -45,10 +45,12 @@ class CrawLink extends Model
     const STATUS_PROCESSING = 'processing';
 
     protected $table = 'crawler_links';
-    protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at'
+
+    protected $fillable = [
+        'url',
+        'website_id',
+        'category_ids',
+        'error',
     ];
 
     public $casts = [
@@ -65,14 +67,5 @@ class CrawLink extends Model
             self::STATUS_ERROR => 'Error',
             self::STATUS_PROCESSING => 'Processing',
         ];
-    }
-
-    public function template(): BelongsTo
-    {
-        return $this->belongsTo(
-            CrawTemplate::class,
-            'template_id',
-            'id'
-        );
     }
 }

@@ -15,12 +15,11 @@ return new class extends Migration {
                 $table->bigIncrements('id');
                 $table->string('list_url', 200);
                 $table->string('list_url_page', 200)->nullable();
-                $table->string('element_item');
                 $table->unsignedBigInteger('website_id')->index();
-                $table->json('category_ids');
+                $table->json('category_ids')->nullable();
                 $table->integer('next_page')->default(1);
-                $table->string('status', 10)->default('active');
-                $table->timestamp('crawler_date')->nullable();
+                $table->boolean('active')->default(1);
+                $table->timestamp('crawler_date')->default('2020-01-01 00:00:00');
                 $table->timestamps();
 
                 $table->foreign('website_id')

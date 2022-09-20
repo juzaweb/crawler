@@ -5,7 +5,7 @@ namespace Juzaweb\Crawler\Http\Datatables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Juzaweb\CMS\Abstracts\DataTable;
-use Juzaweb\Crawler\Models\CrawTemplate;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
 
 class TemplateDatatable extends DataTable
 {
@@ -59,7 +59,7 @@ class TemplateDatatable extends DataTable
      */
     public function query($data)
     {
-        $query = CrawTemplate::query();
+        $query = CrawlerTemplate::query();
         if ($keyword = Arr::get($data, 'keyword')) {
             $query->where(
                 function (Builder $builder) use ($keyword) {
@@ -83,7 +83,7 @@ class TemplateDatatable extends DataTable
     {
         switch ($action) {
             case 'delete':
-                CrawTemplate::destroy($ids);
+                CrawlerTemplate::destroy($ids);
                 break;
         }
     }

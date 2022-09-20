@@ -3,7 +3,7 @@
 namespace Juzaweb\Crawler\Http\Controllers;
 
 use Juzaweb\Crawler\Http\Datatables\LinkDatatable;
-use Juzaweb\Crawler\Models\CrawTemplate;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
 use Juzaweb\CMS\Http\Controllers\BackendController;
 
 class LinkController extends BackendController
@@ -18,7 +18,7 @@ class LinkController extends BackendController
         );
 
         $title = trans('crawler::content.links');
-        $template = CrawTemplate::findOrFail($templateId);
+        $template = CrawlerTemplate::findOrFail($templateId);
         $dataTable = $this->getDataTable($templateId);
 
         return view(

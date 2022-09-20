@@ -16,6 +16,7 @@ return new class extends Migration {
                 $table->string('name');
                 $table->string('link_element')->nullable();
                 $table->json('data_elements')->nullable();
+                $table->string('custom_class')->nullable();
                 $table->timestamps();
             }
         );

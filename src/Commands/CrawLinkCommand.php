@@ -9,20 +9,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Juzaweb\Crawler\Helpers\Leech\LeechListItems;
 use Juzaweb\Crawler\Models\CrawLink;
-use Juzaweb\Crawler\Models\CrawTemplate;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
 
 class CrawLinkCommand extends Command
 {
     protected $signature = 'crawler:link';
 
-    public function handle()
+    public function handle(): int
     {
         $date = Carbon::now();
         $date->subMinutes(20);
 
-        $query = CrawTemplate::withoutGlobalScopes()
+        $query = CrawlerTemplate::withoutGlobalScopes()
             ->where('auto_leech', '=', 1)
-            ->where('status', '=', CrawTemplate::STATUS_ACTIVE)
+            ->where('status', '=', CrawlerTemplate::STATUS_ACTIVE)
             ->whereHas('components')
             ->whereHas(
                 'pages',
@@ -31,7 +31,7 @@ class CrawLinkCommand extends Command
                     $q->where(
                         "{$ptb}.status",
                         '=',
-                        CrawTemplate::STATUS_ACTIVE
+                        CrawlerTemplate::STATUS_ACTIVE
                     );
                     $q->where(
                         "{$ptb}.crawler_date",
@@ -47,7 +47,7 @@ class CrawLinkCommand extends Command
 
         foreach ($links as $link) {
             $page = $link->pages()
-                ->where('status', '=', CrawTemplate::STATUS_ACTIVE)
+                ->where('status', '=', CrawlerTemplate::STATUS_ACTIVE)
                 ->where('crawler_date', '<', $date)
                 ->inRandomOrder()
                 ->first();
@@ -148,7 +148,6 @@ class CrawLinkCommand extends Command
         $split = explode('|', $element_item_url);
         $element = $split[0];
         $attr = $split[1] ?? 'href';
-
         $crawler_list = new LeechListItems($list_url, $element, $attr);
         return $crawler_list->getItems();
     }

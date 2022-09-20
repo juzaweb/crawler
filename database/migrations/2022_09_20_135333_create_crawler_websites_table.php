@@ -17,7 +17,8 @@ return new class extends Migration {
             function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('domain', 100);
-                $table->boolean('has_ssl')->default(false);
+                $table->boolean('has_ssl')->default(1);
+                $table->boolean('active')->default(1);
                 $table->unsignedBigInteger('template_id')->index();
                 $table->timestamps();
 

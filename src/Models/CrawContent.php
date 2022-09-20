@@ -15,7 +15,7 @@ use Juzaweb\CMS\Models\Model;
  * @property int $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Juzaweb\Crawler\Models\CrawTemplate|null $template
+ * @property-read \Juzaweb\Crawler\Models\CrawlerTemplate|null $template
  * @method static \Illuminate\Database\Eloquent\Builder|CrawContent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CrawContent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CrawContent query()
@@ -66,12 +66,12 @@ class CrawContent extends Model
         'components' => 'array',
         'category_ids' => 'array',
     ];
-    
+
     public function template()
     {
-        return $this->belongsTo(CrawTemplate::class, 'template_id', 'id');
+        return $this->belongsTo(CrawlerTemplate::class, 'template_id', 'id');
     }
-    
+
     public function link()
     {
         return $this->belongsTo(CrawLink::class, 'link_id', 'id');

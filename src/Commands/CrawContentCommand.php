@@ -10,7 +10,7 @@ use Juzaweb\Crawler\Helpers\Leech\LeechComponent;
 use Juzaweb\Crawler\Helpers\PostImport;
 use Juzaweb\Crawler\Models\CrawContent;
 use Juzaweb\Crawler\Models\CrawLink;
-use Juzaweb\Crawler\Models\CrawTemplate;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
 
 class CrawContentCommand extends Command
 {
@@ -60,7 +60,7 @@ class CrawContentCommand extends Command
             ]
         );
         /**
-         * @var CrawTemplate $template
+         * @var CrawlerTemplate $template
          */
         $template = $link->template;
         $template->load(['components', 'removes']);

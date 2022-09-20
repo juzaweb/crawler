@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property int|null $index
- * @property-read \Juzaweb\Crawler\Models\CrawTemplate|null $template
+ * @property-read \Juzaweb\Crawler\Models\CrawlerTemplate|null $template
  * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereIndex($value)
  * @property int $type 1: Remove all, 2: Remove html
  * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereType($value)
@@ -36,11 +36,11 @@ class CrawRemoveElement extends Model
         'index',
         'type',
     ];
-    
+
     public $timestamps = false;
-    
+
     public function template()
     {
-        return $this->belongsTo(CrawTemplate::class, 'template_id', 'id');
+        return $this->belongsTo(CrawlerTemplate::class, 'template_id', 'id');
     }
 }

@@ -5,7 +5,7 @@ namespace Juzaweb\Crawler\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Crawler\Helpers\Converter\BBCodeToHtml;
-use Juzaweb\Crawler\Models\CrawTemplate;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
 use Juzaweb\Crawler\Models\Component;
 use Juzaweb\Crawler\Models\CrawRemoveElement;
 use Juzaweb\Crawler\Helpers\Leech\LeechComponent;
@@ -15,7 +15,7 @@ class ComponentController extends BackendController
 {
     public function index($templateId)
     {
-        $model = CrawTemplate::findOrFail($templateId);
+        $model = CrawlerTemplate::findOrFail($templateId);
         $linkAction = action([static::class, 'save'], [$templateId]);
         $linkPreview = action([static::class, 'preview'], [$templateId]);
 
@@ -33,7 +33,7 @@ class ComponentController extends BackendController
             'linkPreview' => $linkPreview,
         ]);
     }
-    
+
     public function save(Request $request)
     {
         $this->validate(
@@ -50,7 +50,7 @@ class ComponentController extends BackendController
 
         DB::beginTransaction();
         try {
-            $model = CrawTemplate::findOrFail($request->post('id'));
+            $model = CrawlerTemplate::findOrFail($request->post('id'));
             $model->fill($request->all());
             $model->save();
 
@@ -103,7 +103,7 @@ class ComponentController extends BackendController
             ]
         );
     }
-    
+
     public function preview($templateId, Request $request)
     {
         $this->validate(
@@ -112,8 +112,8 @@ class ComponentController extends BackendController
                 'preview_url' => 'required',
             ]
         );
-    
-        CrawTemplate::findOrFail($templateId);
+
+        CrawlerTemplate::findOrFail($templateId);
         $url = $request->post('preview_url');
         $coms = $request->post('components', []);
         $res = $request->post('removes', []);
@@ -153,7 +153,7 @@ class ComponentController extends BackendController
                 base_domain($url)
             );
         }
-        
+
         return $this->success(
             [
                 'title' => map_crawler_params(

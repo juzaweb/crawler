@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Juzaweb\Crawler\Helpers\Leech\LeechListItems;
 use Juzaweb\Crawler\Http\Datatables\TemplateDatatable;
-use Juzaweb\Crawler\Models\CrawTemplate;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
 use Illuminate\Http\Request;
 use Juzaweb\CMS\Http\Controllers\BackendController;
 use Juzaweb\CMS\Models\User;
@@ -24,7 +24,7 @@ class TemplateController extends BackendController
 
     /**
      * @param array $data
-     * @param CrawTemplate $model
+     * @param CrawlerTemplate $model
      */
     public function afterSave($data, $model, ...$params)
     {
@@ -68,7 +68,7 @@ class TemplateController extends BackendController
         $data['linkPreview'] = action([static::class, 'preview']);
         return $data;
     }
-    
+
     public function preview(Request $request)
     {
         $this->validate($request, [
@@ -81,47 +81,47 @@ class TemplateController extends BackendController
 
         $element_item = $data['element_item'];
         $split = explode('|', $element_item);
-        
+
         $element = $split[0];
         $attr = $split[1] ?? 'href';
-        
+
         $list_url = $data['list_url'];
         $list = new LeechListItems($list_url, $element, $attr);
         $list->removeQueryString(1);
-        
+
         return $this->success(
             [
                 'items' => $list->getItems(),
             ]
         );
     }
-    
+
     public function copy(Request $request)
     {
         $this->validate($request, [
             'ids' => 'required',
         ]);
-        
+
         $ids = $request->post('ids', []);
         foreach ($ids as $id) {
-            $template = CrawTemplate::find($id);
+            $template = CrawlerTemplate::find($id);
             $new_template = $template->replicate();
             $new_template->status = 2;
             $new_template->push();
-    
+
             foreach ($template->components as $component) {
                 $new_component = $component->replicate();
                 $new_component->template_id = $new_template->id;
                 $new_component->push();
             }
-    
+
             foreach ($template->removes as $remove) {
                 $new_remove = $remove->replicate();
                 $new_remove->template_id = $new_template->id;
                 $new_remove->push();
             }
         }
-        
+
         return $this->success([
             'message' => 'Copy successful'
         ]);
@@ -153,7 +153,7 @@ class TemplateController extends BackendController
 
     protected function getModel(...$params)
     {
-        return CrawTemplate::class;
+        return CrawlerTemplate::class;
     }
 
     protected function getTitle(...$params)
