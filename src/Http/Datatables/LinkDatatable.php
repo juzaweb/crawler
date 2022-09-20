@@ -5,7 +5,7 @@ namespace Juzaweb\Crawler\Http\Datatables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Juzaweb\CMS\Abstracts\DataTable;
-use Juzaweb\Crawler\Models\CrawLink;
+use Juzaweb\Crawler\Models\CrawlerLink;
 
 class LinkDatatable extends DataTable
 {
@@ -39,7 +39,7 @@ class LinkDatatable extends DataTable
 
     public function query($data)
     {
-        $query = CrawLink::query();
+        $query = CrawlerLink::query();
         $query->with('template');
         $query->where('template_id', $this->templateId);
 
@@ -76,7 +76,7 @@ class LinkDatatable extends DataTable
             'status' => [
                 'type' => 'select',
                 'label' => trans('cms::app.status'),
-                'options' => CrawLink::getAllStatus(),
+                'options' => CrawlerLink::getAllStatus(),
             ],
         ];
     }
@@ -85,7 +85,7 @@ class LinkDatatable extends DataTable
     {
         switch ($action) {
             case 'delete':
-                CrawLink::destroy($ids);
+                CrawlerLink::destroy($ids);
                 break;
         }
     }

@@ -10,7 +10,9 @@
 
 namespace Juzaweb\Crawler\Contracts;
 
+use Juzaweb\Crawler\Models\CrawlerPage;
+
 interface CrawlerContract
 {
-
+    public function crawPageLinks(CrawlerPage $page): bool;
 }

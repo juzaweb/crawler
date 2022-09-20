@@ -12,12 +12,13 @@ namespace Juzaweb\Crawler\Support;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
+use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerPage;
-use Juzaweb\Crawler\Models\CrawLink;
+use Juzaweb\Crawler\Models\CrawlerLink;
 
-class Crawler
+class Crawler implements CrawlerContract
 {
-    public function crawLinks(CrawlerPage $page): bool
+    public function crawPageLinks(CrawlerPage $page): bool
     {
         $template = $page->website->template->getTemplateClass();
 
@@ -37,15 +38,18 @@ class Crawler
                 $template->getLinkElementAttribute()
             );
 
+            $ourl = trim(get_full_url($ourl, $url));
+
             $items[] = [
-                'url' => trim(get_full_url($ourl, $url)),
+                'url' => $ourl,
+                'url_hash' => hash($ourl, ''),
                 'website_id' => $page->website->id,
                 'page_id' => $page->id,
                 'category_ids' => $page->category_ids,
             ];
         }
 
-        $urls = CrawLink::whereIn('url', $items)
+        $urls = CrawlerLink::whereIn('url', $items)
             ->pluck('url')
             ->toArray();
 
@@ -58,7 +62,7 @@ class Crawler
 
         DB::beginTransaction();
         try {
-            DB::table(CrawLink::getTableName())->insert($data);
+            DB::table(CrawlerLink::getTableName())->insert($data);
 
             $next_page = ($page->url_page && $page->next_page > 0)
                 ? $page->next_page + 1
@@ -78,6 +82,11 @@ class Crawler
         }
 
         return true;
+    }
+
+    public function crawLinkContent(CrawlerLink $link): bool
+    {
+        //
     }
 
     protected function getClient(): Client

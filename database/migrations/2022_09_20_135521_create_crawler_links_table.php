@@ -14,7 +14,7 @@ return new class extends Migration {
             function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('url', 300);
-                $table->string('url_hash', 40);
+                $table->string('url_hash', 40)->unique();
                 $table->unsignedBigInteger('website_id')->index();
                 $table->unsignedBigInteger('page_id')->nullable()->index();
                 $table->json('category_ids')->nullable();
@@ -22,7 +22,6 @@ return new class extends Migration {
                 $table->json('error')->nullable();
                 $table->boolean('auto_craw')->default(0);
                 $table->boolean('active')->default(1);
-                $table->unique(['url_hash', 'website_id']);
                 $table->timestamps();
 
                 $table->foreign('website_id')

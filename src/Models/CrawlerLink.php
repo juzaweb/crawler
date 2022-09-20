@@ -16,27 +16,27 @@ use Juzaweb\CMS\Models\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Juzaweb\Crawler\Models\CrawlerTemplate|null $template
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink query()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereError($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereTemplateId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink query()
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereError($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereTemplateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereUrl($value)
  * @mixin \Eloquent
  * @property int $page_id
  * @property int $channel_id
  * @property int $category_id
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereChannelId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink wherePageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereChannelId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink wherePageId($value)
  * @property array|null $category_ids
- * @method static \Illuminate\Database\Eloquent\Builder|CrawLink whereCategoryIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereCategoryIds($value)
  */
-class CrawLink extends Model
+class CrawlerLink extends Model
 {
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';

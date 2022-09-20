@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Juzaweb\Crawler\Helpers\Leech\LeechListItems;
-use Juzaweb\Crawler\Models\CrawLink;
+use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerTemplate;
 
 class CrawLinkCommand extends Command
@@ -92,7 +92,7 @@ class CrawLinkCommand extends Command
                 continue;
             }
 
-            $urls = CrawLink::whereIn('url', $itemUrls)
+            $urls = CrawlerLink::whereIn('url', $itemUrls)
                 ->pluck('url')
                 ->toArray();
 

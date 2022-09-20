@@ -31,7 +31,7 @@ use Juzaweb\CMS\Models\Model;
  * @property string $thumbnail
  * @method static \Illuminate\Database\Eloquent\Builder|CrawContent whereThumbnail($value)
  * @property int $link_id
- * @property-read \Juzaweb\Crawler\Models\CrawLink|null $link
+ * @property-read \Juzaweb\Crawler\Models\CrawlerLink|null $link
  * @method static \Illuminate\Database\Eloquent\Builder|CrawContent whereLinkId($value)
  * @property int $page_id
  * @property int $channel_id
@@ -74,6 +74,6 @@ class CrawContent extends Model
 
     public function link()
     {
-        return $this->belongsTo(CrawLink::class, 'link_id', 'id');
+        return $this->belongsTo(CrawlerLink::class, 'link_id', 'id');
     }
 }

@@ -27,7 +27,7 @@ class LinkCrawlerCommand extends Command
             ->get();
 
         foreach ($pages as $page) {
-            app(CrawlerContract::class)->crawLinks($page);
+            app(CrawlerContract::class)->crawPageLinks($page);
         }
     }
 }

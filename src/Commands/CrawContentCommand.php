@@ -9,7 +9,7 @@ use Juzaweb\Crawler\Helpers\Converter\BBCodeToHtml;
 use Juzaweb\Crawler\Helpers\Leech\LeechComponent;
 use Juzaweb\Crawler\Helpers\PostImport;
 use Juzaweb\Crawler\Models\CrawContent;
-use Juzaweb\Crawler\Models\CrawLink;
+use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerTemplate;
 
 class CrawContentCommand extends Command
@@ -26,18 +26,18 @@ class CrawContentCommand extends Command
             return self::SUCCESS;
         }
 
-        $query = CrawLink::with(
+        $query = CrawlerLink::with(
             [
                 'template' => function ($q) {
                     $q->withoutGlobalScopes();
                 }
             ]
         )
-            ->where('status', '=', CrawLink::STATUS_ACTIVE)
+            ->where('status', '=', CrawlerLink::STATUS_ACTIVE)
             ->inRandomOrder();
 
         /**
-         * @var CrawLink[] $links
+         * @var CrawlerLink[] $links
          */
         $links = $query->limit(1)->get();
 
@@ -52,11 +52,11 @@ class CrawContentCommand extends Command
         return self::SUCCESS;
     }
 
-    protected function crawContentByLink(CrawLink $link)
+    protected function crawContentByLink(CrawlerLink $link)
     {
         $link->update(
             [
-                'status' => CrawLink::STATUS_PROCESSING,
+                'status' => CrawlerLink::STATUS_PROCESSING,
             ]
         );
         /**
@@ -78,7 +78,7 @@ class CrawContentCommand extends Command
             if (empty($components)) {
                 $link->update(
                     [
-                        'status' => CrawLink::STATUS_ERROR,
+                        'status' => CrawlerLink::STATUS_ERROR,
                         'error' => ['Cannot get components.'],
                     ]
                 );
@@ -152,7 +152,7 @@ class CrawContentCommand extends Command
 
             $link->update(
                 [
-                    'status' => CrawLink::STATUS_DONE,
+                    'status' => CrawlerLink::STATUS_DONE,
                     'error' => null,
                 ]
             );
@@ -169,7 +169,7 @@ class CrawContentCommand extends Command
 
             $link->update(
                 [
-                    'status' => CrawLink::STATUS_ERROR,
+                    'status' => CrawlerLink::STATUS_ERROR,
                     'error' => [$e->getMessage()],
                 ]
             );
