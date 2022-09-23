@@ -11,6 +11,8 @@
 namespace Juzaweb\Crawler\Support\Traists;
 
 use Juzaweb\Crawler\Models\CrawlerLink;
+use Juzaweb\Crawler\Support\CrawlerElement;
+use Juzaweb\Crawler\Support\Templates\CrawlerTemplate;
 
 trait ContentCrawler
 {
@@ -18,49 +20,21 @@ trait ContentCrawler
     {
         $template = $link->website->template->getTemplateClass();
 
-        $contents = $this->createHTMLDomFromUrl($link->url);
+        $components = $this->crawContentsUrl($link->url, $template);
+    }
+
+    public function crawContentsUrl(string $url, CrawlerTemplate $template): array
+    {
+        $contents = $this->createHTMLDomFromUrl($url);
 
         $contents->removeScript();
 
         $result = [];
-        foreach ($template->getDataElements() as $component) {
-            $elementContent = $contents->find(
-                $component->element,
-                $component->index
-            );
-
-            if (empty($elementContent)) {
-                $result[$component->code] = '';
-                continue;
-            }
-
-            if (is_null($component->index)) {
-                $result[$component->code] = '';
-                foreach ($elementContent as $item) {
-                    if ($component->attr) {
-                        $result[$component->code] .= $item->{$component->attr};
-                    } else {
-                        $innertext = $item->innertext();
-                        if (empty($innertext)) {
-                            $result[$component->code] .= '';
-                            continue;
-                        }
-
-                        $result[$component->code] .= $innertext;
-                    }
-                }
-            } else {
-                if ($component->attr) {
-                    $result[$component->code] = $elementContent->{$component->attr};
-                } else {
-                    $innertext = $elementContent->innertext();
-                    if (empty($innertext)) {
-                        $result[$component->code] .= '';
-                    } else {
-                        $result[$component->code] = $innertext;
-                    }
-                }
-            }
+        foreach ($template->getDataElements() as $code => $el) {
+            $element = new CrawlerElement($el);
+            $result[$code] = $element->getValue($contents);
         }
+
+        return $result;
     }
 }
