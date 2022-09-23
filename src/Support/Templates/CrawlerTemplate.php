@@ -25,6 +25,6 @@ abstract class CrawlerTemplate
 
     public function getLinkElement(): string
     {
-        return $this->getLinkElement();
+        return $this->linkElement;
     }
 }

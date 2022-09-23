@@ -3,31 +3,32 @@
 namespace Juzaweb\Crawler\Commands;
 
 use Illuminate\Console\Command;
+use Juzaweb\CMS\Traits\CommandData;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
-use Juzaweb\Crawler\Models\CrawlerPage;
 
 class LinkCrawlerCommand extends Command
 {
+    use CommandData;
+
     protected $name = 'crawler:links';
 
-    protected $description = 'Craw links command.';
+    protected $description = 'Craw links from url command.';
 
     public function handle()
     {
-        $pages = CrawlerPage::with(['website.template'])
-            ->where(['active' => 1])
-            ->whereHas(
-                'website',
-                function ($q) {
-                    $q->where(['active' => 1]);
-                }
-            )
-            ->inRandomOrder()
-            ->limit(5)
-            ->get();
+        $url = $this->ask('url=', $this->getCommandData('url'));
 
-        foreach ($pages as $page) {
-            app(CrawlerContract::class)->crawPageLinks($page);
-        }
+        $template = $this->ask('template=', $this->getCommandData('template'));
+
+        $this->setCommandData('url', $url);
+
+        $this->setCommandData('template', $template);
+
+        $results = app(CrawlerContract::class)->crawLinksUrl(
+            $url,
+            app($template)
+        );
+
+        dd($results);
     }
 }

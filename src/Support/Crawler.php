@@ -11,82 +11,31 @@
 namespace Juzaweb\Crawler\Support;
 
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\DB;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
-use Juzaweb\Crawler\Models\CrawlerPage;
-use Juzaweb\Crawler\Models\CrawlerLink;
+use Juzaweb\Crawler\Support\Traists\ContentCrawler;
+use Juzaweb\Crawler\Support\Traists\LinkCrawler;
 
 class Crawler implements CrawlerContract
 {
-    public function crawPageLinks(CrawlerPage $page): bool
+    use LinkCrawler, ContentCrawler;
+
+    protected function createHTMLDomFromUrl($url): HtmlDomCrawler
     {
-        $template = $page->website->template->getTemplateClass();
+        $contents = $this->getContentUrl($url);
 
-        $contents = $this->getClient()->get($page->url)->getBody()->getContents();
-
-        $html = str_get_html($contents);
-
-        $urls = $html->find($template->getLinkElement());
-
-        if (empty($urls)) {
-            return false;
-        }
-
-        $items = [];
-        foreach ($urls as $url) {
-            $ourl = $url->getAttribute(
-                $template->getLinkElementAttribute()
-            );
-
-            $ourl = trim(get_full_url($ourl, $url));
-
-            $items[] = [
-                'url' => $ourl,
-                'url_hash' => hash($ourl, ''),
-                'website_id' => $page->website->id,
-                'page_id' => $page->id,
-                'category_ids' => $page->category_ids,
-            ];
-        }
-
-        $urls = CrawlerLink::whereIn('url', $items)
-            ->pluck('url')
-            ->toArray();
-
-        $data = collect($items)
-            ->filter(
-                function ($url) use ($urls) {
-                    return is_url($url) && !in_array($url, $urls);
-                }
-            )->toArray();
-
-        DB::beginTransaction();
-        try {
-            DB::table(CrawlerLink::getTableName())->insert($data);
-
-            $next_page = ($page->url_page && $page->next_page > 0)
-                ? $page->next_page + 1
-                : ($page->next_page > 0 ? 1 : 0);
-
-            $page->update(
-                [
-                    'crawler_date' => now(),
-                    'next_page' => $next_page,
-                ]
-            );
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-        return true;
+        return $this->createHTMLDomFromContent($contents);
     }
 
-    public function crawLinkContent(CrawlerLink $link): bool
+    protected function createHTMLDomFromContent(string $content): HtmlDomCrawler
     {
-        //
+        return new HtmlDomCrawler($content);
+    }
+
+    protected function getContentUrl($url): string
+    {
+        $response = $this->getClient()->get($url);
+
+        return $response->getBody()->getContents();
     }
 
     protected function getClient(): Client

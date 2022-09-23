@@ -68,4 +68,9 @@ class CrawlerLink extends Model
             self::STATUS_PROCESSING => 'Processing',
         ];
     }
+
+    public function website(): BelongsTo
+    {
+        return $this->belongsTo(CrawlerWebsite::class, 'website_id', 'id');
+    }
 }

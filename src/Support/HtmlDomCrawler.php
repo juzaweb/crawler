@@ -1,0 +1,136 @@
+<?php
+/**
+ * JUZAWEB CMS - The Best CMS for Laravel Project
+ *
+ * @package    juzaweb/juzacms
+ * @author     Juzaweb Team <admin@juzaweb.com>
+ * @link       https://juzaweb.com
+ * @license    MIT
+ */
+
+namespace Juzaweb\Crawler\Support;
+
+use GuzzleHttp\Client;
+use Juzaweb\CMS\Support\HtmlDom;
+use Juzaweb\CMS\Support\HtmlDomNode;
+
+class HtmlDomCrawler
+{
+    protected string $content;
+
+    public function __construct(string $content)
+    {
+        $this->content = $content;
+    }
+
+    public function find(string $selector, ?int $index = null): HtmlDom|HtmlDomNode|array|bool
+    {
+        $html = str_get_html($this->content);
+
+        if ($index === null) {
+            return @$html->find($selector);
+        }
+
+        return @$html->find($selector, $index);
+    }
+
+    public function plaintext(string $selector, int $index = 0): ?string
+    {
+        $plaintext = $this->find($selector, $index)->plaintext;
+
+        return html_entity_decode($plaintext);
+    }
+
+    public function innertext(string $selector, int $index = 0): ?string
+    {
+        return $this->find($selector, $index)->innertext;
+    }
+
+    public function attribute(string $selector, int $value, int $index = 0)
+    {
+        return $this->find($selector, $index)->{$value};
+    }
+
+    public function removeScript(): void
+    {
+        $scripts = $this->find('script');
+        foreach ($scripts as $script) {
+            $this->content = str_replace(
+                $script->outertext(),
+                '',
+                $this->content
+            );
+        }
+    }
+
+    public function removeInternalLink(): void
+    {
+        $domain = base_domain($this->url);
+        $html = str_get_html($this->content);
+        $links = $html->find('a');
+
+        foreach ($links as $item) {
+            if (is_url($item->href)) {
+                if ($domain == base_domain($item->href)) {
+                    $text = $item->text();
+                    $item->outertext = $text;
+                }
+
+                continue;
+            }
+
+            if (str_contains($item->href, '/url?q=')) {
+                $href = str_replace('/url?q=', '', $item->href);
+                $href = urldecode($href);
+                $href = base64_decode($href);
+
+                if (is_url($href)) {
+                    $text = '<a href="'. $href .'">'. $item->text() .'</a>';
+                } else {
+                    $text = $item->text();
+                }
+            } else {
+                $text = $item->text();
+            }
+
+            $item->outertext = $text;
+        }
+
+        $html->load($html->save());
+
+        $this->content = $html->root->outertext;
+    }
+
+    public function removeElement($element, $index, $type): void
+    {
+        $html = str_get_html($this->content);
+
+        $content_remove = $html->find($element, $index);
+
+        if (!is_null($index)) {
+            if ($type == 1) {
+                $content_remove->outertext = '';
+            }
+
+            if ($type == 2) {
+                $text = $content_remove->text();
+                $content_remove->outertext = $text;
+            }
+        } else {
+            foreach ($content_remove as $item) {
+                if ($type == 1) {
+                    $item->outertext = '';
+                }
+
+                if ($type == 2) {
+                    $text = $item->text();
+                    $item->outertext = $text;
+                }
+            }
+        }
+
+        $html->load($html->save());
+
+        $this->content = $html->root->outertext;
+    }
+}

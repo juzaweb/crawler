@@ -61,23 +61,13 @@ function clear_markvn($str)
     return $str;
 }
 
-function base_domain($url)
+function base_domain($url): array|bool|string
 {
     if (!is_url($url)) {
         return false;
     }
 
     $domain = explode('/', $url)[2];
-    $domain = str_replace('www.', '', $domain);
 
-    return $domain;
-}
-
-function write_log(\Exception $exception)
-{
-    Log::error(implode(',', [
-        'File: ' . $exception->getFile(),
-        'Line: ' . $exception->getLine(),
-        'Message: ' . $exception->getMessage(),
-    ]));
+    return str_replace('www.', '', $domain);
 }
