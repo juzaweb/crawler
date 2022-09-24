@@ -24,7 +24,8 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface
             'content' => '.desc-text',
             'thumbnail' => [
                 'selector' => '.books .book img',
-                'attr' => 'src'
+                'attr' => 'src',
+                'index' => 0
             ],
             'meta[source]' => '.info .source',
             'authors' => [

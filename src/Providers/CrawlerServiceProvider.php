@@ -5,6 +5,7 @@ namespace Juzaweb\Crawler\Providers;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Collection;
 use Juzaweb\CMS\Support\HookAction;
+use Juzaweb\Crawler\Commands\AutoContentCrawlerCommand;
 use Juzaweb\Crawler\Commands\AutoLinkCrawlerCommand;
 use Juzaweb\Crawler\Commands\ContentCrawlerCommand;
 use Juzaweb\Crawler\Commands\LinkCrawlerCommand;
@@ -52,6 +53,7 @@ class CrawlerServiceProvider extends ServiceProvider
                 LinkCrawlerCommand::class,
                 ContentCrawlerCommand::class,
                 AutoLinkCrawlerCommand::class,
+                AutoContentCrawlerCommand::class,
             ]
         );
 

@@ -16,11 +16,10 @@ return new class extends Migration {
                 $table->string('url', 300);
                 $table->string('url_hash', 40)->unique();
                 $table->unsignedBigInteger('website_id')->index();
-                $table->unsignedBigInteger('page_id')->nullable()->index();
-                $table->json('category_ids')->nullable();
-                $table->string('status', 10)->default('active');
-                $table->json('error')->nullable();
-                $table->boolean('auto_craw')->default(0);
+                $table->unsignedBigInteger('page_id')->index();
+                $table->string('status', 10)->default('pending');
+                $table->text('error')->nullable();
+                $table->boolean('crawed')->default(0);
                 $table->boolean('active')->default(1);
                 $table->timestamps();
 
@@ -32,7 +31,7 @@ return new class extends Migration {
                 $table->foreign('page_id')
                     ->references('id')
                     ->on('crawler_pages')
-                    ->onDelete('set null');
+                    ->onDelete('cascade');
             }
         );
     }

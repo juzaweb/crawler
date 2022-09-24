@@ -13,7 +13,7 @@ class AutoLinkCrawlerCommand extends Command
 
     protected $description = 'Craw links command.';
 
-    public function handle()
+    public function handle(): int
     {
         $pages = CrawlerPage::with(['website.template'])
             ->where(['active' => 1])
@@ -31,14 +31,14 @@ class AutoLinkCrawlerCommand extends Command
             try {
                 $craw = app(CrawlerContract::class)->crawPageLinks($page);
 
-                $next_page = ($page->url_with_page && $page->next_page > 0)
+                $nextPage = ($page->url_with_page && $page->next_page > 0)
                     ? $page->next_page + 1
                     : ($page->next_page > 0 ? 1 : 0);
 
                 $page->update(
                     [
                         'crawler_date' => now(),
-                        'next_page' => $next_page,
+                        'next_page' => $nextPage,
                     ]
                 );
 
@@ -57,6 +57,8 @@ class AutoLinkCrawlerCommand extends Command
                         );
                     }
                 }
+
+                $this->error($e->getMessage());
             } catch (\Exception $e) {
                 report($e);
 
@@ -66,7 +68,11 @@ class AutoLinkCrawlerCommand extends Command
                         'error' => $e->getMessage(),
                     ]
                 );
+
+                $this->error($e->getMessage());
             }
         }
+
+        return self::SUCCESS;
     }
 }

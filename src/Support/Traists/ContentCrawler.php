@@ -12,15 +12,17 @@ namespace Juzaweb\Crawler\Support\Traists;
 
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Support\CrawlerElement;
-use Juzaweb\Crawler\Support\Templates\CrawlerTemplate;
+use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 
 trait ContentCrawler
 {
-    public function crawLinkContent(CrawlerLink $link): bool
+    public function crawContentLink(CrawlerLink $link): bool|int
     {
-        $template = $link->website->template->getTemplateClass();
+        $template = $link->website->getTemplateClass();
 
         $components = $this->crawContentsUrl($link->url, $template);
+
+        dd($components);
     }
 
     public function crawContentsUrl(string $url, CrawlerTemplate $template): array
