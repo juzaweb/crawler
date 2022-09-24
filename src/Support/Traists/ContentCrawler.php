@@ -65,7 +65,7 @@ trait ContentCrawler
 
         $contents->removeScript();
 
-        $contents->removeInternalLink(get_domain_by_url($url));
+        //$contents->removeInternalLink(get_domain_by_url($url));
 
         $result = [];
         foreach ($template->getDataElements() as $code => $el) {

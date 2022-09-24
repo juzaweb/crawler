@@ -26,7 +26,7 @@ class HtmlDomCrawler
     {
         $html = str_get_html($this->content);
 
-        if ($index === null) {
+        if (is_null($index)) {
             return @$html->find($selector);
         }
 

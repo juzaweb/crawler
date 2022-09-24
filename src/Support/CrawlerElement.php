@@ -96,17 +96,17 @@ class CrawlerElement
             return $node->innertext();
         }
 
-        $val = $this->element['value'] ?? 'innertext';
+        $val = $this->element['value'] ?? CrawlerElement::$VALUE_INNERTEXT;
 
         if (is_callable($val)) {
             return call_user_func_array($val, [$node]);
         }
 
-        if ($val == 'text') {
+        if ($val == CrawlerElement::$VALUE_TEXT) {
             return html_entity_decode($node->text());
         }
 
-        if ($val == 'outertext') {
+        if ($val == CrawlerElement::$VALUE_OUTERTEXT) {
             return $node->outertext();
         }
 

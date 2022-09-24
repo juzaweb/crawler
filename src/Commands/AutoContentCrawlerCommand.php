@@ -47,6 +47,10 @@ class AutoContentCrawlerCommand extends Command
 
         foreach ($links as $link) {
             app(CrawlerContract::class)->crawContentLink($link);
+            
+            $this->info("Created post from link {$link->url}");
+            
+            sleep(2);
         }
     }
 }
