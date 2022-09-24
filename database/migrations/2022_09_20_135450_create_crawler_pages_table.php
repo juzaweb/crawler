@@ -17,6 +17,7 @@ return new class extends Migration {
                 $table->string('url_with_page', 200)->nullable();
                 $table->string('post_type', 50)->default('posts');
                 $table->unsignedBigInteger('website_id')->index();
+                $table->text('error')->nullable();
                 $table->json('category_ids')->nullable();
                 $table->integer('next_page')->default(1);
                 $table->boolean('active')->default(1);

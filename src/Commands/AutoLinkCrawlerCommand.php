@@ -2,6 +2,7 @@
 
 namespace Juzaweb\Crawler\Commands;
 
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Console\Command;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerPage;
@@ -41,6 +42,22 @@ class AutoLinkCrawlerCommand extends Command
                             'next_page' => $next_page,
                         ]
                     );
+                }
+                
+                $this->info("Craw successful {$craw} links");
+            } catch (RequestException $e) {
+                report($e);
+
+                if ($e->hasResponse()) {
+                    if ($e->getResponse()->getStatusCode() == '404') {
+                        $page->update(
+                            [
+                                'crawler_date' => now(),
+                                'error' => $e->getMessage(),
+                                'next_page' => 1,
+                            ]
+                        );
+                    }
                 }
             } catch (\Exception $e) {
                 report($e);

@@ -55,6 +55,6 @@ class CrawlerPage extends Model
 
     public function website(): BelongsTo
     {
-        return $this->belongsTo(CrawlerWebsite::class, 'id', 'website_id');
+        return $this->belongsTo(CrawlerWebsite::class, 'website_id', 'id');
     }
 }

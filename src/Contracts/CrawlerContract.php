@@ -10,12 +10,12 @@
 
 namespace Juzaweb\Crawler\Contracts;
 
-use Juzaweb\Crawler\Support\Templates\CrawlerTemplate;
+use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Models\CrawlerPage;
 
 interface CrawlerContract
 {
-    public function crawPageLinks(CrawlerPage $page): bool;
+    public function crawPageLinks(CrawlerPage $page): bool|int;
 
     public function crawLinksUrl(string $url, CrawlerTemplate $template): array;
 }
