@@ -11,4 +11,6 @@ return [
     'website' => 'Website',
     'websites' => 'Websites',
     'has_ssl' => 'SSL',
+    'list_url' => 'List URL',
+    'list_url_page' => 'List URL with Page'
 ];

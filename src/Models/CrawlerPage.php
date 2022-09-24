@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Juzaweb\Crawler\Models\CrawlerPage
  *
  * @property int $id
- * @property string $list_url
- * @property string|null $list_url_page
+ * @property string $url
+ * @property string|null $url_with_page
  * @property int $website_id
  * @property array|null $category_ids
  * @property int $next_page
@@ -42,7 +42,7 @@ class CrawlerPage extends Model
         'url',
         'url_with_page',
         'next_page',
-        'element_item',
+        'post_type',
         'website_id',
         'category_ids',
         'active',

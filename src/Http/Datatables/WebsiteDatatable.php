@@ -33,6 +33,7 @@ class WebsiteDatatable extends DataTable
                         'toggle_has_ssl',
                         [
                             'checked' => $value == 1,
+                            'disabled' => true,
                         ]
                     )->render();
                 }
@@ -47,6 +48,7 @@ class WebsiteDatatable extends DataTable
                         'toggle_active',
                         [
                             'checked' => $value == 1,
+                            'disabled' => true,
                         ]
                     )->render();
                 }
@@ -60,6 +62,14 @@ class WebsiteDatatable extends DataTable
                 }
             ]
         ];
+    }
+
+    public function actions(): array
+    {
+        $actions = parent::actions();
+        $actions['active'] = trans('cms::app.active');
+        $actions['inactive'] = trans('cms::app.inactive');
+        return $actions;
     }
 
     public function query($data): Builder
@@ -83,8 +93,10 @@ class WebsiteDatatable extends DataTable
             );
         }
 
-        if ($status = Arr::get($data, 'status')) {
-            $query->where('status', '=', $status);
+        $active = Arr::get($data, 'active');
+
+        if (!is_null($active)) {
+            $query->where('active', '=', $active);
         }
 
         return $query;
@@ -102,9 +114,8 @@ class WebsiteDatatable extends DataTable
                 'type' => 'select',
                 'label' => trans('cms::app.status'),
                 'options' => [
-                    '' => trans('cms::app.active'),
-                    0 => trans('cms::app.active'),
-                    1 => trans('cms::app.unactive'),
+                    1 => trans('cms::app.active'),
+                    0 => trans('cms::app.inactive'),
                 ],
             ],
         ];
@@ -115,6 +126,22 @@ class WebsiteDatatable extends DataTable
         switch ($action) {
             case 'delete':
                 CrawlerWebsite::destroy($ids);
+                break;
+            case 'active':
+                $models = CrawlerWebsite::whereIn('id', $ids)->get();
+
+                foreach ($models as $model) {
+                    $model->update(['active' => 1]);
+                }
+
+                break;
+            case 'inactive':
+                $models = CrawlerWebsite::whereIn('id', $ids)->get();
+
+                foreach ($models as $model) {
+                    $model->update(['active' => 0]);
+                }
+
                 break;
         }
     }

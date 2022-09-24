@@ -13,8 +13,9 @@ return new class extends Migration {
             'crawler_pages',
             function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->string('list_url', 200);
-                $table->string('list_url_page', 200)->nullable();
+                $table->string('url', 200);
+                $table->string('url_with_page', 200)->nullable();
+                $table->string('post_type', 50)->default('posts');
                 $table->unsignedBigInteger('website_id')->index();
                 $table->json('category_ids')->nullable();
                 $table->integer('next_page')->default(1);
