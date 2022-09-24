@@ -11,6 +11,7 @@
 namespace Juzaweb\Crawler\Support\Templates;
 
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
+use Juzaweb\Crawler\Support\CrawlerElement;
 
 class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface
 {
@@ -24,11 +25,11 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface
             'meta[source]' => '.info .source',
             'authors' => [
                 'selector' => '.info a[itemprop="author"]',
-                'value' => 'text',
+                'value' => CrawlerElement::$VALUE_TEXT,
             ],
             'genres' => [
                 'selector' => '.info a[itemprop="genre"]',
-                'value' => 'text',
+                'value' => CrawlerElement::$VALUE_TEXT,
             ]
         ];
     }

@@ -19,7 +19,8 @@ return new class extends Migration {
                 $table->string('domain', 100);
                 $table->boolean('has_ssl')->default(1);
                 $table->boolean('active')->default(1);
-                $table->unsignedBigInteger('template_id')->index();
+                $table->unsignedBigInteger('template_id')->nullable();
+                $table->string('template_class');
                 $table->timestamps();
 
                 $table->foreign('template_id')

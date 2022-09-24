@@ -12,13 +12,28 @@ namespace Juzaweb\Crawler;
 
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
+use Juzaweb\Crawler\Support\Templates\TruyenFullVN;
 
 class CrawlerAction extends Action
 {
     public function handle()
     {
-        $this->addAction(Action::BACKEND_CALL_ACTION, [$this, 'addAddminMenu']);
-        $this->addAction(Action::BACKEND_CALL_ACTION, [$this, 'addScriptAdmin']);
+        $this->addAction(Action::BACKEND_INIT, [$this, 'addAddminMenu']);
+        $this->addAction(Action::INIT_ACTION, [$this, 'registerCrawlerTemplates']);
+        //$this->addAction(Action::BACKEND_CALL_ACTION, [$this, 'addScriptAdmin']);
+    }
+
+    public function registerCrawlerTemplates()
+    {
+        $args = [
+            'name' => 'TruyenFull.vn',
+            'class' => TruyenFullVN::class,
+        ];
+
+        $this->hookAction->registerCrawlerTemplate(
+            'truyenfullvn',
+            $args
+        );
     }
 
     public function addScriptAdmin()
@@ -34,11 +49,24 @@ class CrawlerAction extends Action
 
     public function addAddminMenu()
     {
-        HookAction::addAdminMenu(
-            trans('crawler::content.crawler'),
-            'crawler.template',
+        HookAction::registerAdminPage(
+            'crawler',
             [
-                'position' => 20,
+                'title' => trans('crawler::content.crawler'),
+                'menu' => [
+                    'position' => 30,
+                ]
+            ]
+        );
+
+        HookAction::registerAdminPage(
+            'crawler.websites',
+            [
+                'title' => trans('crawler::content.websites'),
+                'menu' => [
+                    'position' => 1,
+                    'parent' => 'crawler'
+                ]
             ]
         );
     }

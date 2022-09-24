@@ -8,4 +8,7 @@ return [
     'component' => 'Component',
     'components' => 'Components',
     'links' => 'Links',
+    'website' => 'Website',
+    'websites' => 'Websites',
+    'has_ssl' => 'SSL',
 ];

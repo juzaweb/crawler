@@ -3,9 +3,9 @@
 namespace Juzaweb\Crawler\Providers;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Collection;
+use Juzaweb\CMS\Support\HookAction;
 use Juzaweb\Crawler\Commands\ContentCrawlerCommand;
-use Juzaweb\Crawler\Commands\CrawContentCommand;
-use Juzaweb\Crawler\Commands\CrawLinkCommand;
 use Juzaweb\Crawler\Commands\LinkCrawlerCommand;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\CrawlerAction;
@@ -17,10 +17,33 @@ class CrawlerServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        ActionRegister::register(
-            [
-                //CrawlerAction::class
-            ]
+        HookAction::macro(
+            'registerCrawlerTemplate',
+            function (string $key, array $args = []) {
+                $defaults = [
+                    'name' => '',
+                    'class' => '',
+                    'key' => $key,
+                ];
+
+                $args = array_merge($defaults, $args);
+
+                $this->globalData->set(
+                    "crawler_template.{$key}",
+                    new Collection($args)
+                );
+            }
+        );
+
+        HookAction::macro(
+            'getCrawlerTemplates',
+            function (string $key = null) {
+                if ($key) {
+                    return $this->globalData->get('crawler_template.' . $key);
+                }
+
+                return new Collection($this->globalData->get('crawler_template'));
+            }
         );
 
         $this->commands(
@@ -29,6 +52,12 @@ class CrawlerServiceProvider extends ServiceProvider
                 ContentCrawlerCommand::class,
                 //CrawLinkCommand::class,
                 //CrawContentCommand::class
+            ]
+        );
+
+        ActionRegister::register(
+            [
+                CrawlerAction::class
             ]
         );
 

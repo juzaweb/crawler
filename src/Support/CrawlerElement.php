@@ -14,6 +14,12 @@ use Juzaweb\CMS\Support\HtmlDomNode;
 
 class CrawlerElement
 {
+    public static string $VALUE_TEXT = 'text';
+
+    public static string $VALUE_INNERTEXT = 'innertext';
+
+    public static string $VALUE_OUTERTEXT = 'outertext';
+
     public string $selector;
 
     public ?int $index;

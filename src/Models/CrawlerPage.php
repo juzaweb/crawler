@@ -5,6 +5,35 @@ namespace Juzaweb\Crawler\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Juzaweb\Crawler\Models\CrawlerPage
+ *
+ * @property int $id
+ * @property string $list_url
+ * @property string|null $list_url_page
+ * @property int $website_id
+ * @property array|null $category_ids
+ * @property int $next_page
+ * @property int $active
+ * @property string $crawler_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Juzaweb\Crawler\Models\CrawlerWebsite|null $website
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage query()
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereCategoryIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereCrawlerDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereListUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereListUrlPage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereNextPage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereWebsiteId($value)
+ * @mixin \Eloquent
+ */
 class CrawlerPage extends Model
 {
     protected $table = 'crawler_pages';

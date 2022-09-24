@@ -35,6 +35,14 @@ use Juzaweb\CMS\Models\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink wherePageId($value)
  * @property array|null $category_ids
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereCategoryIds($value)
+ * @property string $url_hash
+ * @property int $auto_craw
+ * @property int $active
+ * @property-read \Juzaweb\Crawler\Models\CrawlerWebsite $website
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereAutoCraw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereUrlHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereWebsiteId($value)
  */
 class CrawlerLink extends Model
 {
