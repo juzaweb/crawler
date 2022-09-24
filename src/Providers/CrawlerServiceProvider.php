@@ -4,6 +4,7 @@ namespace Juzaweb\Crawler\Providers;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Collection;
+use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\CMS\Support\HookAction;
 use Juzaweb\Crawler\Commands\AutoContentCrawlerCommand;
 use Juzaweb\Crawler\Commands\AutoLinkCrawlerCommand;
@@ -74,6 +75,11 @@ class CrawlerServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(CrawlerContract::class, Crawler::class);
+        $this->app->singleton(
+            CrawlerContract::class,
+            function ($app) {
+                return new Crawler($app[PostImporterContract::class]);
+            }
+        );
     }
 }

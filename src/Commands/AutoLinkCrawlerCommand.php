@@ -56,6 +56,13 @@ class AutoLinkCrawlerCommand extends Command
                             ]
                         );
                     }
+                } else {
+                    $page->update(
+                        [
+                            'crawler_date' => now(),
+                            'error' => $e->getMessage(),
+                        ]
+                    );
                 }
 
                 $this->error($e->getMessage());

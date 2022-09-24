@@ -42,7 +42,7 @@ trait LinkCrawler
                 function ($item) use ($page) {
                     return [
                         'url' => $item,
-                        'url_hash' => hash('sha1', $item),
+                        'url_hash' => sha1($item),
                         'website_id' => $page->website->id,
                         'page_id' => $page->id,
                         'created_at' => date('Y-m-d H:i:s'),

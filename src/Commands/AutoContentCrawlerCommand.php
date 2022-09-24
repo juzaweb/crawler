@@ -24,7 +24,8 @@ class AutoContentCrawlerCommand extends Command
     {
         $query = CrawlerLink::with(
             [
-                'website'
+                'website',
+                'page'
             ]
         )
             ->where('status', '=', CrawlerLink::STATUS_PENDING)

@@ -11,6 +11,7 @@
 namespace Juzaweb\Crawler\Support;
 
 use GuzzleHttp\Client;
+use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Support\Traists\ContentCrawler;
 use Juzaweb\Crawler\Support\Traists\LinkCrawler;
@@ -18,6 +19,13 @@ use Juzaweb\Crawler\Support\Traists\LinkCrawler;
 class Crawler implements CrawlerContract
 {
     use LinkCrawler, ContentCrawler;
+
+    protected PostImporterContract $postImport;
+
+    public function __construct($postImport)
+    {
+        $this->postImport = $postImport;
+    }
 
     protected function createHTMLDomFromUrl($url): HtmlDomCrawler
     {

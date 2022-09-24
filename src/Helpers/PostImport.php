@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Juzaweb\Backend\Models\MediaFile;
-use Juzaweb\Multisite\Helpers\DatabaseConnection;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 class PostImport
@@ -23,7 +22,6 @@ class PostImport
     protected $storage;
     protected $tmp;
     protected $data;
-    protected $siteId;
 
     public function __construct(Client $client)
     {

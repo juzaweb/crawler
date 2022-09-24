@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+
+    public function up()
+    {
+        Schema::create(
+            'crawler_contents',
+            function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->json('components');
+                $table->string('lang', 5)->nullable()->index();
+                $table->unsignedBigInteger('link_id')->unique();
+                $table->unsignedBigInteger('page_id')->index();
+                $table->unsignedBigInteger('post_id')->nullable()->index();
+                $table->string('status')->default('pending');
+                $table->timestamps();
+
+                $table->foreign('page_id')
+                    ->references('id')
+                    ->on('crawler_pages')
+                    ->onDelete('cascade');
+
+                $table->foreign('link_id')
+                    ->references('id')
+                    ->on('crawler_links')
+                    ->onDelete('cascade');
+            }
+        );
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('crawler_contents');
+    }
+};

@@ -16,7 +16,7 @@ use Juzaweb\Backend\Models\Post;
  * @property int $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Juzaweb\Crawler\Models\CrawContent|null $content
+ * @property-read \Juzaweb\Crawler\Models\CrawlerContent|null $content
  * @property-read \Juzaweb\Crawler\Models\Language|null $language
  * @property-read \Juzaweb\Crawler\Models\Post|null $post
  * @method static \Illuminate\Database\Eloquent\Builder|CrawTranslate newModelQuery()
@@ -42,17 +42,17 @@ class CrawTranslate extends Model
         'status',
         'error',
     ];
-    
+
     public function content()
     {
-        return $this->hasOne(CrawContent::class, 'id', 'content_id');
+        return $this->hasOne(CrawlerContent::class, 'id', 'content_id');
     }
-    
+
     public function post()
     {
         return $this->hasOne(Post::class, 'id', 'post_id');
     }
-    
+
     public function language()
     {
         return $this->hasOne('Juzaweb\Crawler\Models\Language', 'code', 'lang');

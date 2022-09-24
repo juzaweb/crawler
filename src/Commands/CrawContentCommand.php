@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Juzaweb\Crawler\Helpers\Converter\BBCodeToHtml;
 use Juzaweb\Crawler\Helpers\Leech\LeechComponent;
 use Juzaweb\Crawler\Helpers\PostImport;
-use Juzaweb\Crawler\Models\CrawContent;
+use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerTemplate;
 
@@ -111,7 +111,7 @@ class CrawContentCommand extends Command
                 );
             }
 
-            CrawContent::updateOrCreate(
+            CrawlerContent::updateOrCreate(
                 [
                     'link_id' => $link->id
                 ],
@@ -127,7 +127,7 @@ class CrawContentCommand extends Command
                     'crawler_thumbnail' => $template->crawler_thumbnail,
                     'crawler_title' => $template->crawler_title,
                     'crawler_content' => $template->crawler_content,
-                    'status' => CrawContent::STATUS_ACTIVE,
+                    'status' => CrawlerContent::STATUS_PENDING,
                 ]
             );
 

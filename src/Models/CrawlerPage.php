@@ -33,6 +33,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereWebsiteId($value)
  * @mixin \Eloquent
+ * @property string $post_type
+ * @property int $auto_craw
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereAutoCraw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage wherePostType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrlWithPage($value)
  */
 class CrawlerPage extends Model
 {

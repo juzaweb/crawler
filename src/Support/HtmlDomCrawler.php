@@ -10,7 +10,6 @@
 
 namespace Juzaweb\Crawler\Support;
 
-use GuzzleHttp\Client;
 use Juzaweb\CMS\Support\HtmlDom;
 use Juzaweb\CMS\Support\HtmlDomNode;
 
@@ -63,15 +62,14 @@ class HtmlDomCrawler
         }
     }
 
-    public function removeInternalLink(): void
+    public function removeInternalLink(string $domain): void
     {
-        $domain = base_domain($this->url);
         $html = str_get_html($this->content);
         $links = $html->find('a');
 
         foreach ($links as $item) {
             if (is_url($item->href)) {
-                if ($domain == base_domain($item->href)) {
+                if ($domain == get_domain_by_url($item->href)) {
                     $text = $item->text();
                     $item->outertext = $text;
                 }

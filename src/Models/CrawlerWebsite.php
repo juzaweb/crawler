@@ -31,6 +31,11 @@ use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereTemplateId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $active
+ * @property string $template_class
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereFilter($params = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereTemplateClass($value)
  */
 class CrawlerWebsite extends Model
 {

@@ -2,7 +2,7 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
-use Juzaweb\Crawler\Models\CrawContent;
+use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerTemplate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class ContentController extends BackendController
 
     public function form($id = null)
     {
-        $model = CrawContent::firstOrNew(['id' => $id]);
+        $model = CrawlerContent::firstOrNew(['id' => $id]);
         return view('backend.leech.content.form', [
             'model' => $model,
         ]);
@@ -48,7 +48,7 @@ class ContentController extends BackendController
         $search = $request->input('search');
         $status = $request->input('status');
 
-        $query = CrawContent::query();
+        $query = CrawlerContent::query();
         $query->with('template');
         $query->where('template_id', '=', $template_id);
 
@@ -88,7 +88,7 @@ class ContentController extends BackendController
         $ids = $request->input('ids');
         $status = $request->input('status');
 
-        CrawContent::whereIn('id', $ids)
+        CrawlerContent::whereIn('id', $ids)
             ->update([
                 'status' => $status,
             ]);
@@ -106,7 +106,7 @@ class ContentController extends BackendController
 
         $ids = $request->input('ids', []);
 
-        CrawContent::whereIn('id', $ids)
+        CrawlerContent::whereIn('id', $ids)
             ->delete();
 
         return $this->success([
@@ -120,7 +120,7 @@ class ContentController extends BackendController
             'id' => 'required',
         ]);
 
-        $content = CrawContent::find($request->post('id'));
+        $content = CrawlerContent::find($request->post('id'));
 
         $content->update([
             'status' => 2,
