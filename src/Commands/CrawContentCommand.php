@@ -14,7 +14,7 @@ use Juzaweb\Crawler\Models\CrawlerTemplate;
 
 class CrawContentCommand extends Command
 {
-    use CommandSlotTrait;
+    //use CommandSlotTrait;
 
     protected $signature = 'crawler:content';
     protected $slot = 1;

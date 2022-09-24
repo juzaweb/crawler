@@ -31,19 +31,17 @@ class AutoLinkCrawlerCommand extends Command
             try {
                 $craw = app(CrawlerContract::class)->crawPageLinks($page);
 
-                if ($craw) {
-                    $next_page = ($page->url_page && $page->next_page > 0)
-                        ? $page->next_page + 1
-                        : ($page->next_page > 0 ? 1 : 0);
+                $next_page = ($page->url_with_page && $page->next_page > 0)
+                    ? $page->next_page + 1
+                    : ($page->next_page > 0 ? 1 : 0);
 
-                    $page->update(
-                        [
-                            'crawler_date' => now(),
-                            'next_page' => $next_page,
-                        ]
-                    );
-                }
-                
+                $page->update(
+                    [
+                        'crawler_date' => now(),
+                        'next_page' => $next_page,
+                    ]
+                );
+
                 $this->info("Craw successful {$craw} links");
             } catch (RequestException $e) {
                 report($e);

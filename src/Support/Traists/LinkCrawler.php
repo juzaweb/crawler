@@ -21,7 +21,12 @@ trait LinkCrawler
     {
         $template = $page->website->getTemplateClass();
 
-        $items = $this->crawLinksUrl($page->url, $template);
+        $crawUrl = $page->url;
+        if ($page->next_page > 1 && $page->url_with_page) {
+            $crawUrl = str_replace(['{page}'], [$page->next_page], $page->url_with_page);
+        }
+
+        $items = $this->crawLinksUrl($crawUrl, $template);
 
         $urls = CrawlerLink::whereIn('url', $items)
             ->pluck('url')
