@@ -11,9 +11,10 @@
 namespace Juzaweb\Crawler\Support\Templates;
 
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
+use Juzaweb\Crawler\Interfaces\TemplateWithResource;
 use Juzaweb\Crawler\Support\CrawlerElement;
 
-class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface
+class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, TemplateWithResource
 {
     protected string $linkElement = 'h3.truyen-title a';
 
@@ -35,6 +36,20 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface
             'genres' => [
                 'selector' => '.info a[itemprop="genre"]',
                 'value' => CrawlerElement::$VALUE_TEXT,
+            ]
+        ];
+    }
+
+    public function getLinkResourceElement(): string
+    {
+        return '.list-chapter a';
+    }
+
+    public function getDataResourceElements(): array
+    {
+        return [
+            'chapters' => [
+                'link_element' => '.list-chapter a',
             ]
         ];
     }

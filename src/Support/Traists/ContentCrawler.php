@@ -11,6 +11,7 @@
 namespace Juzaweb\Crawler\Support\Traists;
 
 use Illuminate\Support\Facades\DB;
+use Juzaweb\Crawler\Interfaces\TemplateWithResource;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Support\CrawlerElement;
@@ -71,6 +72,10 @@ trait ContentCrawler
         foreach ($template->getDataElements() as $code => $el) {
             $element = new CrawlerElement($el);
             $result[$code] = $element->getValue($contents);
+        }
+
+        if ($template instanceof TemplateWithResource) {
+
         }
 
         return $result;
