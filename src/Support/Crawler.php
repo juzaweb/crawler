@@ -13,41 +13,31 @@ namespace Juzaweb\Crawler\Support;
 use GuzzleHttp\Client;
 use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
-use Juzaweb\Crawler\Support\Traists\ContentCrawler;
-use Juzaweb\Crawler\Support\Traists\LinkCrawler;
+use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
+use Juzaweb\Crawler\Models\CrawlerPage;
+use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
+use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
 
 class Crawler implements CrawlerContract
 {
-    use LinkCrawler, ContentCrawler;
+    protected ContentCrawler $contentCrawler;
 
-    protected PostImporterContract $postImport;
+    protected LinkCrawler $linkCrawler;
 
-    public function __construct($postImport)
+    public function __construct()
     {
-        $this->postImport = $postImport;
+        $this->contentCrawler = app(ContentCrawler::class);
+
+        $this->linkCrawler = app(LinkCrawler::class);
     }
 
-    protected function createHTMLDomFromUrl($url): HtmlDomCrawler
+    public function crawPageLinks(CrawlerPage $page): bool|int
     {
-        $contents = $this->getContentUrl($url);
-
-        return $this->createHTMLDomFromContent($contents);
+        return $this->linkCrawler->crawPageLinks($page);
     }
 
-    protected function createHTMLDomFromContent(string $content): HtmlDomCrawler
+    public function crawLinksUrl(string $url, CrawlerTemplate $template): array
     {
-        return new HtmlDomCrawler($content);
-    }
-
-    protected function getContentUrl($url): string
-    {
-        $response = $this->getClient()->get($url);
-
-        return $response->getBody()->getContents();
-    }
-
-    protected function getClient(): Client
-    {
-        return new Client(['timeout' => 10]);
+        return $this->linkCrawler->crawLinksUrl($url, $template);
     }
 }

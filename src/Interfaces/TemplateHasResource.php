@@ -10,7 +10,7 @@
 
 namespace Juzaweb\Crawler\Interfaces;
 
-interface TemplateWithResource
+interface TemplateHasResource
 {
     public function getLinkResourceElement(): string;
 

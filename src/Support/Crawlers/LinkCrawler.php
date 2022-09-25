@@ -8,14 +8,15 @@
  * @license    MIT
  */
 
-namespace Juzaweb\Crawler\Support\Traists;
+namespace Juzaweb\Crawler\Support\Crawlers;
 
 use Illuminate\Support\Facades\DB;
+use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 
-trait LinkCrawler
+class LinkCrawler extends CrawlerAbstract
 {
     public function crawPageLinks(CrawlerPage $page): bool|int
     {
@@ -67,9 +68,21 @@ trait LinkCrawler
 
     public function crawLinksUrl(string $url, CrawlerTemplate $template): array
     {
+        return $this->crawLinkViaElement(
+            $url,
+            $template->getLinkElement(),
+            $template->getLinkElementAttribute()
+        );
+    }
+
+    public function crawLinkViaElement(
+        string $url,
+        string $element,
+        string $elementAttribute = 'href'
+    ): array {
         $html = $this->createHTMLDomFromUrl($url);
 
-        $urls = $html->find($template->getLinkElement());
+        $urls = $html->find($element);
 
         if (empty($urls)) {
             return [];
@@ -77,9 +90,7 @@ trait LinkCrawler
 
         $items = [];
         foreach ($urls as $url) {
-            $href = $url->getAttribute(
-                $template->getLinkElementAttribute()
-            );
+            $href = $url->getAttribute($elementAttribute);
 
             $items[] = trim(get_full_url($href, $url));
         }

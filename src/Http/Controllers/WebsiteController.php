@@ -32,12 +32,15 @@ class WebsiteController extends PageController
         $pages = [];
 
         foreach (Arr::get($data, 'pages', []) as $page) {
+            $url = trim(Arr::get($page, 'url'));
+
             $pages[] = CrawlerPage::updateOrCreate(
                 [
                     'id' => Arr::get($page, 'id'),
                 ],
                 [
-                    'url' => Arr::get($page, 'url'),
+                    'url' => $url,
+                    'url_hash' => sha1($url),
                     'url_with_page' => Arr::get($page, 'url_with_page'),
                     'post_type' => Arr::get($page, 'post_type'),
                     'active' => Arr::get($page, 'active', 0),

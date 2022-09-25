@@ -8,17 +8,28 @@
  * @license    MIT
  */
 
-namespace Juzaweb\Crawler\Support\Traists;
+namespace Juzaweb\Crawler\Support\Crawlers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Juzaweb\Crawler\Interfaces\TemplateWithResource;
+use Juzaweb\CMS\Contracts\PostImporterContract;
+use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
+use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
+use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
+use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\CrawlerElement;
-use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 
-trait ContentCrawler
+class ContentCrawler extends CrawlerAbstract
 {
+    protected PostImporterContract $postImport;
+
+    public function __construct(PostImporterContract $postImport)
+    {
+        $this->postImport = $postImport;
+    }
+
     public function crawContentLink(CrawlerLink $link): bool
     {
         $template = $link->website->getTemplateClass();
@@ -51,6 +62,25 @@ trait ContentCrawler
                 ]
             );
 
+            if ($template instanceof TemplateHasResource) {
+                $urlPage = $template->getResourceUrlWithPage() ? str_replace(
+                    ['{post_url}'],
+                    [$link->url],
+                    $template->getResourceUrlWithPage()
+                ) : null;
+
+                CrawlerPage::firstOrCreate(
+                    [
+                        'url' => $link->url,
+                        'url_hash' => sha1($link->url),
+                        'url_with_page' => $urlPage,
+                        'post_type' => $link->page->post_type,
+                        'active' => 1,
+                        'website_id' => $link->website->id
+                    ]
+                );
+            }
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -66,18 +96,20 @@ trait ContentCrawler
 
         $contents->removeScript();
 
-        //$contents->removeInternalLink(get_domain_by_url($url));
+        $elementData = $template->getDataElements();
 
         $result = [];
-        foreach ($template->getDataElements() as $code => $el) {
+
+        foreach ($elementData['data'] ?? [] as $code => $el) {
             $element = new CrawlerElement($el);
             $result[$code] = $element->getValue($contents);
         }
 
-        if ($template instanceof TemplateWithResource) {
-
-        }
-
         return $result;
+    }
+
+    public function crawContentsViaHTMLDom(string $url, $contents)
+    {
+        //
     }
 }

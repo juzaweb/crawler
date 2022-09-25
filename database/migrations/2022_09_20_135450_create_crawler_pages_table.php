@@ -14,6 +14,7 @@ return new class extends Migration {
             function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('url', 200);
+                $table->string('url_hash', 40)->unique();
                 $table->string('url_with_page', 200)->nullable();
                 $table->string('post_type', 50)->default('posts');
                 $table->unsignedBigInteger('website_id')->index();

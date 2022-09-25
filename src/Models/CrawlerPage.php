@@ -53,6 +53,7 @@ class CrawlerPage extends Model
         'category_ids',
         'active',
         'crawler_date',
+        'url_hash'
     ];
 
     public $casts = [
