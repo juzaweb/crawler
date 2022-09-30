@@ -10,10 +10,9 @@
 
 namespace Juzaweb\Crawler\Support;
 
-use GuzzleHttp\Client;
-use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
+use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
 use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
@@ -39,5 +38,10 @@ class Crawler implements CrawlerContract
     public function crawLinksUrl(string $url, CrawlerTemplate $template): array
     {
         return $this->linkCrawler->crawLinksUrl($url, $template);
+    }
+
+    public function crawContentLink(CrawlerLink $link): bool
+    {
+        return $this->contentCrawler->crawContentLink($link);
     }
 }

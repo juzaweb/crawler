@@ -90,12 +90,15 @@ class ContentCrawler extends CrawlerAbstract
 
         $contents->removeScript();
 
+        if ($link->page->is_resource_page) {
+
+        }
+
         $elementData = $link->page->is_resource_page ?
             $template->getDataResourceElements() :
             $template->getDataElements();
 
         $result = [];
-
         foreach ($elementData['data'] ?? [] as $code => $el) {
             $element = new CrawlerElement($el);
             $result[$code] = $element->getValue($contents);

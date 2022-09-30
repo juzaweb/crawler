@@ -24,10 +24,18 @@ class LinkCrawler extends CrawlerAbstract
 
         $crawUrl = $page->url;
         if ($page->next_page > 1 && $page->url_with_page) {
-            $crawUrl = str_replace(['{page}'], [$page->next_page], $page->url_with_page);
+            $crawUrl = str_replace(
+                ['{page}'],
+                [$page->next_page],
+                $page->url_with_page
+            );
         }
 
-        $items = $this->crawLinksUrl($crawUrl, $template);
+        $items = $this->crawLinksUrl(
+            $crawUrl,
+            $template,
+            (bool) $page->is_resource_page
+        );
 
         $urls = CrawlerLink::whereIn('url', $items)
             ->pluck('url')
@@ -66,11 +74,16 @@ class LinkCrawler extends CrawlerAbstract
         return count($data);
     }
 
-    public function crawLinksUrl(string $url, CrawlerTemplate $template): array
-    {
+    public function crawLinksUrl(
+        string $url,
+        CrawlerTemplate $template,
+        bool $isResource = false
+    ): array {
+        $linkElement = $isResource ? $template->getLinkResourceElement() : $template->getLinkElement();
+
         return $this->crawLinkViaElement(
             $url,
-            $template->getLinkElement(),
+            $linkElement,
             $template->getLinkElementAttribute()
         );
     }

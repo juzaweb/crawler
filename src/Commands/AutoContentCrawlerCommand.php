@@ -39,6 +39,7 @@ class AutoContentCrawlerCommand extends Command
                 'page',
                 function ($q) {
                     $q->where(['active' => 1]);
+                    $q->where(['is_resource_page' => 1]);
                 }
             )
             ->inRandomOrder();
@@ -48,7 +49,9 @@ class AutoContentCrawlerCommand extends Command
         foreach ($links as $link) {
             app(CrawlerContract::class)->crawContentLink($link);
 
-            $this->info("Created post from link {$link->url}");
+            $type = $link->page->is_resource_page ? 'Resource' : 'Post';
+
+            $this->info("Created {$type} from link {$link->url}");
 
             sleep(2);
         }
