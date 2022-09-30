@@ -39,7 +39,6 @@ class AutoContentCrawlerCommand extends Command
                 'page',
                 function ($q) {
                     $q->where(['active' => 1]);
-                    $q->where(['is_resource_page' => 1]);
                 }
             )
             ->inRandomOrder();
