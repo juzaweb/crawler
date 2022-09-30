@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Crawler\Support\Templates;
 
+use Juzaweb\CMS\Support\HtmlDomNode;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Support\CrawlerElement;
@@ -57,8 +58,15 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, 
         return [
             'chapters' => [
                 'data' => [
-                    'name' => 'a.truyen-title',
+                    'name' => [
+                        'selector' => '.chapter-title',
+                        'value' => CrawlerElement::$VALUE_TEXT,
+                        'index' => 0
+                    ],
                     'meta.content' => '#chapter-c',
+                ],
+                'removes' => [
+                    '#ads-chapter-pc-top'
                 ]
             ]
         ];

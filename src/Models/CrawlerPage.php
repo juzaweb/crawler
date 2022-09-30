@@ -60,6 +60,7 @@ class CrawlerPage extends Model
         'active',
         'crawler_date',
         'url_hash',
+        'parent_post_id',
         'is_resource_page'
     ];
 

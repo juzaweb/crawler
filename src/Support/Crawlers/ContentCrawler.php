@@ -10,7 +10,6 @@
 
 namespace Juzaweb\Crawler\Support\Crawlers;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Backend\Models\Post;
@@ -54,11 +53,11 @@ class ContentCrawler extends CrawlerAbstract
             );
 
             if ($link->page->is_resource_page) {
-                $resource = $this->importResourceData($data);
+                $resource = $this->importResourceData($data, $link);
 
                 $content->update(
                     [
-                        'resource_id' => $resource->id,
+                        'resource_id' => $resource[0]->id,
                         'status' => CrawlerContent::STATUS_DONE
                     ]
                 );
@@ -90,32 +89,45 @@ class ContentCrawler extends CrawlerAbstract
 
         $contents->removeScript();
 
-        if ($link->page->is_resource_page) {
-
-        }
-
-        $elementData = $link->page->is_resource_page ?
-            $template->getDataResourceElements() :
-            $template->getDataElements();
-
         $result = [];
-        foreach ($elementData['data'] ?? [] as $code => $el) {
-            $element = new CrawlerElement($el);
-            $result[$code] = $element->getValue($contents);
+        if ($link->page->is_resource_page) {
+            $elementData = $template->getDataResourceElements();
+
+            foreach ($elementData as $key => $resource) {
+                foreach ($resource['data'] ?? [] as $code => $el) {
+                    $element = new CrawlerElement($el);
+                    Arr::set($result, "$key.{$code}", $element->getValue($contents));
+                }
+            }
+        } else {
+            $elementData = $template->getDataElements();
+
+            foreach ($elementData['data'] ?? [] as $code => $el) {
+                $element = new CrawlerElement($el);
+                Arr::set($result, $code, $element->getValue($contents));
+            }
         }
 
         return $result;
     }
 
-    protected function importResourceData(array $data): Model|Resource
+    protected function importResourceData(array $data, CrawlerLink $link): array
     {
-        $resource = Resource::create($data);
+        $resources = [];
+        foreach ($data as $key => $item) {
+            $item['type'] = $key;
+            $item['post_id'] = $link->page->parent_post_id;
 
-        if ($metas = Arr::get($data, 'meta')) {
-            $resource->syncMetas($metas);
+            $resource = Resource::create($item);
+
+            if ($metas = Arr::get($item, 'meta')) {
+                $resource->syncMetas($metas);
+            }
+
+            $resources[] = $resource;
         }
 
-        return $resource;
+        return $resources;
     }
 
     protected function importPostData(array $data, CrawlerLink $link, CrawlerTemplate $template): Post
@@ -137,6 +149,7 @@ class ContentCrawler extends CrawlerAbstract
                     'post_type' => $link->page->post_type,
                     'active' => 1,
                     'website_id' => $link->website->id,
+                    'parent_post_id' => $post->id,
                     'is_resource_page' => 1,
                 ]
             );
