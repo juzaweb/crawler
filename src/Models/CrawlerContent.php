@@ -45,6 +45,7 @@ class CrawlerContent extends Model
         'link_id',
         'page_id',
         'post_id',
+        'resource_id',
         'status',
     ];
 

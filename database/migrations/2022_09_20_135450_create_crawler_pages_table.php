@@ -21,6 +21,7 @@ return new class extends Migration {
                 $table->text('error')->nullable();
                 $table->json('category_ids')->nullable();
                 $table->integer('next_page')->default(1);
+                $table->boolean('is_resource_page')->default(0);
                 $table->boolean('active')->default(1);
                 $table->timestamp('crawler_date')->default('2020-01-01 00:00:00');
                 $table->timestamps();

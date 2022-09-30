@@ -10,8 +10,11 @@
 
 namespace Juzaweb\Crawler\Support\Crawlers;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Juzaweb\Backend\Models\Post;
+use Juzaweb\Backend\Models\Resource;
 use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
@@ -34,7 +37,7 @@ class ContentCrawler extends CrawlerAbstract
     {
         $template = $link->website->getTemplateClass();
 
-        $data = $this->crawContentsUrl($link->url, $template);
+        $data = $this->crawContentsUrl($link, $template);
 
         DB::beginTransaction();
         try {
@@ -50,33 +53,24 @@ class ContentCrawler extends CrawlerAbstract
                 ]
             );
 
-            $data['type'] = $link->page->post_type;
-            //$data['status'] = $link->page->post_type;
+            if ($link->page->is_resource_page) {
+                $resource = $this->importResourceData($data);
 
-            $post = $this->postImport->import($data);
-
-            $content->update(
-                [
-                    'post_id' => $post->id,
-                    'status' => CrawlerContent::STATUS_DONE
-                ]
-            );
-
-            if ($template instanceof TemplateHasResource) {
-                $urlPage = $template->getResourceUrlWithPage() ? str_replace(
-                    ['{post_url}'],
-                    [$link->url],
-                    $template->getResourceUrlWithPage()
-                ) : null;
-
-                CrawlerPage::firstOrCreate(
+                $content->update(
                     [
-                        'url' => $link->url,
-                        'url_hash' => sha1($link->url),
-                        'url_with_page' => $urlPage,
-                        'post_type' => $link->page->post_type,
-                        'active' => 1,
-                        'website_id' => $link->website->id
+                        'resource_id' => $resource->id,
+                        'status' => CrawlerContent::STATUS_DONE
+                    ]
+                );
+            } else {
+                $data['type'] = $link->page->post_type;
+
+                $post = $this->importPostData($data, $link, $template);
+
+                $content->update(
+                    [
+                        'post_id' => $post->id,
+                        'status' => CrawlerContent::STATUS_DONE
                     ]
                 );
             }
@@ -90,13 +84,15 @@ class ContentCrawler extends CrawlerAbstract
         return true;
     }
 
-    public function crawContentsUrl(string $url, CrawlerTemplate $template): array
+    public function crawContentsUrl(CrawlerLink $link, CrawlerTemplate $template): array
     {
-        $contents = $this->createHTMLDomFromUrl($url);
+        $contents = $this->createHTMLDomFromUrl($link->url);
 
         $contents->removeScript();
 
-        $elementData = $template->getDataElements();
+        $elementData = $link->page->is_resource_page ?
+            $template->getDataResourceElements() :
+            $template->getDataElements();
 
         $result = [];
 
@@ -108,8 +104,41 @@ class ContentCrawler extends CrawlerAbstract
         return $result;
     }
 
-    public function crawContentsViaHTMLDom(string $url, $contents)
+    protected function importResourceData(array $data): Model|Resource
     {
-        //
+        $resource = Resource::create($data);
+
+        if ($metas = Arr::get($data, 'meta')) {
+            $resource->syncMetas($metas);
+        }
+
+        return $resource;
+    }
+
+    protected function importPostData(array $data, CrawlerLink $link, CrawlerTemplate $template): Post
+    {
+        $post = $this->postImport->import($data);
+
+        if ($template instanceof TemplateHasResource) {
+            $urlPage = $template->getResourceUrlWithPage() ? str_replace(
+                ['{post_url}'],
+                [$link->url],
+                $template->getResourceUrlWithPage()
+            ) : null;
+
+            CrawlerPage::firstOrCreate(
+                [
+                    'url' => $link->url,
+                    'url_hash' => sha1($link->url),
+                    'url_with_page' => $urlPage,
+                    'post_type' => $link->page->post_type,
+                    'active' => 1,
+                    'website_id' => $link->website->id,
+                    'is_resource_page' => 1,
+                ]
+            );
+        }
+
+        return $post;
     }
 }
