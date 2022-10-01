@@ -91,6 +91,10 @@ class Crawler implements CrawlerContract
             if ($isResource) {
                 $resource = $this->importResourceData($data, $link);
 
+                if (method_exists($template, 'createdResourcesEvent')) {
+                    $template->createdResourcesEvent($resource, $data);
+                }
+
                 $content->update(
                     [
                         'resource_id' => $resource[0]->id,
@@ -101,6 +105,10 @@ class Crawler implements CrawlerContract
                 $data['type'] = $link->page->post_type;
 
                 $post = $this->importPostData($data, $link, $template);
+
+                if (method_exists($template, 'createdPostEvent')) {
+                    $template->createdPostEvent($post, $data);
+                }
 
                 $content->update(
                     [

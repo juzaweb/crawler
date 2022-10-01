@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Crawler\Support\Templates;
 
+use Juzaweb\Backend\Models\Resource;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Support\CrawlerElement;
@@ -74,5 +75,16 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, 
                 ]
             ]
         ];
+    }
+
+    public function createdResourcesEvent(array $resource, array $data)
+    {
+        $post = $resource[0]->post;
+
+        $chapters = $post->resources()
+            ->where('type', '=', 'chapters')
+            ->count(['id']);
+
+        $post->setMeta('chapters', $chapters);
     }
 }
