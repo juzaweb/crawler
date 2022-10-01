@@ -35,7 +35,26 @@ class Crawler implements CrawlerContract
 
     public function crawPageLinks(CrawlerPage $page): bool|int
     {
-        return $this->createLinkCrawler()->crawPageLinks($page);
+        $template = $page->website->getTemplateClass();
+
+        $crawUrl = $page->url;
+        if ($page->next_page > 1 && $page->url_with_page) {
+            $crawUrl = str_replace(
+                ['{page}'],
+                [$page->next_page],
+                $page->url_with_page
+            );
+        }
+
+        $items = $this->createLinkCrawler()->crawLinksUrl(
+            $crawUrl,
+            $template,
+            (bool) $page->is_resource_page
+        );
+
+        $data = $this->checkAndInsertLinks($items, $page);
+
+        return count($data);
     }
 
     public function crawLinksUrl(string $url, CrawlerTemplate $template): array
@@ -98,6 +117,46 @@ class Crawler implements CrawlerContract
         }
 
         return true;
+    }
+
+    protected function checkAndInsertLinks(array $items, CrawlerPage $page): array
+    {
+        $urls = CrawlerLink::whereIn('url', $items)
+            ->get(['url'])
+            ->pluck('url')
+            ->toArray();
+
+        $data = collect($items)
+            ->filter(
+                function ($url) use ($urls) {
+                    return is_url($url) && !in_array($url, $urls);
+                }
+            )
+            ->map(
+                function ($item) use ($page) {
+                    return [
+                        'url' => $item,
+                        'url_hash' => sha1($item),
+                        'website_id' => $page->website->id,
+                        'page_id' => $page->id,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ];
+                }
+            )
+            ->toArray();
+
+        DB::beginTransaction();
+        try {
+            DB::table(CrawlerLink::getTableName())->insert($data);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return $data;
     }
 
     protected function importResourceData(array $data, CrawlerLink $link): array
