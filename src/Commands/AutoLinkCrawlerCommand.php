@@ -23,7 +23,7 @@ class AutoLinkCrawlerCommand extends Command
                     $q->where(['active' => 1]);
                 }
             )
-            ->inRandomOrder()
+            ->orderBy('crawler_date', 'ASC')
             ->limit(5)
             ->get();
 
@@ -31,11 +31,9 @@ class AutoLinkCrawlerCommand extends Command
             try {
                 $this->info("Craw {$page->url} in process...");
 
-                $craw = app(CrawlerContract::class)->crawPageLinks($page);
+                $crawl = app(CrawlerContract::class)->crawPageLinks($page);
 
-                $nextPage = ($page->url_with_page && $page->next_page > 0)
-                    ? $page->next_page + 1
-                    : ($page->next_page > 0 ? 1 : 0);
+                $nextPage = $this->getNextPage($page, $crawl);
 
                 $page->update(
                     [
@@ -44,7 +42,7 @@ class AutoLinkCrawlerCommand extends Command
                     ]
                 );
 
-                $this->info("Crawed successful {$craw} links - Next crawl page {$nextPage}");
+                $this->info("Crawed successful {$crawl} links - Next crawl page {$nextPage}");
             } catch (RequestException $e) {
                 report($e);
 
@@ -83,5 +81,16 @@ class AutoLinkCrawlerCommand extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    protected function getNextPage(CrawlerPage $page, int $crawl): int
+    {
+        if ($crawl == 0 && $page->next_page > 0) {
+            return 1;
+        }
+
+        return ($page->url_with_page && $page->next_page > 0)
+            ? $page->next_page + 1
+            : ($page->next_page > 0 ? 1 : 0);
     }
 }
