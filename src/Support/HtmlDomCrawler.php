@@ -50,6 +50,39 @@ class HtmlDomCrawler
         return $this->find($selector, $index)->{$value};
     }
 
+    public function removeElement(string $selector, int $type, int $index = null): void
+    {
+        $html = str_get_html($this->content);
+
+        $contents = $html->find($selector, $index);
+
+        if (!is_null($index)) {
+            if ($type == 1) {
+                $contents->outertext = '';
+            }
+
+            if ($type == 2) {
+                $text = $contents->text();
+                $contents->outertext = $text;
+            }
+        } else {
+            foreach ($contents as $item) {
+                if ($type == 1) {
+                    $item->outertext = '';
+                }
+
+                if ($type == 2) {
+                    $text = $item->text();
+                    $item->outertext = $text;
+                }
+            }
+        }
+
+        $html->load($html->save());
+
+        $this->content = $html->root->outertext;
+    }
+
     public function removeScript(): void
     {
         $scripts = $this->find('script');
@@ -92,39 +125,6 @@ class HtmlDomCrawler
             }
 
             $item->outertext = $text;
-        }
-
-        $html->load($html->save());
-
-        $this->content = $html->root->outertext;
-    }
-
-    public function removeElement($element, $index, $type): void
-    {
-        $html = str_get_html($this->content);
-
-        $content_remove = $html->find($element, $index);
-
-        if (!is_null($index)) {
-            if ($type == 1) {
-                $content_remove->outertext = '';
-            }
-
-            if ($type == 2) {
-                $text = $content_remove->text();
-                $content_remove->outertext = $text;
-            }
-        } else {
-            foreach ($content_remove as $item) {
-                if ($type == 1) {
-                    $item->outertext = '';
-                }
-
-                if ($type == 2) {
-                    $text = $item->text();
-                    $item->outertext = $text;
-                }
-            }
         }
 
         $html->load($html->save());

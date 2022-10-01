@@ -10,8 +10,15 @@
 
 namespace Juzaweb\Crawler\Support;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use Juzaweb\Backend\Models\Post;
+use Juzaweb\Backend\Models\Resource;
+use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
+use Juzaweb\Crawler\Interfaces\TemplateHasResource;
+use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
@@ -19,29 +26,134 @@ use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
 
 class Crawler implements CrawlerContract
 {
-    protected ContentCrawler $contentCrawler;
+    protected PostImporterContract $postImporter;
 
-    protected LinkCrawler $linkCrawler;
-
-    public function __construct()
+    public function __construct(PostImporterContract $postImporter)
     {
-        $this->contentCrawler = app(ContentCrawler::class);
-
-        $this->linkCrawler = app(LinkCrawler::class);
+        $this->postImporter = $postImporter;
     }
 
     public function crawPageLinks(CrawlerPage $page): bool|int
     {
-        return $this->linkCrawler->crawPageLinks($page);
+        return $this->createLinkCrawler()->crawPageLinks($page);
     }
 
     public function crawLinksUrl(string $url, CrawlerTemplate $template): array
     {
-        return $this->linkCrawler->crawLinksUrl($url, $template);
+        return $this->createLinkCrawler()->crawLinksUrl($url, $template);
     }
 
     public function crawContentLink(CrawlerLink $link): bool
     {
-        return $this->contentCrawler->crawContentLink($link);
+        $template = $link->website->getTemplateClass();
+
+        $isResource = (bool) $link->page->is_resource_page;
+
+        $data = $this->createContentCrawler()->crawContentsUrl(
+            $link->url,
+            $template,
+            $isResource
+        );
+
+        DB::beginTransaction();
+        try {
+            $content = CrawlerContent::updateOrCreate(
+                [
+                    'link_id' => $link->id
+                ],
+                [
+                    'components' => $data,
+                    'link_id' => $link->id,
+                    'page_id' => $link->page_id,
+                    'status' => CrawlerContent::STATUS_PENDING,
+                ]
+            );
+
+            if ($isResource) {
+                $resource = $this->importResourceData($data, $link);
+
+                $content->update(
+                    [
+                        'resource_id' => $resource[0]->id,
+                        'status' => CrawlerContent::STATUS_DONE
+                    ]
+                );
+            } else {
+                $data['type'] = $link->page->post_type;
+
+                $post = $this->importPostData($data, $link, $template);
+
+                $content->update(
+                    [
+                        'post_id' => $post->id,
+                        'status' => CrawlerContent::STATUS_DONE
+                    ]
+                );
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return true;
+    }
+
+    protected function importResourceData(array $data, CrawlerLink $link): array
+    {
+        $resources = [];
+        foreach ($data as $key => $item) {
+            $item['type'] = $key;
+            $item['post_id'] = $link->page->parent_post_id;
+
+            $resource = Resource::create($item);
+
+            if ($metas = Arr::get($item, 'meta')) {
+                $resource->syncMetas($metas);
+            }
+
+            $resources[] = $resource;
+        }
+
+        return $resources;
+    }
+
+    protected function importPostData(array $data, CrawlerLink $link, CrawlerTemplate $template): Post
+    {
+        $post = $this->postImporter->import($data);
+
+        if ($template instanceof TemplateHasResource) {
+            $urlPage = $template->getResourceUrlWithPage() ? str_replace(
+                ['{post_url}'],
+                [$link->url],
+                $template->getResourceUrlWithPage()
+            ) : null;
+
+            CrawlerPage::firstOrCreate(
+                [
+                    'url' => $link->url,
+                    'url_hash' => sha1($link->url),
+                    'url_with_page' => $urlPage,
+                    'post_type' => $link->page->post_type,
+                    'active' => 1,
+                    'website_id' => $link->website->id,
+                    'parent_post_id' => $post->id,
+                    'is_resource_page' => 1,
+                ]
+            );
+        }
+
+        return $post;
+    }
+
+    private function createLinkCrawler(): LinkCrawler
+    {
+        return app(LinkCrawler::class);
+    }
+
+    private function createContentCrawler(): ContentCrawler
+    {
+        return app(ContentCrawler::class);
     }
 }
