@@ -103,7 +103,7 @@ class CrawlerElement
         }
 
         if ($val == CrawlerElement::$VALUE_TEXT) {
-            return html_entity_decode($node->text());
+            return $node->text();
         }
 
         if ($val == CrawlerElement::$VALUE_OUTERTEXT) {

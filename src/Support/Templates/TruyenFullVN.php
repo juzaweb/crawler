@@ -10,32 +10,40 @@
 
 namespace Juzaweb\Crawler\Support\Templates;
 
+use Juzaweb\CMS\Support\HtmlDomNode;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
-use Juzaweb\Crawler\Interfaces\TemplateWithResource;
+use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Support\CrawlerElement;
+use Juzaweb\Crawler\Support\Traists\UseTemplateHasResource;
 
-class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, TemplateWithResource
+class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, TemplateHasResource
 {
+    use UseTemplateHasResource;
+
     protected string $linkElement = 'h3.truyen-title a';
+
+    protected string $resourceUrlWithPage = '{post_url}/trang-{page}/';
 
     public function getDataElements(): array
     {
         return [
-            'title' => 'h3.title',
-            'content' => '.desc-text',
-            'thumbnail' => [
-                'selector' => '.books .book img',
-                'attr' => 'src',
-                'index' => 0
-            ],
-            'meta[source]' => '.info .source',
-            'authors' => [
-                'selector' => '.info a[itemprop="author"]',
-                'value' => CrawlerElement::$VALUE_TEXT,
-            ],
-            'genres' => [
-                'selector' => '.info a[itemprop="genre"]',
-                'value' => CrawlerElement::$VALUE_TEXT,
+            'data' => [
+                'title' => 'h3.title',
+                'content' => '.desc-text',
+                'thumbnail' => [
+                    'selector' => '.books .book img',
+                    'attr' => 'src',
+                    'index' => 0
+                ],
+                'meta.source' => '.info .source',
+                'authors' => [
+                    'selector' => '.info a[itemprop="author"]',
+                    'value' => CrawlerElement::$VALUE_TEXT,
+                ],
+                'genres' => [
+                    'selector' => '.info a[itemprop="genre"]',
+                    'value' => CrawlerElement::$VALUE_TEXT,
+                ]
             ]
         ];
     }
@@ -49,7 +57,17 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, 
     {
         return [
             'chapters' => [
-                'link_element' => '.list-chapter a',
+                'data' => [
+                    'name' => [
+                        'selector' => '.chapter-title',
+                        'value' => CrawlerElement::$VALUE_TEXT,
+                        'index' => 0
+                    ],
+                    'meta.content' => '#chapter-c',
+                ],
+                'removes' => [
+                    '#ads-chapter-pc-top'
+                ]
             ]
         ];
     }

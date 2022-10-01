@@ -8,14 +8,15 @@
  * @license    MIT
  */
 
-namespace Juzaweb\Crawler\Support\Traists;
+namespace Juzaweb\Crawler\Support\Crawlers;
 
 use Illuminate\Support\Facades\DB;
+use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 
-trait LinkCrawler
+class LinkCrawler extends CrawlerAbstract
 {
     public function crawPageLinks(CrawlerPage $page): bool|int
     {
@@ -23,10 +24,18 @@ trait LinkCrawler
 
         $crawUrl = $page->url;
         if ($page->next_page > 1 && $page->url_with_page) {
-            $crawUrl = str_replace(['{page}'], [$page->next_page], $page->url_with_page);
+            $crawUrl = str_replace(
+                ['{page}'],
+                [$page->next_page],
+                $page->url_with_page
+            );
         }
 
-        $items = $this->crawLinksUrl($crawUrl, $template);
+        $items = $this->crawLinksUrl(
+            $crawUrl,
+            $template,
+            (bool) $page->is_resource_page
+        );
 
         $urls = CrawlerLink::whereIn('url', $items)
             ->pluck('url')
@@ -65,11 +74,28 @@ trait LinkCrawler
         return count($data);
     }
 
-    public function crawLinksUrl(string $url, CrawlerTemplate $template): array
-    {
+    public function crawLinksUrl(
+        string $url,
+        CrawlerTemplate $template,
+        bool $isResource = false
+    ): array {
+        $linkElement = $isResource ? $template->getLinkResourceElement() : $template->getLinkElement();
+
+        return $this->crawLinkViaElement(
+            $url,
+            $linkElement,
+            $template->getLinkElementAttribute()
+        );
+    }
+
+    public function crawLinkViaElement(
+        string $url,
+        string $element,
+        string $elementAttribute = 'href'
+    ): array {
         $html = $this->createHTMLDomFromUrl($url);
 
-        $urls = $html->find($template->getLinkElement());
+        $urls = $html->find($element);
 
         if (empty($urls)) {
             return [];
@@ -77,9 +103,7 @@ trait LinkCrawler
 
         $items = [];
         foreach ($urls as $url) {
-            $href = $url->getAttribute(
-                $template->getLinkElementAttribute()
-            );
+            $href = $url->getAttribute($elementAttribute);
 
             $items[] = trim(get_full_url($href, $url));
         }

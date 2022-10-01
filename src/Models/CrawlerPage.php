@@ -39,6 +39,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage wherePostType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrlWithPage($value)
+ * @property string $url_hash
+ * @property string|null $error
+ * @property int $is_resource_page
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereError($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereIsResourcePage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrlHash($value)
  */
 class CrawlerPage extends Model
 {
@@ -53,6 +59,9 @@ class CrawlerPage extends Model
         'category_ids',
         'active',
         'crawler_date',
+        'url_hash',
+        'parent_post_id',
+        'is_resource_page'
     ];
 
     public $casts = [

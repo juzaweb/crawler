@@ -31,6 +31,8 @@ use Juzaweb\CMS\Models\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerContent whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerContent whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int|null $resource_id
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerContent whereResourceId($value)
  */
 class CrawlerContent extends Model
 {
@@ -45,6 +47,7 @@ class CrawlerContent extends Model
         'link_id',
         'page_id',
         'post_id',
+        'resource_id',
         'status',
     ];
 
