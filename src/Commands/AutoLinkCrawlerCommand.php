@@ -29,6 +29,8 @@ class AutoLinkCrawlerCommand extends Command
 
         foreach ($pages as $page) {
             try {
+                $this->info("Craw {$page->url} in process...");
+
                 $craw = app(CrawlerContract::class)->crawPageLinks($page);
 
                 $nextPage = ($page->url_with_page && $page->next_page > 0)
@@ -42,7 +44,7 @@ class AutoLinkCrawlerCommand extends Command
                     ]
                 );
 
-                $this->info("Craw successful {$craw} links");
+                $this->info("Crawed successful {$craw} links - Next crawl page {$nextPage}");
             } catch (RequestException $e) {
                 report($e);
 
