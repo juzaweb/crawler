@@ -52,6 +52,7 @@ class CrawlerLink extends Model
         'website_id',
         'page_id',
         'error',
+        'status',
     ];
 
     public static function getAllStatus(): array

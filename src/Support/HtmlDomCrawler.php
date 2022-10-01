@@ -98,6 +98,7 @@ class HtmlDomCrawler
     public function removeInternalLink(string $domain): void
     {
         $html = str_get_html($this->content);
+
         $links = $html->find('a');
 
         foreach ($links as $item) {

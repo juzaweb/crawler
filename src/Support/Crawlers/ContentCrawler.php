@@ -63,7 +63,7 @@ class ContentCrawler extends CrawlerAbstract
         $elementData = $template->getDataResourceElements();
 
         foreach ($elementData as $key => $resource) {
-            if ($removes = Arr::get($elementData, 'removes', [])) {
+            if ($removes = Arr::get($resource, 'removes', [])) {
                 $this->removeElements($removes, $url, $contents);
             }
 
