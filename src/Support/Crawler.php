@@ -122,16 +122,11 @@ class Crawler implements CrawlerContract
     protected function checkAndInsertLinks(array $items, CrawlerPage $page): array
     {
         $urls = CrawlerLink::whereIn('url', $items)
-            ->get(['url'])
-            ->pluck('url')
+            ->get(['url_hash'])
+            ->keyBy('url_hash')
             ->toArray();
 
         $data = collect($items)
-            ->filter(
-                function ($url) use ($urls) {
-                    return is_url($url) && !in_array($url, $urls);
-                }
-            )
             ->map(
                 function ($item) use ($page) {
                     return [
@@ -142,6 +137,11 @@ class Crawler implements CrawlerContract
                         'created_at' => date('Y-m-d H:i:s'),
                         'updated_at' => date('Y-m-d H:i:s'),
                     ];
+                }
+            )
+            ->filter(
+                function ($url) use ($urls) {
+                    return is_url($url['url']) && !isset($urls[$url['url_hash']]);
                 }
             )
             ->toArray();

@@ -37,7 +37,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($model->pages ?? [] as $page)
+                                @foreach($pages ?? [] as $page)
                                     @component('crawler::website.components.page_item', [
                                         'types' => $types,
                                         'marker' => $page->id,
