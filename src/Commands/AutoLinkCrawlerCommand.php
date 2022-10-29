@@ -25,6 +25,10 @@ class AutoLinkCrawlerCommand extends Command
                 }
             );
 
+        if ($this->option('is_resource')) {
+            $query->where(['is_resource_page' => 1]);
+        }
+
         $pages = $query->orderBy('crawler_date', 'ASC')
             ->limit($this->option('limit'))
             ->get();
