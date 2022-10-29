@@ -199,8 +199,10 @@ class Crawler implements CrawlerContract
 
             CrawlerPage::firstOrCreate(
                 [
-                    'url' => $link->url,
                     'url_hash' => sha1($link->url),
+                ],
+                [
+                    'url' => $link->url,
                     'url_with_page' => $urlPage,
                     'post_type' => $link->page->post_type,
                     'active' => 1,
