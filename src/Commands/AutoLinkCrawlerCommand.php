@@ -107,6 +107,7 @@ class AutoLinkCrawlerCommand extends Command
         return [
             ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 5],
             ['sleep', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds per crawl.', 2],
+            ['is_resource', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds per crawl.', false],
         ];
     }
 }
