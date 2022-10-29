@@ -22,7 +22,7 @@ return new class extends Migration {
                 $table->integer('next_page')->default(1);
                 $table->boolean('is_resource_page')->default(0);
                 $table->boolean('active')->default(1);
-                $table->timestamp('crawler_date')->default('2020-01-01 00:00:00');
+                $table->timestamp('crawler_date')->default('2020-01-01 00:00:00')->index();
                 $table->unsignedBigInteger('website_id')->index();
                 $table->unsignedBigInteger('parent_post_id')->index()->nullable();
                 $table->timestamps();

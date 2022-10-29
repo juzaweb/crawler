@@ -50,6 +50,7 @@ class WebsiteController extends PageController
         }
 
         CrawlerPage::where('website_id', '=', $model->id)
+            ->where('is_resource_page', '=', 0)
             ->whereNotIn('id', $pages)
             ->delete();
     }
@@ -59,6 +60,7 @@ class WebsiteController extends PageController
         $data = $this->DataForForm($model, ...$params);
         $data['templates'] = HookAction::getCrawlerTemplates();
         $data['types'] = HookAction::getPostTypes();
+        $data['pages'] = $model->pages()->where('is_resource_page', '=', 0)->get();
         return $data;
     }
 

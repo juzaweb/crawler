@@ -10,7 +10,7 @@
 
 namespace Juzaweb\Crawler\Support\Templates;
 
-use Juzaweb\CMS\Support\HtmlDomNode;
+use Juzaweb\Backend\Models\Resource;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Support\CrawlerElement;
@@ -28,7 +28,11 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, 
     {
         return [
             'data' => [
-                'title' => 'h3.title',
+                'title' => [
+                    'selector' => 'h3.title',
+                    'value' => CrawlerElement::$VALUE_TEXT,
+                    'index' => 0
+                ],
                 'content' => '.desc-text',
                 'thumbnail' => [
                     'selector' => '.books .book img',
@@ -66,9 +70,21 @@ class TruyenFullVN extends CrawlerTemplate implements CrawlerTemplateInterface, 
                     'meta.content' => '#chapter-c',
                 ],
                 'removes' => [
+                    'script',
                     '#ads-chapter-pc-top'
                 ]
             ]
         ];
+    }
+
+    public function createdResourcesEvent(array $resource, array $data)
+    {
+        $post = $resource[0]->post;
+
+        $chapters = $post->resources()
+            ->where('type', '=', 'chapters')
+            ->count(['id']);
+
+        $post->setMeta('chapters', $chapters);
     }
 }

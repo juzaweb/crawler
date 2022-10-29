@@ -10,80 +10,32 @@
 
 namespace Juzaweb\Crawler\Support\Crawlers;
 
-use Illuminate\Support\Facades\DB;
 use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
-use Juzaweb\Crawler\Models\CrawlerLink;
-use Juzaweb\Crawler\Models\CrawlerPage;
+use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 
 class LinkCrawler extends CrawlerAbstract
 {
-    public function crawPageLinks(CrawlerPage $page): bool|int
-    {
-        $template = $page->website->getTemplateClass();
-
-        $crawUrl = $page->url;
-        if ($page->next_page > 1 && $page->url_with_page) {
-            $crawUrl = str_replace(
-                ['{page}'],
-                [$page->next_page],
-                $page->url_with_page
-            );
-        }
-
-        $items = $this->crawLinksUrl(
-            $crawUrl,
-            $template,
-            (bool) $page->is_resource_page
-        );
-
-        $urls = CrawlerLink::whereIn('url', $items)
-            ->pluck('url')
-            ->toArray();
-
-        $data = collect($items)
-            ->filter(
-                function ($url) use ($urls) {
-                    return is_url($url) && !in_array($url, $urls);
-                }
-            )
-            ->map(
-                function ($item) use ($page) {
-                    return [
-                        'url' => $item,
-                        'url_hash' => sha1($item),
-                        'website_id' => $page->website->id,
-                        'page_id' => $page->id,
-                        'created_at' => date('Y-m-d H:i:s'),
-                        'updated_at' => date('Y-m-d H:i:s'),
-                    ];
-                }
-            )
-            ->toArray();
-
-        DB::beginTransaction();
-        try {
-            DB::table(CrawlerLink::getTableName())->insert($data);
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-        return count($data);
-    }
-
     public function crawLinksUrl(
         string $url,
         CrawlerTemplate $template,
         bool $isResource = false
     ): array {
-        $linkElement = $isResource ? $template->getLinkResourceElement() : $template->getLinkElement();
+        if (!$isResource) {
+            return $this->crawLinkViaElement(
+                $url,
+                $template->getLinkElement(),
+                $template->getLinkElementAttribute()
+            );
+        }
+
+        if (!$template instanceof TemplateHasResource) {
+            throw new \Exception('Template is not a instanceof '. TemplateHasResource::class);
+        }
 
         return $this->crawLinkViaElement(
             $url,
-            $linkElement,
+            $template->getLinkResourceElement(),
             $template->getLinkElementAttribute()
         );
     }
