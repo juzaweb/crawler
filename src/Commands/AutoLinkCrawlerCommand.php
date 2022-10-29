@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Console\Command;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerPage;
+use Symfony\Component\Console\Input\InputOption;
 
 class AutoLinkCrawlerCommand extends Command
 {
@@ -15,16 +16,17 @@ class AutoLinkCrawlerCommand extends Command
 
     public function handle(): int
     {
-        $pages = CrawlerPage::with(['website.template'])
+        $query = CrawlerPage::with(['website.template'])
             ->where(['active' => 1])
             ->whereHas(
                 'website',
                 function ($q) {
                     $q->where(['active' => 1]);
                 }
-            )
-            ->orderBy('crawler_date', 'ASC')
-            ->limit(5)
+            );
+
+        $pages = $query->orderBy('crawler_date', 'ASC')
+            ->limit($this->option('limit'))
             ->get();
 
         foreach ($pages as $page) {
@@ -78,6 +80,8 @@ class AutoLinkCrawlerCommand extends Command
 
                 $this->error($e->getMessage());
             }
+
+            sleep($this->option('sleep'));
         }
 
         return self::SUCCESS;
@@ -92,5 +96,13 @@ class AutoLinkCrawlerCommand extends Command
         return ($page->url_with_page && $page->next_page > 0)
             ? $page->next_page + 1
             : ($page->next_page > 0 ? 1 : 0);
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 5],
+            ['sleep', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds per crawl.', 2],
+        ];
     }
 }

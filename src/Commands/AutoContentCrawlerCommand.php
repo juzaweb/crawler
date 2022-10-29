@@ -43,7 +43,9 @@ class AutoContentCrawlerCommand extends Command
                 'page',
                 function ($q) {
                     $q->where(['active' => 1]);
-                    //$q->where(['is_resource_page' => 1]);
+                    if ($this->option('is_resource')) {
+                        $q->where(['is_resource_page' => 1]);
+                    }
                 }
             )
             ->orderBy('id', 'ASC');
@@ -63,11 +65,12 @@ class AutoContentCrawlerCommand extends Command
         }
     }
 
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 5],
             ['sleep', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds per crawl.', 2],
+            ['is_resource', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds per crawl.', false],
         ];
     }
 }
