@@ -82,7 +82,7 @@ class Crawler implements CrawlerContract
 
         DB::beginTransaction();
         try {
-            CrawlerContent::updateOrCreate(
+            $content = CrawlerContent::updateOrCreate(
                 [
                     'link_id' => $link->id
                 ],
@@ -94,6 +94,14 @@ class Crawler implements CrawlerContract
                 ]
             );
 
+            if (0) {
+                $this->savePost($content, $link);
+            }
+
+            $content->update(
+                ['status' => 1 ? CrawlerContent::STATUS_PENDING_TRANSLATE : CrawlerContent::STATUS_DONE]
+            );
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -103,23 +111,27 @@ class Crawler implements CrawlerContract
         return true;
     }
 
-    public function translate(CrawlerContent $content, string $target, string $source = 'auto'): CrawlerContent
+    public function translate(CrawlerContent $content, string $target): CrawlerContent
     {
-        $components = $this->createCrawlerContentTranslation($content, $source, $target);
+        $components = $this->createCrawlerContentTranslation($content, $content->locale ?? 'en', $target);
         $newContent = $content->replicate();
         $newContent->components = $components;
         $newContent->save();
         return $newContent;
     }
 
-    public function savePost(CrawlerContent $content): Post|array
+    public function savePost(CrawlerContent $content, CrawlerLink $link = null): Post|array
     {
-        $template = $content->link->website->getTemplateClass();
+        if ($link === null) {
+            $link = $content->link;
+        }
 
-        $isResource = (bool) $content->link->page->is_resource_page;
+        $template = $link->website->getTemplateClass();
+
+        $isResource = (bool) $link->page->is_resource_page;
 
         if ($isResource) {
-            $resource = $this->importResourceData($content->components, $content->link);
+            $resource = $this->importResourceData($content->components, $link);
 
             if (method_exists($template, 'createdResourcesEvent')) {
                 $template->createdResourcesEvent($resource, $content->components);
@@ -135,9 +147,9 @@ class Crawler implements CrawlerContract
             return $resource;
         }
 
-        $data['type'] = $content->link->page->post_type;
+        $data['type'] = $link->page->post_type;
 
-        $post = $this->importPostData($data, $content->link, $template);
+        $post = $this->importPostData($data, $link, $template);
 
         if (method_exists($template, 'createdPostEvent')) {
             $template->createdPostEvent($post, $data);
