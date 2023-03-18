@@ -98,9 +98,7 @@ class Crawler implements CrawlerContract
                 $this->savePost($content, $link);
             }
 
-            $content->update(
-                ['status' => 1 ? CrawlerContent::STATUS_PENDING_TRANSLATE : CrawlerContent::STATUS_DONE]
-            );
+            $content->update(['status' => 1 ? CrawlerContent::STATUS_PENDING_TRANSLATE : CrawlerContent::STATUS_DONE]);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -116,6 +114,7 @@ class Crawler implements CrawlerContract
         $components = $this->createCrawlerContentTranslation($content, $content->locale ?? 'en', $target);
         $newContent = $content->replicate();
         $newContent->components = $components;
+        $newContent->status = CrawlerContent::STATUS_PENDING;
         $newContent->save();
         return $newContent;
     }

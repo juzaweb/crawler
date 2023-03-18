@@ -43,6 +43,7 @@ class CrawlerContent extends Model
     const STATUS_TRANSLATING = 'translating';
     const STATUS_DONE = 'done';
     const STATUS_ERROR = 'error';
+    const STATUS_TRANSLATE_ERROR = 'translate_error';
 
     protected $table = 'crawler_contents';
     protected $fillable = [

@@ -23,4 +23,6 @@ interface CrawlerContract
     public function crawContentUrl(string $url, CrawlerTemplate $template, bool $isResource = false): array;
 
     public function savePost(CrawlerContent $content);
+
+    public function translate(CrawlerContent $content, string $target): CrawlerContent;
 }
