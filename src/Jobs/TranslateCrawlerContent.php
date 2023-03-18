@@ -36,9 +36,7 @@ class TranslateCrawlerContent implements ShouldQueue
 
         DB::beginTransaction();
         try {
-            $newContent = $crawler->translate($this->content, $this->target);
-
-            $crawler->savePost($newContent);
+            $crawler->translate($this->content, $this->target);
 
             $this->content->update(['status' => CrawlerContent::STATUS_DONE]);
 

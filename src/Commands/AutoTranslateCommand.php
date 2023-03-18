@@ -32,6 +32,8 @@ class AutoTranslateCommand extends Command
             ->get();
 
         foreach ($contents as $content) {
+            $content->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
+
             foreach ($targets as $target) {
                 try {
                     TranslateCrawlerContent::dispatch($content, $target)->onQueue('slow');
@@ -39,10 +41,10 @@ class AutoTranslateCommand extends Command
                     report($e);
                 }
 
+                $this->info('Translate in process...');
+                die;
                 sleep(1);
             }
-
-            $content->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
 
             sleep(3);
         }

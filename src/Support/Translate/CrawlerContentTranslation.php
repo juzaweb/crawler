@@ -8,14 +8,17 @@
  * @license    GNU V2
  */
 
-namespace Juzaweb\Crawler\Helpers\Translate;
+namespace Juzaweb\Crawler\Support\Translate;
 
 use Juzaweb\Crawler\Models\CrawlerContent;
 
 class CrawlerContentTranslation
 {
-    public function __construct(protected CrawlerContent $content, protected string $source, protected string $target)
-    {
+    public function __construct(
+        protected CrawlerContent $content,
+        protected string $source,
+        protected string $target
+    ) {
     }
 
     public function translate(): array

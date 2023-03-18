@@ -16,7 +16,6 @@ use Juzaweb\Backend\Models\Post;
 use Juzaweb\Backend\Models\Resource;
 use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
-use Juzaweb\Crawler\Helpers\Translate\CrawlerContentTranslation;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Models\CrawlerContent;
@@ -24,6 +23,7 @@ use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
 use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
+use Juzaweb\Crawler\Support\Translate\CrawlerContentTranslation;
 
 class Crawler implements CrawlerContract
 {
@@ -111,11 +111,13 @@ class Crawler implements CrawlerContract
 
     public function translate(CrawlerContent $content, string $target): CrawlerContent
     {
-        $components = $this->createCrawlerContentTranslation($content, $content->locale ?? 'en', $target);
+        $components = $this->createCrawlerContentTranslation($content, $content->lang ?? 'en', $target);
         $newContent = $content->replicate();
-        $newContent->components = $components;
+        $newContent->components = $components->translate();
         $newContent->status = CrawlerContent::STATUS_PENDING;
+        $newContent->lang = $target;
         $newContent->save();
+        $this->savePost($newContent);
         return $newContent;
     }
 
@@ -146,6 +148,7 @@ class Crawler implements CrawlerContract
             return $resource;
         }
 
+        $data = $content->components;
         $data['type'] = $link->page->post_type;
 
         $post = $this->importPostData($data, $link, $template);
@@ -228,7 +231,7 @@ class Crawler implements CrawlerContract
         foreach ($link->page->category_ids ?? [] as $key => $item) {
             $data[$key] = $item;
         }
-        
+
         $post = $this->postImporter->import($data);
 
         if ($template instanceof TemplateHasResource) {

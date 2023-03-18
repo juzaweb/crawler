@@ -15,7 +15,12 @@ return new class extends Migration {
         Schema::table(
             'crawler_contents',
             function (Blueprint $table) {
-                $table->string('locale', 5)->index()->default('en');
+                $table->dropForeign('crawler_contents_link_id_foreign');
+                $table->dropUnique('crawler_contents_link_id_unique');
+                $table->foreign('link_id')
+                    ->references('id')
+                    ->on('crawler_links')
+                    ->onDelete('cascade');
             }
         );
     }
@@ -30,7 +35,6 @@ return new class extends Migration {
         Schema::table(
             'crawler_contents',
             function (Blueprint $table) {
-                $table->dropColumn('locale');
             }
         );
     }

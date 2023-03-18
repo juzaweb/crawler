@@ -1,10 +1,12 @@
 <?php
 
-namespace Juzaweb\Crawler\Helpers\Translate;
+namespace Juzaweb\Crawler\Support\Translate;
 
 use Illuminate\Support\Facades\Log;
 use Juzaweb\CMS\Contracts\GoogleTranslate;
 use Juzaweb\CMS\Support\HtmlDom;
+use Juzaweb\Crawler\Support\Converter\BBCodeToHTML;
+use Juzaweb\Crawler\Support\Converter\HTMLToBBCode;
 
 class TranslateBBCode
 {
@@ -25,7 +27,7 @@ class TranslateBBCode
     public function translate(): string|null
     {
         $this->noneReplace();
-        $transText = $this->text;
+        $transText = HTMLToBBCode::toBBCode($this->text);
         $texts = preg_split('|[[\/\!]*?[^\[\]]*?]|si', $transText, -1, PREG_SPLIT_NO_EMPTY);
         $translate = app(GoogleTranslate::class);
 
@@ -76,9 +78,11 @@ class TranslateBBCode
             if (!$this->preview) {
                 sleep(3);
             }
+
+            sleep(2);
         }
 
-        $this->text = $transText;
+        $this->text = BBCodeToHTML::toHTML($transText);
         $this->parseNoneReplace();
         return $this->text;
     }
@@ -111,7 +115,6 @@ class TranslateBBCode
         }
 
         $this->text = str_replace(["<pre><code>", "</code></pre>"], ["<pre>", "</pre>"], $this->text);
-        $this->text = str_replace(["<pre>", "</pre>"], ["[code]", "[/code]"], $this->text);
     }
 
     protected function excludeTranslate($text): bool

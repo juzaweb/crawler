@@ -13,7 +13,7 @@ return new class extends Migration {
             function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->json('components');
-                $table->string('lang', 5)->nullable()->index();
+                $table->string('lang', 5)->default('en')->index();
                 $table->unsignedBigInteger('link_id')->unique();
                 $table->unsignedBigInteger('page_id')->index();
                 $table->unsignedBigInteger('post_id')->nullable()->index();
