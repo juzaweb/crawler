@@ -53,13 +53,11 @@ class ContentCrawler extends CrawlerAbstract
     public function getContensOfResource(string $url, CrawlerTemplate $template): array
     {
         if (!$template instanceof TemplateHasResource) {
-            throw new \Exception('Template is not a instanceof '. TemplateHasResource::class);
+            throw new \Exception('Template is not a instanceof ['. TemplateHasResource::class .']');
         }
 
         $result = [];
-
         $contents = $this->createHTMLDomFromUrl($url);
-
         $elementData = $template->getDataResourceElements();
 
         foreach ($elementData as $key => $resource) {
@@ -86,11 +84,8 @@ class ContentCrawler extends CrawlerAbstract
                 continue;
             }
 
-            if (is_string($remove)) {
-                $selector = $remove;
-                $type = 1;
-            }
-
+            $selector = $remove;
+            $type = 1;
             if (is_array($remove)) {
                 $selector = $remove['selector'];
                 $type = (int) Arr::get($remove, 'type', 1);

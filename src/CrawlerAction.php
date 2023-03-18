@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler;
 
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
+use Juzaweb\Crawler\Support\Templates\MediumCom;
 use Juzaweb\Crawler\Support\Templates\TruyenFullVN;
 
 class CrawlerAction extends Action
@@ -33,6 +34,14 @@ class CrawlerAction extends Action
         $this->hookAction->registerCrawlerTemplate(
             'truyenfullvn',
             $args
+        );
+
+        $this->hookAction->registerCrawlerTemplate(
+            'medium',
+            [
+                'name' => 'Medium.com',
+                'class' => MediumCom::class,
+            ]
         );
     }
 

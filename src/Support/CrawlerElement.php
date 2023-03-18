@@ -10,20 +10,18 @@
 
 namespace Juzaweb\Crawler\Support;
 
+use Illuminate\Support\Arr;
+use Juzaweb\CMS\Support\Converter\HTMLToBBCode;
 use Juzaweb\CMS\Support\HtmlDomNode;
 
 class CrawlerElement
 {
     public static string $VALUE_TEXT = 'text';
-
     public static string $VALUE_INNERTEXT = 'innertext';
-
     public static string $VALUE_OUTERTEXT = 'outertext';
 
     public string $selector;
-
     public ?int $index;
-
     public ?string $attr = null;
 
     protected string|array $element;
@@ -68,10 +66,18 @@ class CrawlerElement
         if (is_null($this->index)) {
             $result = [];
             foreach ($elements as $item) {
-                $result[] = $this->getHtmlNodeValue($item);
+                if (Arr::get($this->element, 'to_bbcode')) {
+                    $result[] = HTMLToBBCode::toBBCode($this->getHtmlNodeValue($item));
+                } else {
+                    $result[] = $this->getHtmlNodeValue($item);
+                }
             }
         } else {
             $result = $this->getHtmlNodeValue($elements);
+
+            if (Arr::get($this->element, 'to_bbcode')) {
+                $result = HTMLToBBCode::toBBCode($result);
+            }
         }
 
         return $result;

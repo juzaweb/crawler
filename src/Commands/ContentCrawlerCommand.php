@@ -10,9 +10,9 @@ class ContentCrawlerCommand extends Command
 {
     use CommandData;
 
-    protected $name = 'crawler:contents';
+    protected $name = 'crawler:test-contents';
 
-    protected $description = 'Craw content from url command.';
+    protected $description = 'Craw content for test from url command.';
 
     public function handle()
     {
@@ -24,7 +24,7 @@ class ContentCrawlerCommand extends Command
 
         $this->setCommandData('template', $template);
 
-        $results = app(CrawlerContract::class)->crawContentsUrl(
+        $results = app(CrawlerContract::class)->crawContentUrl(
             $url,
             app($template)
         );
