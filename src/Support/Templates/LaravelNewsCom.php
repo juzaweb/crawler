@@ -35,10 +35,10 @@ class LaravelNewsCom extends CrawlerTemplate implements CrawlerTemplateInterface
                     'attr' => 'content',
                     'index' => 0,
                 ],
-                'categories' => [
+                /*'categories' => [
                     'selector' => 'header .items-center a.transition-opacity',
                     'value' => CrawlerElement::$VALUE_TEXT,
-                ]
+                ]*/
             ]
         ];
     }

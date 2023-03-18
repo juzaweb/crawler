@@ -225,6 +225,10 @@ class Crawler implements CrawlerContract
 
     protected function importPostData(array $data, CrawlerLink $link, CrawlerTemplate $template): Post
     {
+        foreach ($link->page->category_ids ?? [] as $key => $item) {
+            $data[$key] = $item;
+        }
+        
         $post = $this->postImporter->import($data);
 
         if ($template instanceof TemplateHasResource) {

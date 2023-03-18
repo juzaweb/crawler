@@ -10,7 +10,8 @@
             ];
         }
     ),
-    'value' => $model->post_type ?? null
+    'value' => $model->post_type ?? null,
+    'default' => 'posts'
 ]) }}
 
 {{ Field::checkbox(trans('cms::app.active'), "pages[{$marker}][active]", ['checked' => ($model->active ?? 1) == 1]) }}

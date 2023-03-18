@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler\Http\Controllers;
 
 use Illuminate\Support\Arr;
 use Juzaweb\Backend\Http\Controllers\Backend\PageController;
+use Juzaweb\Backend\Models\Taxonomy;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\CMS\Traits\ResourceController;
 use Juzaweb\Crawler\Http\Datatables\WebsiteDatatable;
@@ -30,7 +31,6 @@ class WebsiteController extends PageController
     protected function afterSave($data, $model, ...$params)
     {
         $pages = [];
-
         foreach (Arr::get($data, 'pages', []) as $page) {
             $url = trim(Arr::get($page, 'url'));
 
@@ -43,6 +43,7 @@ class WebsiteController extends PageController
                     'url_hash' => sha1($url),
                     'url_with_page' => Arr::get($page, 'url_with_page'),
                     'post_type' => Arr::get($page, 'post_type'),
+                    'category_ids' => Arr::get($page, 'category_ids', []),
                     'active' => Arr::get($page, 'active', 0),
                     'website_id' => $model->id,
                 ]
@@ -60,7 +61,8 @@ class WebsiteController extends PageController
         $data = $this->DataForForm($model, ...$params);
         $data['templates'] = HookAction::getCrawlerTemplates();
         $data['types'] = HookAction::getPostTypes();
-        $data['pages'] = $model->pages()->where('is_resource_page', '=', 0)->get();
+        $data['pages'] = $model->pages()->where(['is_resource_page' => 0])->get();
+        $data['taxonomies'] = Taxonomy::where(['post_type' => 'posts'])->limit(10)->get();
         return $data;
     }
 

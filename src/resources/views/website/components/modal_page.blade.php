@@ -26,6 +26,10 @@
                         @include('crawler::website.components.tabs.tab_info')
                     @endslot
 
+                    @slot('tab_taxonomies')
+                        @include('crawler::website.components.tabs.tab_taxonomies')
+                    @endslot
+
                 @endcomponent
 
             </div>
