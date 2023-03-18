@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Crawler\Support\Converter;
 
+use Illuminate\Support\Str;
 use Juzaweb\CMS\Support\HtmlDom;
 
 class HTMLToBBCode
@@ -47,17 +48,25 @@ class HTMLToBBCode
             return $text;
         }
 
-        $preTags = $dom->find('pre');
+        foreach ($dom->find('pre code') as $e) {
+            $key = $this->generateNoneReplaceKey();
+            $text = str_replace(
+                $e->outertext,
+                '[none_replace-'. $key .'][/none_replace-'. $key .']',
+                $text
+            );
+            $this->noneReplace[$key] = $e->text();
+        }
 
-        if ($preTags) {
-            foreach ($preTags as $index => $e) {
-                $text = str_replace(
-                    $e->outertext,
-                    '[none_replace-'. $index .'][/none_replace-'. $index .']',
-                    $text
-                );
-                $this->noneReplace[$index] = $e->innertext;
-            }
+        foreach ($dom->find('pre') as $e) {
+            $key = $this->generateNoneReplaceKey();
+            $text = str_replace(
+                $e->outertext,
+                '[none_replace-'. $key .'][/none_replace-'. $key .']',
+                $text
+            );
+
+            $this->noneReplace[$key] = $e->text();
         }
 
         return $text;
@@ -68,13 +77,13 @@ class HTMLToBBCode
         foreach ($this->noneReplace as $index => $item) {
             $text = str_replace(
                 '[none_replace-'. $index .'][/none_replace-'. $index .']',
-                '<pre>' . $item . '</pre>',
+                '<pre>' . html_entity_decode(strip_tags($item), ENT_COMPAT) . '</pre>',
                 $text
             );
         }
 
         $text = str_replace(["<pre><code>", "</code></pre>"], ["<pre>", "</pre>"], $text);
-        return str_replace(["</pre>", "</pre>"], ["[code]", "[/code]"], $text);
+        return str_replace(["<pre>", "</pre>"], ["[code]", "[/code]"], $text);
     }
 
     protected function replaceLinks($text): array|string
@@ -86,7 +95,7 @@ class HTMLToBBCode
         foreach ($dom->find('a') as $e) {
             $text = str_replace(
                 $e->outertext,
-                '[url="' . $this->escUrl($e->href) . '"]'. $e->innertext .'[/url]',
+                '[url=' . $this->escUrl($e->href) . ']'. $e->innertext .'[/url]',
                 $text
             );
         }
@@ -251,6 +260,15 @@ class HTMLToBBCode
         }
 
         return $text;
+    }
+
+    protected function generateNoneReplaceKey(): string
+    {
+        do {
+            $str = Str::uuid()->toString();
+        } while (isset($this->noneReplace[$str]));
+
+        return $str;
     }
 
     protected function escUrl(?string $url): null|string

@@ -15,7 +15,7 @@ use Juzaweb\Crawler\Support\Converter\BBCodeToHTML;
 use Juzaweb\Crawler\Support\Converter\HTMLToBBCode;
 use Juzaweb\Crawler\Support\HtmlDomCrawler;
 
-class CrawlerElementAbstract
+abstract class CrawlerElementAbstract
 {
     public static string $VALUE_TEXT = 'text';
     public static string $VALUE_INNERTEXT = 'innertext';
@@ -72,9 +72,8 @@ class CrawlerElementAbstract
                 $result[] = BBCodeToHTML::toHTML($text);
             }
         } else {
-            $result = $this->getHtmlNodeValue($elements);
-
-            $result = BBCodeToHTML::toHTML(HTMLToBBCode::toBBCode($result));
+            $result = HTMLToBBCode::toBBCode($this->getHtmlNodeValue($elements));
+            $result = BBCodeToHTML::toHTML($result);
         }
 
         return $result;

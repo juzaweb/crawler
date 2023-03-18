@@ -22,7 +22,7 @@ class HtmlDomCrawler
         $this->content = $content;
     }
 
-    public function find(string $selector, ?int $index = null): HtmlDom|HtmlDomNode|array|bool
+    public function find(string $selector, ?int $index = null): HtmlDom|HtmlDomNode|array|bool|null
     {
         $html = str_get_html($this->content);
 

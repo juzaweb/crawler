@@ -47,16 +47,15 @@ class LinkCrawler extends CrawlerAbstract
     ): array {
         $html = $this->createHTMLDomFromUrl($url);
 
-        $urls = $html->find($element);
+        $elements = $html->find($element);
 
-        if (empty($urls)) {
+        if (empty($elements)) {
             return [];
         }
 
         $items = [];
-        foreach ($urls as $url) {
-            $href = $url->getAttribute($elementAttribute);
-
+        foreach ($elements as $element) {
+            $href = $element->getAttribute($elementAttribute);
             $items[] = trim(get_full_url($href, $url));
         }
 

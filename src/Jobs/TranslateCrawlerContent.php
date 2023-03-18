@@ -50,7 +50,5 @@ class TranslateCrawlerContent implements ShouldQueue
             DB::rollBack();
             throw $e;
         }
-
-        return $newContent;
     }
 }

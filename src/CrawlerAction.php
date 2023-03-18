@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler;
 
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
+use Juzaweb\Crawler\Support\Templates\LaravelNewsCom;
 use Juzaweb\Crawler\Support\Templates\MediumCom;
 use Juzaweb\Crawler\Support\Templates\TruyenFullVN;
 
@@ -41,6 +42,14 @@ class CrawlerAction extends Action
             [
                 'name' => 'Medium.com',
                 'class' => MediumCom::class,
+            ]
+        );
+
+        $this->hookAction->registerCrawlerTemplate(
+            'laravel-news',
+            [
+                'name' => 'Laravel-News.com',
+                'class' => LaravelNewsCom::class,
             ]
         );
     }

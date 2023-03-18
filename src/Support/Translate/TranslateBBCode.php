@@ -111,7 +111,7 @@ class TranslateBBCode
         }
 
         $this->text = str_replace(["<pre><code>", "</code></pre>"], ["<pre>", "</pre>"], $this->text);
-        $this->text = str_replace(["</pre>", "</pre>"], ["[code]", "[/code]"], $this->text);
+        $this->text = str_replace(["<pre>", "</pre>"], ["[code]", "[/code]"], $this->text);
     }
 
     protected function excludeTranslate($text): bool
