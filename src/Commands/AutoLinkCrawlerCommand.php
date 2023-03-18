@@ -35,7 +35,7 @@ class AutoLinkCrawlerCommand extends Command
 
         foreach ($pages as $page) {
             try {
-                $this->info("Craw {$page->url} in process...");
+                $this->info("Craw {$page->url}  in process...");
 
                 $crawl = app(CrawlerContract::class)->crawPageLinks($page);
 

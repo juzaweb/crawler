@@ -52,7 +52,6 @@ class AutoContentCrawlerCommand extends Command
         foreach ($links as $link) {
             try {
                 ContentCrawlerJob::dispatch($link)
-                    ->onQueue('slow')
                     ->delay(Carbon::now()->addSeconds($job * 20));
             } catch (\Exception $e) {
                 report($e);

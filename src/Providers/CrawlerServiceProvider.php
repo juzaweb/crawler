@@ -69,8 +69,9 @@ class CrawlerServiceProvider extends ServiceProvider
         $this->app->booted(
             function () {
                 $schedule = $this->app->make(Schedule::class);
-                //$schedule->command('crawler:content')->everyMinute();
-                //$schedule->command('crawler:link')->everyFiveMinutes();
+                $schedule->command('crawler:contents')->everyMinute();
+                $schedule->command('crawler:links')->everyFiveMinutes();
+                $schedule->command('crawler:translate')->everyFiveMinutes();
             }
         );
     }

@@ -16,6 +16,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Juzaweb\CMS\Exceptions\GoogleTranslateException;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
@@ -38,12 +39,7 @@ class TranslateCrawlerContentJob implements ShouldQueue
         try {
             $crawler->translate($this->content, $this->target);
 
-            $this->content->update(['status' => CrawlerContent::STATUS_DONE]);
-
             DB::commit();
-        } catch (GoogleTranslateException $e) {
-            DB::rollBack();
-            $this->content->update(['status' => CrawlerContent::STATUS_TRANSLATE_ERROR]);
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
