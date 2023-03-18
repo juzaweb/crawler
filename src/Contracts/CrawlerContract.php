@@ -18,4 +18,6 @@ interface CrawlerContract
     public function crawPageLinks(CrawlerPage $page): bool|int;
 
     public function crawLinksUrl(string $url, CrawlerTemplate $template): array;
+
+    public function crawContentUrl(string $url, CrawlerTemplate $template, bool $isResource = false): array;
 }

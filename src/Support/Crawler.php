@@ -62,6 +62,11 @@ class Crawler implements CrawlerContract
         return $this->createLinkCrawler()->crawLinksUrl($url, $template);
     }
 
+    public function crawContentUrl(string $url, CrawlerTemplate $template, bool $isResource = false): array
+    {
+        return $this->createContentCrawler()->crawContentsUrl($url, $template, $isResource);
+    }
+
     public function crawContentLink(CrawlerLink $link): bool
     {
         $template = $link->website->getTemplateClass();
