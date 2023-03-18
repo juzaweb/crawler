@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler\Support\Crawlers;
 
 use Illuminate\Support\Arr;
 use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
+use Juzaweb\Crawler\Interfaces\CrawlerElement as CrawlerElementInterface;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Support\CrawlerElement;
@@ -43,7 +44,7 @@ class ContentCrawler extends CrawlerAbstract
         }
 
         foreach ($elementData['data'] ?? [] as $code => $el) {
-            $element = new CrawlerElement($el);
+            $element = $this->createCrawlerElement($el);
             Arr::set($result, $code, $element->getValue($contents));
         }
 
@@ -93,5 +94,14 @@ class ContentCrawler extends CrawlerAbstract
 
             $contents->removeElement($selector, $type);
         }
+    }
+
+    protected function createCrawlerElement(string|array $el): CrawlerElementInterface
+    {
+        if ($crawler = Arr::get($el, 'crawler_element')) {
+            return app($crawler, ['element' => $el]);
+        }
+
+        return new CrawlerElement($el);
     }
 }
