@@ -20,7 +20,7 @@ use Juzaweb\CMS\Exceptions\GoogleTranslateException;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
 
-class TranslateCrawlerContent implements ShouldQueue
+class TranslateCrawlerContentJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

@@ -88,6 +88,7 @@ class Crawler implements CrawlerContract
                 ],
                 [
                     'components' => $data,
+                    'is_source' => true,
                     'link_id' => $link->id,
                     'page_id' => $link->page_id,
                     'status' => CrawlerContent::STATUS_PENDING,
@@ -98,7 +99,7 @@ class Crawler implements CrawlerContract
                 $this->savePost($content, $link);
             }
 
-            $content->update(['status' => 1 ? CrawlerContent::STATUS_PENDING_TRANSLATE : CrawlerContent::STATUS_DONE]);
+            $content->update(['status' => CrawlerContent::STATUS_DONE]);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -150,6 +151,7 @@ class Crawler implements CrawlerContract
 
         $data = $content->components;
         $data['type'] = $link->page->post_type;
+        $data['status'] = Post::STATUS_PRIVATE;
 
         $post = $this->importPostData($data, $link, $template);
 

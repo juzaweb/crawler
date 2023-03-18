@@ -39,8 +39,6 @@ use Juzaweb\CMS\Models\Model;
 class CrawlerContent extends Model
 {
     const STATUS_PENDING = 'pending';
-    const STATUS_PENDING_TRANSLATE = 'pending_translate';
-    const STATUS_TRANSLATING = 'translating';
     const STATUS_DONE = 'done';
     const STATUS_ERROR = 'error';
     const STATUS_TRANSLATE_ERROR = 'translate_error';
@@ -55,6 +53,7 @@ class CrawlerContent extends Model
         'resource_id',
         'status',
         'locale',
+        'is_source',
     ];
 
     public $casts = [
@@ -64,5 +63,10 @@ class CrawlerContent extends Model
     public function link(): BelongsTo
     {
         return $this->belongsTo(CrawlerLink::class, 'link_id', 'id');
+    }
+
+    public function children(): BelongsTo
+    {
+        return $this->belongsTo(CrawlerContent::class, 'link_id', 'link_id');
     }
 }

@@ -3,7 +3,8 @@
 namespace Juzaweb\Crawler\Commands;
 
 use Illuminate\Console\Command;
-use Juzaweb\Crawler\Jobs\TranslateCrawlerContent;
+use Illuminate\Support\Carbon;
+use Juzaweb\Crawler\Jobs\TranslateCrawlerContentJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 
 class AutoTranslateCommand extends Command
@@ -25,24 +26,27 @@ class AutoTranslateCommand extends Command
     public function handle()
     {
         $targets = ['vi'];
+        $job = 1;
 
-        $contents = CrawlerContent::with(['link.website'])
-            ->where(['status' => CrawlerContent::STATUS_PENDING_TRANSLATE])
-            ->limit(20)
-            ->get();
+        foreach ($targets as $target) {
+            $contents = CrawlerContent::with(['link.website'])
+                ->where(['status' => CrawlerContent::STATUS_DONE, 'is_source' => true])
+                ->whereDoesntHave('children', fn($q) => $q->where('lang', $target))
+                ->limit(20)
+                ->get();
 
-        foreach ($contents as $content) {
-            $content->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
-
-            foreach ($targets as $target) {
+            foreach ($contents as $content) {
                 try {
-                    TranslateCrawlerContent::dispatch($content, $target)->onQueue('slow');
+                    TranslateCrawlerContentJob::dispatch($content, $target)
+                        ->onQueue('slow');
+                    //->delay(Carbon::now()->addSeconds($job * 60));
                 } catch (\Exception $e) {
                     report($e);
                 }
 
-                $this->info('Translate in process...');
-                die;
+                $this->info("Translate {$content->id} in process...");
+
+                $job++;
                 sleep(1);
             }
 

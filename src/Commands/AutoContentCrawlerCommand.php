@@ -11,7 +11,8 @@
 namespace Juzaweb\Crawler\Commands;
 
 use Illuminate\Console\Command;
-use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Illuminate\Support\Carbon;
+use Juzaweb\Crawler\Jobs\ContentCrawlerJob;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -47,15 +48,21 @@ class AutoContentCrawlerCommand extends Command
 
         $links = $query->limit($limit)->get();
 
+        $job = 1;
         foreach ($links as $link) {
-            app(CrawlerContract::class)->crawContentLink($link);
+            try {
+                ContentCrawlerJob::dispatch($link)
+                    ->onQueue('slow')
+                    ->delay(Carbon::now()->addSeconds($job * 20));
+            } catch (\Exception $e) {
+                report($e);
+            }
 
             $type = $link->page->is_resource_page ? 'Resource' : 'Post';
 
-            $link->update(['status' => CrawlerLink::STATUS_DONE]);
+            $this->info("Creating {$type} from link {$link->url}");
 
-            $this->info("Created {$type} from link {$link->url}");
-
+            $job++;
             sleep($sleep);
         }
     }

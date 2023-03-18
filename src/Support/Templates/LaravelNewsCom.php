@@ -39,6 +39,10 @@ class LaravelNewsCom extends CrawlerTemplate implements CrawlerTemplateInterface
                     'selector' => 'header .items-center a.transition-opacity',
                     'value' => CrawlerElement::$VALUE_TEXT,
                 ]*/
+            ],
+            'removes' => [
+                'script',
+                '.twitter-tweet'
             ]
         ];
     }
