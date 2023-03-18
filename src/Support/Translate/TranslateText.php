@@ -3,6 +3,7 @@
 namespace Juzaweb\Crawler\Helpers\Translate;
 
 use Illuminate\Support\Facades\Log;
+use Juzaweb\CMS\Contracts\GoogleTranslate;
 use Juzaweb\CMS\Support\HtmlDom;
 
 class TranslateText
@@ -21,12 +22,12 @@ class TranslateText
         $this->preview = $preview;
     }
 
-    public function translateBBCode(): array|bool|string|null
+    public function translateBBCode(): string|null
     {
         $this->noneReplace();
-        $trans_text = $this->text;
-        $texts = preg_split('|[[\/\!]*?[^\[\]]*?]|si', $trans_text, -1, PREG_SPLIT_NO_EMPTY);
-        $translate = new GoogleTranslate();
+        $transText = $this->text;
+        $texts = preg_split('|[[\/\!]*?[^\[\]]*?]|si', $transText, -1, PREG_SPLIT_NO_EMPTY);
+        $translate = app(GoogleTranslate::class);
 
         foreach ($texts as $textrow) {
             if ($this->excludeTranslate($textrow)) {
@@ -65,10 +66,10 @@ class TranslateText
                 return false;
             }
 
-            $trans_text = preg_replace(
+            $transText = preg_replace(
                 '/' . preg_quote($textrow, '/') . '/',
                 $before . $trans . $after,
-                $trans_text,
+                $transText,
                 1
             );
 
@@ -77,7 +78,7 @@ class TranslateText
             }
         }
 
-        $this->text = $trans_text;
+        $this->text = $transText;
         $this->parseNoneReplace();
         return $this->text;
     }
@@ -92,7 +93,7 @@ class TranslateText
         foreach ($this->dom()->find('pre') as $index => $e) {
             $this->text = str_replace(
                 $e->outertext,
-                '[nonepeplace' . $index . '][/nonepeplace' . $index . ']',
+                '[none_replace' . $index . '][/none_replace' . $index . ']',
                 $this->text
             );
             $this->noneReplace[$index] = $e->innertext;
@@ -103,14 +104,14 @@ class TranslateText
     {
         foreach ($this->noneReplace as $index => $item) {
             $this->text = str_replace(
-                '[nonepeplace' . $index . '][/nonepeplace' . $index . ']',
+                '[none_replace' . $index . '][/none_replace' . $index . ']',
                 '<pre>' . $item . '</pre>',
                 $this->text
             );
         }
 
-        $this->text = str_replace("<pre><code>", "<pre>", $this->text);
-        $this->text = str_replace("</code></pre>", "</pre>", $this->text);
+        $this->text = str_replace(["<pre><code>", "</code></pre>"], ["<pre>", "</pre>"], $this->text);
+        $this->text = str_replace(["</pre>", "</pre>"], ["[code]", "[/code]"], $this->text);
     }
 
     protected function excludeTranslate($text): bool
@@ -123,7 +124,7 @@ class TranslateText
             return true;
         }
 
-        if (is_url($text) || is_image_path($text)) {
+        if (is_url($text) || str_contains($text, 'storage/')) {
             return true;
         }
 

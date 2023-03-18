@@ -68,13 +68,13 @@ class HTMLToBBCode
         foreach ($this->noneReplace as $index => $item) {
             $text = str_replace(
                 '[none_replace-'. $index .'][/none_replace-'. $index .']',
-                '[code]' . $item . '[/code]',
+                '<pre>' . $item . '</pre>',
                 $text
             );
         }
 
-        $text = str_replace("<pre><code>", "[code]", $text);
-        return str_replace("</code></pre>", "[/code]", $text);
+        $text = str_replace(["<pre><code>", "</code></pre>"], ["<pre>", "</pre>"], $text);
+        return str_replace(["</pre>", "</pre>"], ["[code]", "[/code]"], $text);
     }
 
     protected function replaceLinks($text): array|string
