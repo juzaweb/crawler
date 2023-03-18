@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Log;
 use Juzaweb\CMS\Contracts\GoogleTranslate;
 use Juzaweb\CMS\Support\HtmlDom;
 
-class TranslateText
+class TranslateBBCode
 {
     protected string $source;
     protected string $target;
@@ -22,7 +22,7 @@ class TranslateText
         $this->preview = $preview;
     }
 
-    public function translateBBCode(): string|null
+    public function translate(): string|null
     {
         $this->noneReplace();
         $transText = $this->text;

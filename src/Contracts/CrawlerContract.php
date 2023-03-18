@@ -11,6 +11,7 @@
 namespace Juzaweb\Crawler\Contracts;
 
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
+use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerPage;
 
 interface CrawlerContract
@@ -20,4 +21,6 @@ interface CrawlerContract
     public function crawLinksUrl(string $url, CrawlerTemplate $template): array;
 
     public function crawContentUrl(string $url, CrawlerTemplate $template, bool $isResource = false): array;
+
+    public function savePost(CrawlerContent $content);
 }

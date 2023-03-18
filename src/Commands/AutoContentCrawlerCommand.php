@@ -33,12 +33,7 @@ class AutoContentCrawlerCommand extends Command
             ]
         )
             ->where('status', '=', CrawlerLink::STATUS_PENDING)
-            ->whereHas(
-                'website',
-                function ($q) {
-                    $q->where(['active' => 1]);
-                }
-            )
+            ->whereHas('website', fn($q) => $q->where(['active' => 1]))
             ->whereHas(
                 'page',
                 function ($q) {

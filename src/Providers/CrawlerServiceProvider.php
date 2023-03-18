@@ -8,6 +8,7 @@ use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\CMS\Support\HookAction;
 use Juzaweb\Crawler\Commands\AutoContentCrawlerCommand;
 use Juzaweb\Crawler\Commands\AutoLinkCrawlerCommand;
+use Juzaweb\Crawler\Commands\AutoTranslateCommand;
 use Juzaweb\Crawler\Commands\ContentCrawlerCommand;
 use Juzaweb\Crawler\Commands\LinkCrawlerCommand;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
@@ -55,6 +56,7 @@ class CrawlerServiceProvider extends ServiceProvider
                 ContentCrawlerCommand::class,
                 AutoLinkCrawlerCommand::class,
                 AutoContentCrawlerCommand::class,
+                AutoTranslateCommand::class,
             ]
         );
 

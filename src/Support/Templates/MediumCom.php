@@ -28,7 +28,6 @@ class MediumCom extends CrawlerTemplate implements CrawlerTemplateInterface
                 ],
                 'content' => [
                     'selector' => 'article section',
-                    'to_bbcode' => true,
                     'index' => 0,
                 ],
                 'thumbnail' => [

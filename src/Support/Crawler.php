@@ -16,6 +16,7 @@ use Juzaweb\Backend\Models\Post;
 use Juzaweb\Backend\Models\Resource;
 use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Juzaweb\Crawler\Helpers\Translate\CrawlerContentTranslation;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Models\CrawlerContent;
@@ -81,7 +82,7 @@ class Crawler implements CrawlerContract
 
         DB::beginTransaction();
         try {
-            $content = CrawlerContent::updateOrCreate(
+            CrawlerContent::updateOrCreate(
                 [
                     'link_id' => $link->id
                 ],
@@ -93,36 +94,6 @@ class Crawler implements CrawlerContract
                 ]
             );
 
-            if ($isResource) {
-                $resource = $this->importResourceData($data, $link);
-
-                if (method_exists($template, 'createdResourcesEvent')) {
-                    $template->createdResourcesEvent($resource, $data);
-                }
-
-                $content->update(
-                    [
-                        'resource_id' => $resource[0]->id,
-                        'status' => CrawlerContent::STATUS_DONE
-                    ]
-                );
-            } else {
-                $data['type'] = $link->page->post_type;
-
-                $post = $this->importPostData($data, $link, $template);
-
-                if (method_exists($template, 'createdPostEvent')) {
-                    $template->createdPostEvent($post, $data);
-                }
-
-                $content->update(
-                    [
-                        'post_id' => $post->id,
-                        'status' => CrawlerContent::STATUS_DONE
-                    ]
-                );
-            }
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -130,6 +101,56 @@ class Crawler implements CrawlerContract
         }
 
         return true;
+    }
+
+    public function translate(CrawlerContent $content, string $target, string $source = 'auto'): CrawlerContent
+    {
+        $components = $this->createCrawlerContentTranslation($content, $source, $target);
+        $newContent = $content->replicate();
+        $newContent->components = $components;
+        $newContent->save();
+        return $newContent;
+    }
+
+    public function savePost(CrawlerContent $content): Post|array
+    {
+        $template = $content->link->website->getTemplateClass();
+
+        $isResource = (bool) $content->link->page->is_resource_page;
+
+        if ($isResource) {
+            $resource = $this->importResourceData($content->components, $content->link);
+
+            if (method_exists($template, 'createdResourcesEvent')) {
+                $template->createdResourcesEvent($resource, $content->components);
+            }
+
+            $content->update(
+                [
+                    'resource_id' => $resource[0]->id,
+                    'status' => CrawlerContent::STATUS_DONE
+                ]
+            );
+
+            return $resource;
+        }
+
+        $data['type'] = $content->link->page->post_type;
+
+        $post = $this->importPostData($data, $content->link, $template);
+
+        if (method_exists($template, 'createdPostEvent')) {
+            $template->createdPostEvent($post, $data);
+        }
+
+        $content->update(
+            [
+                'post_id' => $post->id,
+                'status' => CrawlerContent::STATUS_DONE
+            ]
+        );
+
+        return $post;
     }
 
     protected function checkAndInsertLinks(array $items, CrawlerPage $page): array
@@ -219,6 +240,14 @@ class Crawler implements CrawlerContract
         }
 
         return $post;
+    }
+
+    private function createCrawlerContentTranslation(
+        CrawlerContent $content,
+        string $source,
+        string $target
+    ): CrawlerContentTranslation {
+        return new CrawlerContentTranslation($content, $source, $target);
     }
 
     private function createLinkCrawler(): LinkCrawler

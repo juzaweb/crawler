@@ -10,8 +10,8 @@
 
 namespace Juzaweb\Crawler\Abstracts;
 
-use Illuminate\Support\Arr;
 use Juzaweb\CMS\Support\HtmlDomNode;
+use Juzaweb\Crawler\Support\Converter\BBCodeToHTML;
 use Juzaweb\Crawler\Support\Converter\HTMLToBBCode;
 use Juzaweb\Crawler\Support\HtmlDomCrawler;
 
@@ -64,21 +64,17 @@ class CrawlerElementAbstract
             return null;
         }
 
+        /* Convert to bbcode to remove HTML format */
         if (is_null($this->index)) {
             $result = [];
             foreach ($elements as $item) {
-                if (Arr::get($this->element, 'to_bbcode')) {
-                    $result[] = HTMLToBBCode::toBBCode($this->getHtmlNodeValue($item));
-                } else {
-                    $result[] = $this->getHtmlNodeValue($item);
-                }
+                $text = HTMLToBBCode::toBBCode($this->getHtmlNodeValue($item));
+                $result[] = BBCodeToHTML::toHTML($text);
             }
         } else {
             $result = $this->getHtmlNodeValue($elements);
 
-            if (Arr::get($this->element, 'to_bbcode')) {
-                $result = HTMLToBBCode::toBBCode($result);
-            }
+            $result = BBCodeToHTML::toHTML(HTMLToBBCode::toBBCode($result));
         }
 
         return $result;
