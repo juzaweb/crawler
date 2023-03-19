@@ -25,7 +25,8 @@ class CrawlerContentTranslation
     public function translate(): array
     {
         $components = [];
-        $replaces = $this->content->page->translate_replaces;
+        $replaces = $this->content->page->translate_replaces ?? [];
+
         foreach ($this->content->components as $key => $component) {
             $translater = new TranslateBBCode($this->source, $this->target, $component);
             $translate = $translater->translate();

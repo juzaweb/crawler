@@ -6,21 +6,22 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
+use Symfony\Component\Console\Input\InputOption;
 
 class AutoPostCommand extends Command
 {
-    protected $signature = 'crawler:posts';
+    protected $name = 'crawler:posts';
 
     protected $description = 'Command post crawler content.';
 
     public function handle()
     {
-        $contents = CrawlerContent::with(['link.website'])
+        $contents = CrawlerContent::with(['link.page', 'link.website'])
             ->where(['status' => CrawlerContent::STATUS_PENDING])
             ->whereNull('post_id')
             ->whereNull('resource_id')
             ->orderBy('id', 'ASC')
-            ->limit(20)
+            ->limit((int) $this->option('limit'))
             ->get();
 
         $skipSource = (bool) get_config('crawler_skip_origin_content', 0);
@@ -33,7 +34,11 @@ class AutoPostCommand extends Command
 
             DB::beginTransaction();
             try {
-                $crawler->savePost($content);
+                $post = $crawler->savePost($content);
+
+                $type = $content->link->page->is_resource_page ? 'Resource' : 'Post';
+
+                $this->info("Created {$type} {$post->id}");
 
                 DB::commit();
             } catch (\Exception $e) {
@@ -46,5 +51,12 @@ class AutoPostCommand extends Command
                 );
             }
         }
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 20],
+        ];
     }
 }

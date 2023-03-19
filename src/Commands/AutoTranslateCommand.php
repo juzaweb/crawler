@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Juzaweb\Crawler\Jobs\TranslateCrawlerContentJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
+use Symfony\Component\Console\Input\InputOption;
 
 class AutoTranslateCommand extends Command
 {
@@ -34,13 +35,14 @@ class AutoTranslateCommand extends Command
         }
 
         $targets = get_config('crawler_translate_languages', []);
+        $limit = (int) $this->option('limit');
         $job = 1;
-        foreach ($targets as $target) {
+        foreach ($targets as $index => $target) {
             $contents = CrawlerContent::with(['link.website'])
                 ->where(['status' => CrawlerContent::STATUS_DONE, 'is_source' => true])
                 ->whereDoesntHave('children', fn($q) => $q->where('lang', $target))
                 ->orderBy('id', 'ASC')
-                ->limit(20)
+                ->limit($limit)
                 ->get();
 
             foreach ($contents as $content) {
@@ -57,7 +59,9 @@ class AutoTranslateCommand extends Command
                 sleep(1);
             }
 
-            sleep(3);
+            if (isset($targets[$index + 1])) {
+                sleep(3);
+            }
         }
     }
 
@@ -77,5 +81,12 @@ class AutoTranslateCommand extends Command
     protected function getStorageDisk(): Filesystem
     {
         return Storage::disk('local');
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 20],
+        ];
     }
 }

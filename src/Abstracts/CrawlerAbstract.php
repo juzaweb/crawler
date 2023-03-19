@@ -36,6 +36,6 @@ abstract class CrawlerAbstract
 
     protected function getClient(): Client
     {
-        return new Client(['timeout' => 10]);
+        return new Client(['timeout' => 20]);
     }
 }

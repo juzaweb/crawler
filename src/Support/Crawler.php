@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler\Support;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\Backend\Models\Resource;
 use Juzaweb\CMS\Contracts\PostImporterContract;
@@ -112,6 +113,9 @@ class Crawler implements CrawlerContract
         $newContent->components = $components->translate();
         $newContent->status = CrawlerContent::STATUS_PENDING;
         $newContent->lang = $target;
+        $newContent->is_source = false;
+        $newContent->post_id = null;
+        $newContent->resource_id = null;
         $newContent->save();
         return $newContent;
     }
