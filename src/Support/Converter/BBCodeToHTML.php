@@ -61,6 +61,7 @@ class BBCodeToHTML
             '~\[img\]((https?)://.*?)\[/img\]~s',
             '~\[img\](.*?)\[/img\]~s',
             '~\[embed\](.*?)\[/embed\]~s',
+            '~\[code lang=([a-zA-Z0-9]+)\](.*?)\[/code\]~s',
             '~\[code\](.*?)\[/code\]~s',
         ];
 
@@ -74,7 +75,7 @@ class BBCodeToHTML
             '<ul>$1</ul>',
             '<ol>$1</ol>',
             '<li>$1</li>',
-            '<pre>$1</pre>',
+            '<pre><code>$1</code></pre>',
             '<span style="font-size:$1px;">$2</span>',
             '<span style="color:$1;">$2</span>',
             '<a href="$1" rel="nofollow" target="_blank">$1</a>',
@@ -84,7 +85,8 @@ class BBCodeToHTML
             '<div class="embed-responsive">'.
             '<iframe src="$1" class="embed-responsive-item" allowfullscreen></iframe>'
             .'</div>',
-            '<pre>$1</pre>',
+            '<pre><code class="language-$1">$2</code></pre>',
+            '<pre><code>$1</code></pre>',
         ];
 
         return preg_replace($find, $replace, $text);
