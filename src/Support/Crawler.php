@@ -82,7 +82,7 @@ class Crawler implements CrawlerContract
 
         DB::beginTransaction();
         try {
-            $content = CrawlerContent::updateOrCreate(
+            CrawlerContent::updateOrCreate(
                 [
                     'link_id' => $link->id
                 ],
@@ -91,15 +91,10 @@ class Crawler implements CrawlerContract
                     'is_source' => true,
                     'link_id' => $link->id,
                     'page_id' => $link->page_id,
+                    'lang' => $link->page->lang,
                     'status' => CrawlerContent::STATUS_PENDING,
                 ]
             );
-
-            if (0) {
-                $this->savePost($content, $link);
-            }
-
-            $content->update(['status' => CrawlerContent::STATUS_DONE]);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -112,13 +107,14 @@ class Crawler implements CrawlerContract
 
     public function translate(CrawlerContent $content, string $target): CrawlerContent
     {
-        $components = $this->createCrawlerContentTranslation($content, $content->lang ?? 'en', $target);
         $newContent = $content->replicate();
-        $newContent->components = $components->translate();
+        $newContent->components = $this->translateCrawlerContent($content, $target);
         $newContent->status = CrawlerContent::STATUS_PENDING;
         $newContent->lang = $target;
+        $newContent->is_source = false;
+        $newContent->post_id = null;
+        $newContent->resource_id = null;
         $newContent->save();
-        $this->savePost($newContent);
         return $newContent;
     }
 
@@ -167,6 +163,13 @@ class Crawler implements CrawlerContract
         );
 
         return $post;
+    }
+
+    public function translateCrawlerContent(CrawlerContent $content, string $target): array
+    {
+        $translater = $this->createCrawlerContentTranslation($content, $content->lang ?? 'en', $target);
+
+        return $translater->translate();
     }
 
     protected function checkAndInsertLinks(array $items, CrawlerPage $page): array

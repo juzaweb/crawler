@@ -27,6 +27,7 @@
             'marker' => $marker,
             'types' => $types,
             'taxonomies' => $taxonomies,
+            'languages' => $languages,
             'title' => ($model->id ?? '') ? 'Page '.$model->id : 'New Page',
         ])
 

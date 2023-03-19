@@ -47,6 +47,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|CrawlerPage whereIsResourcePage($value)
  * @method static Builder|CrawlerPage whereUrlHash($value)
  * @mixin \Eloquent
+ * @property int|null $parent_post_id
+ * @method static Builder|CrawlerPage whereParentPostId($value)
+ * @property string $lang
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereLang($value)
  */
 class CrawlerPage extends Model
 {
@@ -63,7 +67,8 @@ class CrawlerPage extends Model
         'crawler_date',
         'url_hash',
         'parent_post_id',
-        'is_resource_page'
+        'is_resource_page',
+        'lang',
     ];
 
     public $casts = [

@@ -19,7 +19,7 @@ use Juzaweb\CMS\Models\Model;
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \Juzaweb\Crawler\Models\CrawlerLink $link
+ * @property-read CrawlerLink $link
  * @method static Builder|CrawlerContent newModelQuery()
  * @method static Builder|CrawlerContent newQuery()
  * @method static Builder|CrawlerContent query()
@@ -35,13 +35,16 @@ use Juzaweb\CMS\Models\Model;
  * @mixin \Eloquent
  * @property int|null $resource_id
  * @method static Builder|CrawlerContent whereResourceId($value)
+ * @property int $is_source
+ * @property-read CrawlerContent $children
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerContent whereIsSource($value)
+ * @property-read \Juzaweb\Crawler\Models\CrawlerPage $page
  */
 class CrawlerContent extends Model
 {
     const STATUS_PENDING = 'pending';
     const STATUS_DONE = 'done';
     const STATUS_ERROR = 'error';
-    const STATUS_TRANSLATE_ERROR = 'translate_error';
 
     protected $table = 'crawler_contents';
     protected $fillable = [
@@ -52,7 +55,6 @@ class CrawlerContent extends Model
         'post_id',
         'resource_id',
         'status',
-        'locale',
         'is_source',
     ];
 
@@ -63,6 +65,11 @@ class CrawlerContent extends Model
     public function link(): BelongsTo
     {
         return $this->belongsTo(CrawlerLink::class, 'link_id', 'id');
+    }
+
+    public function page(): BelongsTo
+    {
+        return $this->belongsTo(CrawlerPage::class, 'page_id', 'id');
     }
 
     public function children(): BelongsTo

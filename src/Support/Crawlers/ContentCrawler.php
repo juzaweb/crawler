@@ -35,12 +35,14 @@ class ContentCrawler extends CrawlerAbstract
     public function getContentsOfPost(string $url, CrawlerTemplate $template): array
     {
         $contents = $this->createHTMLDomFromUrl($url);
+        $domain = get_domain_by_url($url);
+        $contents->removeInternalLink($domain);
 
         $result = [];
         $elementData = $template->getDataElements();
 
         if ($removes = Arr::get($elementData, 'removes', [])) {
-            $this->removeElements($removes, $url, $contents);
+            $this->removeElements($removes, $contents);
         }
 
         foreach ($elementData['data'] ?? [] as $code => $el) {
@@ -59,11 +61,14 @@ class ContentCrawler extends CrawlerAbstract
 
         $result = [];
         $contents = $this->createHTMLDomFromUrl($url);
+
         $elementData = $template->getDataResourceElements();
+        $domain = get_domain_by_url($url);
+        $contents->removeInternalLink($domain);
 
         foreach ($elementData as $key => $resource) {
             if ($removes = Arr::get($resource, 'removes', [])) {
-                $this->removeElements($removes, $url, $contents);
+                $this->removeElements($removes, $contents);
             }
 
             foreach ($resource['data'] ?? [] as $code => $el) {
@@ -75,16 +80,9 @@ class ContentCrawler extends CrawlerAbstract
         return $result;
     }
 
-    protected function removeElements(array $removes, string $url, HtmlDomCrawler &$contents): void
+    protected function removeElements(array $removes, HtmlDomCrawler &$contents): void
     {
-        $domain = get_domain_by_url($url);
-
         foreach ($removes as $remove) {
-            if ($remove == 'internal_link') {
-                $contents->removeInternalLink($domain);
-                continue;
-            }
-
             $selector = $remove;
             $type = 1;
             if (is_array($remove)) {

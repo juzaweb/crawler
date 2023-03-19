@@ -41,12 +41,48 @@
                                     @component('crawler::website.components.page_item', [
                                         'types' => $types,
                                         'taxonomies' => $taxonomies,
+                                        'languages' => $languages,
                                         'marker' => $page->id,
                                         'model' => $page,
                                     ])
 
                                     @endcomponent
                                 @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-6 text-right">
+                        <a href="javascript:void(0)"
+                           class="btn btn-success btn-sm"
+                           id="add-new-replace"
+                        >
+                            Add Replace
+                        </a>
+                    </div>
+
+                    <div class="col-md-12 mt-2">
+                        <table class="table" id="table-replaces">
+                            <thead>
+                                <tr>
+                                    <th>Search</th>
+                                    <th style="width: 50%;text-align: center">Replace</th>
+                                    <th style="width: 15%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($model->translate_replaces ?? [] as $index => $replace)
+                                @component('crawler::website.components.replace_item', [
+                                    'marker' => $index,
+                                    'model' => $model,
+                                    'item' => $replace,
+                                ])
+
+                                @endcomponent
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -59,13 +95,7 @@
                 ]) }}
 
                 @php
-                    $templateOptions = $templates->mapWithKeys(
-                        function ($item) {
-                            return [
-                                $item['class'] => $item['name'],
-                            ];
-                        }
-                    );
+                    $templateOptions = $templates->mapWithKeys(fn($item) => [$item['class'] => $item['name']]);
                 @endphp
 
                 {{ Field::select($model, 'template_class', ['options' => $templateOptions]) }}
@@ -77,6 +107,15 @@
         @component('crawler::website.components.page_item', [
                 'types' => $types,
                 'taxonomies' => $taxonomies,
+                'languages' => $languages,
+                'marker' => '{marker}',
+            ])
+
+        @endcomponent
+    </template>
+
+    <template id="replace-item-template">
+        @component('crawler::website.components.replace_item', [
                 'marker' => '{marker}',
             ])
 
@@ -85,12 +124,24 @@
 
     <script type="text/javascript">
         const tableEl = $('#table-pages');
+        const tableReplaceEl = $('#table-replaces');
 
         $('#add-new-page').on('click', function () {
             let temp = document.getElementById('page-item-template').innerHTML;
             let marker = -(new Date());
             temp = replace_template(temp, {marker: marker});
             $('#table-pages tbody').append(temp);
+        });
+
+        $('#add-new-replace').on('click', function () {
+            let temp = document.getElementById('replace-item-template').innerHTML;
+            let marker = -(new Date());
+            temp = replace_template(temp, {marker: marker});
+            $('#table-replaces tbody').append(temp);
+        });
+
+        tableReplaceEl.on('click', '.remove-replace-item', function () {
+            $(this).closest('tr').remove();
         });
 
         tableEl.on('change', '.page-list_url', function () {

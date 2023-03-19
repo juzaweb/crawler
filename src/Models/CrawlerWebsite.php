@@ -36,6 +36,8 @@ use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereFilter($params = [])
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereTemplateClass($value)
+ * @property array|null $translate_replaces
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereTranslateReplaces($value)
  */
 class CrawlerWebsite extends Model
 {
@@ -50,8 +52,11 @@ class CrawlerWebsite extends Model
         'has_ssl',
         'active',
         'template_id',
-        'template_class'
+        'template_class',
+        'translate_replaces',
     ];
+
+    protected $casts = ['translate_replaces' => 'array'];
 
     public function pages(): HasMany
     {

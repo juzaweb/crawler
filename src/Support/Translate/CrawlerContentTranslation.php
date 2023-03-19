@@ -14,6 +14,11 @@ use Juzaweb\Crawler\Models\CrawlerContent;
 
 class CrawlerContentTranslation
 {
+    protected array $translateComponents = [
+        'title',
+        'content'
+    ];
+
     public function __construct(
         protected CrawlerContent $content,
         protected string $source,
@@ -24,9 +29,20 @@ class CrawlerContentTranslation
     public function translate(): array
     {
         $components = [];
+        $replaces = $this->content->page->website->translate_replaces ?? [];
+
         foreach ($this->content->components as $key => $component) {
+            if (!in_array($key, $this->translateComponents)) {
+                $components[$key] = $component;
+                continue;
+            }
+
             $translater = new TranslateBBCode($this->source, $this->target, $component);
-            $components[$key] = $translater->translate();
+            $translate = $translater->translate();
+            foreach ($replaces as $replace) {
+                $translate = str_ireplace($replace['search'], $replace['replace'], $translate);
+            }
+            $components[$key] = $translate;
         }
 
         return $components;

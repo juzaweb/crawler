@@ -8,7 +8,7 @@
  * @license    MIT
  */
 
-namespace Juzaweb\Crawler;
+namespace Juzaweb\Crawler\Actions;
 
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;

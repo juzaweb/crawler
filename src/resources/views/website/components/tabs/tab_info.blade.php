@@ -15,3 +15,12 @@
 ]) }}
 
 {{ Field::checkbox(trans('cms::app.active'), "pages[{$marker}][active]", ['checked' => ($model->active ?? 1) == 1]) }}
+
+{{ Field::select(
+    trans('cms::app.language'),
+    "pages[{$marker}][lang]",
+    [
+        'options' => collect($languages)->mapWithKeys(fn($item) => [$item['code'] => $item['name']]),
+        'default' => 'en',
+    ]
+) }}
