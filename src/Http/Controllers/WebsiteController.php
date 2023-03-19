@@ -43,6 +43,7 @@ class WebsiteController extends PageController
                     'url_hash' => sha1($url),
                     'url_with_page' => Arr::get($page, 'url_with_page'),
                     'post_type' => Arr::get($page, 'post_type'),
+                    'lang' => Arr::get($page, 'lang', 'en'),
                     'category_ids' => Arr::get($page, 'category_ids', []),
                     'active' => Arr::get($page, 'active', 0),
                     'website_id' => $model->id,
@@ -63,6 +64,7 @@ class WebsiteController extends PageController
         $data['types'] = HookAction::getPostTypes();
         $data['pages'] = $model->pages()->where(['is_resource_page' => 0])->get();
         $data['taxonomies'] = Taxonomy::where(['post_type' => 'posts'])->limit(10)->get();
+        $data['languages'] = config('locales');
         return $data;
     }
 

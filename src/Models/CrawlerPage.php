@@ -47,6 +47,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|CrawlerPage whereIsResourcePage($value)
  * @method static Builder|CrawlerPage whereUrlHash($value)
  * @mixin \Eloquent
+ * @property int|null $parent_post_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereParentPostId($value)
  */
 class CrawlerPage extends Model
 {

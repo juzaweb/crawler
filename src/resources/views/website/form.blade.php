@@ -41,6 +41,7 @@
                                     @component('crawler::website.components.page_item', [
                                         'types' => $types,
                                         'taxonomies' => $taxonomies,
+                                        'languages' => $languages,
                                         'marker' => $page->id,
                                         'model' => $page,
                                     ])
@@ -77,6 +78,7 @@
         @component('crawler::website.components.page_item', [
                 'types' => $types,
                 'taxonomies' => $taxonomies,
+                'languages' => $languages,
                 'marker' => '{marker}',
             ])
 

@@ -19,7 +19,7 @@ use Juzaweb\CMS\Models\Model;
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \Juzaweb\Crawler\Models\CrawlerLink $link
+ * @property-read CrawlerLink $link
  * @method static Builder|CrawlerContent newModelQuery()
  * @method static Builder|CrawlerContent newQuery()
  * @method static Builder|CrawlerContent query()
@@ -35,6 +35,9 @@ use Juzaweb\CMS\Models\Model;
  * @mixin \Eloquent
  * @property int|null $resource_id
  * @method static Builder|CrawlerContent whereResourceId($value)
+ * @property int $is_source
+ * @property-read CrawlerContent $children
+ * @method static \Illuminate\Database\Eloquent\Builder|CrawlerContent whereIsSource($value)
  */
 class CrawlerContent extends Model
 {
@@ -51,7 +54,6 @@ class CrawlerContent extends Model
         'post_id',
         'resource_id',
         'status',
-        'locale',
         'is_source',
     ];
 
