@@ -127,7 +127,7 @@ class TranslateBBCode
             return true;
         }
 
-        if (is_url($text) || str_contains($text, 'storage/')) {
+        if (is_url($text)) {
             return true;
         }
 
