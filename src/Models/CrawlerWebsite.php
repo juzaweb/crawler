@@ -50,8 +50,11 @@ class CrawlerWebsite extends Model
         'has_ssl',
         'active',
         'template_id',
-        'template_class'
+        'template_class',
+        'translate_replaces',
     ];
+
+    protected $casts = ['translate_replaces' => 'array'];
 
     public function pages(): HasMany
     {

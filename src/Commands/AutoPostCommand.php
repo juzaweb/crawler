@@ -25,6 +25,11 @@ class AutoPostCommand extends Command
 
         $crawler = app(CrawlerContract::class);
         foreach ($contents as $content) {
+            if ($content->is_source && 1) {
+                $content->update(['status' => CrawlerContent::STATUS_DONE]);
+                continue;
+            }
+
             DB::beginTransaction();
             try {
                 $crawler->savePost($content);

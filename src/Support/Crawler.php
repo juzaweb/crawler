@@ -91,6 +91,7 @@ class Crawler implements CrawlerContract
                     'is_source' => true,
                     'link_id' => $link->id,
                     'page_id' => $link->page_id,
+                    'lang' => $link->page->lang,
                     'status' => CrawlerContent::STATUS_PENDING,
                 ]
             );

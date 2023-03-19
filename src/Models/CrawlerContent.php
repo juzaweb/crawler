@@ -66,6 +66,11 @@ class CrawlerContent extends Model
         return $this->belongsTo(CrawlerLink::class, 'link_id', 'id');
     }
 
+    public function page(): BelongsTo
+    {
+        return $this->belongsTo(CrawlerPage::class, 'page_id', 'id');
+    }
+
     public function children(): BelongsTo
     {
         return $this->belongsTo(CrawlerContent::class, 'link_id', 'link_id');

@@ -71,6 +71,8 @@ class WebsiteController extends PageController
     protected function parseDataForSave(array $attributes, ...$params): array
     {
         $data = $this->DataForSave($attributes, ...$params);
+        $data['translate_replaces'] = array_values($data['translate_replaces'] ?? []);
+
         if (empty($data['active'])) {
             $data['active'] = 0;
         }
