@@ -82,7 +82,7 @@ class Crawler implements CrawlerContract
 
         DB::beginTransaction();
         try {
-            $content = CrawlerContent::updateOrCreate(
+            CrawlerContent::updateOrCreate(
                 [
                     'link_id' => $link->id
                 ],
@@ -94,12 +94,6 @@ class Crawler implements CrawlerContract
                     'status' => CrawlerContent::STATUS_PENDING,
                 ]
             );
-
-            if (0) {
-                $this->savePost($content, $link);
-            }
-
-            $content->update(['status' => CrawlerContent::STATUS_DONE]);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -118,7 +112,6 @@ class Crawler implements CrawlerContract
         $newContent->status = CrawlerContent::STATUS_PENDING;
         $newContent->lang = $target;
         $newContent->save();
-        $this->savePost($newContent);
         return $newContent;
     }
 

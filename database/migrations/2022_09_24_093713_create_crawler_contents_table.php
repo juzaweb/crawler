@@ -30,6 +30,11 @@ return new class extends Migration {
                     ->references('id')
                     ->on('crawler_links')
                     ->onDelete('cascade');
+
+                $table->foreign('post_id')
+                    ->references('id')
+                    ->on('posts')
+                    ->onDelete('set null');
             }
         );
     }
