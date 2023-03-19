@@ -23,6 +23,7 @@ use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
 use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
+use Juzaweb\Crawler\Support\Translate\CrawlerContentTranslation;
 
 class Crawler implements CrawlerContract
 {
@@ -87,41 +88,18 @@ class Crawler implements CrawlerContract
                 ],
                 [
                     'components' => $data,
+                    'is_source' => true,
                     'link_id' => $link->id,
                     'page_id' => $link->page_id,
                     'status' => CrawlerContent::STATUS_PENDING,
                 ]
             );
 
-            if ($isResource) {
-                $resource = $this->importResourceData($data, $link);
-
-                if (method_exists($template, 'createdResourcesEvent')) {
-                    $template->createdResourcesEvent($resource, $data);
-                }
-
-                $content->update(
-                    [
-                        'resource_id' => $resource[0]->id,
-                        'status' => CrawlerContent::STATUS_DONE
-                    ]
-                );
-            } else {
-                $data['type'] = $link->page->post_type;
-
-                $post = $this->importPostData($data, $link, $template);
-
-                if (method_exists($template, 'createdPostEvent')) {
-                    $template->createdPostEvent($post, $data);
-                }
-
-                $content->update(
-                    [
-                        'post_id' => $post->id,
-                        'status' => CrawlerContent::STATUS_DONE
-                    ]
-                );
+            if (0) {
+                $this->savePost($content, $link);
             }
+
+            $content->update(['status' => CrawlerContent::STATUS_DONE]);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -130,6 +108,65 @@ class Crawler implements CrawlerContract
         }
 
         return true;
+    }
+
+    public function translate(CrawlerContent $content, string $target): CrawlerContent
+    {
+        $components = $this->createCrawlerContentTranslation($content, $content->lang ?? 'en', $target);
+        $newContent = $content->replicate();
+        $newContent->components = $components->translate();
+        $newContent->status = CrawlerContent::STATUS_PENDING;
+        $newContent->lang = $target;
+        $newContent->save();
+        $this->savePost($newContent);
+        return $newContent;
+    }
+
+    public function savePost(CrawlerContent $content, CrawlerLink $link = null): Post|array
+    {
+        if ($link === null) {
+            $link = $content->link;
+        }
+
+        $template = $link->website->getTemplateClass();
+
+        $isResource = (bool) $link->page->is_resource_page;
+
+        if ($isResource) {
+            $resource = $this->importResourceData($content->components, $link);
+
+            if (method_exists($template, 'createdResourcesEvent')) {
+                $template->createdResourcesEvent($resource, $content->components);
+            }
+
+            $content->update(
+                [
+                    'resource_id' => $resource[0]->id,
+                    'status' => CrawlerContent::STATUS_DONE
+                ]
+            );
+
+            return $resource;
+        }
+
+        $data = $content->components;
+        $data['type'] = $link->page->post_type;
+        $data['status'] = Post::STATUS_PRIVATE;
+
+        $post = $this->importPostData($data, $link, $template);
+
+        if (method_exists($template, 'createdPostEvent')) {
+            $template->createdPostEvent($post, $data);
+        }
+
+        $content->update(
+            [
+                'post_id' => $post->id,
+                'status' => CrawlerContent::STATUS_DONE
+            ]
+        );
+
+        return $post;
     }
 
     protected function checkAndInsertLinks(array $items, CrawlerPage $page): array
@@ -193,6 +230,10 @@ class Crawler implements CrawlerContract
 
     protected function importPostData(array $data, CrawlerLink $link, CrawlerTemplate $template): Post
     {
+        foreach ($link->page->category_ids ?? [] as $key => $item) {
+            $data[$key] = $item;
+        }
+
         $post = $this->postImporter->import($data);
 
         if ($template instanceof TemplateHasResource) {
@@ -219,6 +260,14 @@ class Crawler implements CrawlerContract
         }
 
         return $post;
+    }
+
+    private function createCrawlerContentTranslation(
+        CrawlerContent $content,
+        string $source,
+        string $target
+    ): CrawlerContentTranslation {
+        return new CrawlerContentTranslation($content, $source, $target);
     }
 
     private function createLinkCrawler(): LinkCrawler

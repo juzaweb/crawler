@@ -1,11 +1,11 @@
 <?php
 /**
- * JUZAWEB CMS - The Best CMS for Laravel Project
+ * JUZAWEB CMS - Laravel CMS for Your Project
  *
  * @package    juzaweb/juzacms
- * @author     Juzaweb Team <admin@juzaweb.com>
+ * @author     The Anh Dang
  * @link       https://juzaweb.com
- * @license    MIT
+ * @license    GNU V2
  */
 
 namespace Juzaweb\Crawler\Support\Templates;
@@ -13,32 +13,36 @@ namespace Juzaweb\Crawler\Support\Templates;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
 use Juzaweb\Crawler\Support\CrawlerElement;
 
-class MediumCom extends CrawlerTemplate implements CrawlerTemplateInterface
+class LaravelNewsCom extends CrawlerTemplate implements CrawlerTemplateInterface
 {
-    protected string $linkElement = 'article h2';
+    protected string $linkElement = '.grid .card a.flex';
 
     public function getDataElements(): array
     {
         return [
             'data' => [
                 'title' => [
-                    'selector' => 'h1.pw-post-title',
+                    'selector' => 'header h1.tracking-tighter',
                     'value' => CrawlerElement::$VALUE_TEXT,
                     'index' => 0,
                 ],
                 'content' => [
-                    'selector' => 'article section',
+                    'selector' => 'div.prose-sm',
                     'index' => 0,
                 ],
                 'thumbnail' => [
-                    'selector' => 'article section img',
-                    'attr' => 'src',
+                    'selector' => 'meta[property="og:image"]',
+                    'attr' => 'content',
                     'index' => 0,
                 ],
-                'categories' => [
-                    'selector' => '.ads.al',
+                /*'categories' => [
+                    'selector' => 'header .items-center a.transition-opacity',
                     'value' => CrawlerElement::$VALUE_TEXT,
-                ]
+                ]*/
+            ],
+            'removes' => [
+                'script',
+                '.twitter-tweet'
             ]
         ];
     }

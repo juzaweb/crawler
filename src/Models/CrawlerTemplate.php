@@ -49,7 +49,7 @@ class CrawlerTemplate extends Model
         'custom_class'
     ];
 
-    public function language()
+    public function language(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Language::class, 'lang', 'code');
     }

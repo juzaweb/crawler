@@ -40,6 +40,7 @@
                                 @foreach($pages ?? [] as $page)
                                     @component('crawler::website.components.page_item', [
                                         'types' => $types,
+                                        'taxonomies' => $taxonomies,
                                         'marker' => $page->id,
                                         'model' => $page,
                                     ])
@@ -75,6 +76,7 @@
     <template id="page-item-template">
         @component('crawler::website.components.page_item', [
                 'types' => $types,
+                'taxonomies' => $taxonomies,
                 'marker' => '{marker}',
             ])
 

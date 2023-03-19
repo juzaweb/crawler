@@ -10,7 +10,7 @@ class LinkCrawlerCommand extends Command
 {
     use CommandData;
 
-    protected $name = 'crawler:links';
+    protected $name = 'crawler:test-links';
 
     protected $description = 'Craw links from url command.';
 

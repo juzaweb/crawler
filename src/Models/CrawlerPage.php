@@ -2,8 +2,10 @@
 
 namespace Juzaweb\Crawler\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerPage
@@ -16,35 +18,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $next_page
  * @property int $active
  * @property string $crawler_date
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Juzaweb\Crawler\Models\CrawlerWebsite|null $website
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage query()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereCategoryIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereCrawlerDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereListUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereListUrlPage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereNextPage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereWebsiteId($value)
- * @mixin \Eloquent
- * @property string $post_type
- * @property int $auto_craw
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereAutoCraw($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage wherePostType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrlWithPage($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $url_hash
  * @property string|null $error
  * @property int $is_resource_page
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereError($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereIsResourcePage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerPage whereUrlHash($value)
+ * @property string $post_type
+ * @property int $auto_craw
+ * @property-read CrawlerWebsite|null $website
+ * @method static Builder|CrawlerPage newModelQuery()
+ * @method static Builder|CrawlerPage newQuery()
+ * @method static Builder|CrawlerPage query()
+ * @method static Builder|CrawlerPage whereActive($value)
+ * @method static Builder|CrawlerPage whereCategoryIds($value)
+ * @method static Builder|CrawlerPage whereCrawlerDate($value)
+ * @method static Builder|CrawlerPage whereCreatedAt($value)
+ * @method static Builder|CrawlerPage whereId($value)
+ * @method static Builder|CrawlerPage whereListUrl($value)
+ * @method static Builder|CrawlerPage whereListUrlPage($value)
+ * @method static Builder|CrawlerPage whereNextPage($value)
+ * @method static Builder|CrawlerPage whereUpdatedAt($value)
+ * @method static Builder|CrawlerPage whereWebsiteId($value)
+ * @method static Builder|CrawlerPage whereAutoCraw($value)
+ * @method static Builder|CrawlerPage wherePostType($value)
+ * @method static Builder|CrawlerPage whereUrl($value)
+ * @method static Builder|CrawlerPage whereUrlWithPage($value)
+ * @method static Builder|CrawlerPage whereError($value)
+ * @method static Builder|CrawlerPage whereIsResourcePage($value)
+ * @method static Builder|CrawlerPage whereUrlHash($value)
+ * @mixin \Eloquent
  */
 class CrawlerPage extends Model
 {
@@ -65,7 +67,8 @@ class CrawlerPage extends Model
     ];
 
     public $casts = [
-        'category_ids' => 'array'
+        'category_ids' => 'array',
+        'is_resource_page' => 'boolean',
     ];
 
     public function website(): BelongsTo
