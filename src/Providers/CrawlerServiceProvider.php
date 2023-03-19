@@ -14,8 +14,9 @@ use Juzaweb\Crawler\Commands\AutoContentCrawlerCommand;
 use Juzaweb\Crawler\Commands\AutoLinkCrawlerCommand;
 use Juzaweb\Crawler\Commands\AutoPostCommand;
 use Juzaweb\Crawler\Commands\AutoTranslateCommand;
-use Juzaweb\Crawler\Commands\ContentCrawlerCommand;
-use Juzaweb\Crawler\Commands\LinkCrawlerCommand;
+use Juzaweb\Crawler\Commands\TestContentCrawlerCommand;
+use Juzaweb\Crawler\Commands\TestLinkCrawlerCommand;
+use Juzaweb\Crawler\Commands\TestTranslateCrawlerCommand;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Support\Crawler;
 
@@ -54,12 +55,13 @@ class CrawlerServiceProvider extends ServiceProvider
 
         $this->commands(
             [
-                LinkCrawlerCommand::class,
-                ContentCrawlerCommand::class,
+                TestLinkCrawlerCommand::class,
+                TestContentCrawlerCommand::class,
                 AutoLinkCrawlerCommand::class,
                 AutoContentCrawlerCommand::class,
                 AutoTranslateCommand::class,
                 AutoPostCommand::class,
+                TestTranslateCrawlerCommand::class,
             ]
         );
 

@@ -87,31 +87,6 @@ class TranslateBBCode
         return $this->text;
     }
 
-    protected function noneReplace2(): void
-    {
-        foreach ($this->dom()->find('pre') as $index => $e) {
-            $this->text = str_replace(
-                $e->outertext,
-                '[none_replace' . $index . '][/none_replace' . $index . ']',
-                $this->text
-            );
-            $this->noneReplace[$index] = $e->innertext;
-        }
-    }
-
-    protected function parseNoneReplace2(): void
-    {
-        foreach ($this->noneReplace as $index => $item) {
-            $this->text = str_replace(
-                '[none_replace' . $index . '][/none_replace' . $index . ']',
-                '<pre>' . $item . '</pre>',
-                $this->text
-            );
-        }
-
-        $this->text = str_replace(["<pre><code>", "</code></pre>"], ["<pre>", "</pre>"], $this->text);
-    }
-
     protected function excludeTranslate($text): bool
     {
         if (empty(trim($text))) {

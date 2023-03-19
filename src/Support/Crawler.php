@@ -12,7 +12,6 @@ namespace Juzaweb\Crawler\Support;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\Backend\Models\Resource;
 use Juzaweb\CMS\Contracts\PostImporterContract;
@@ -108,9 +107,8 @@ class Crawler implements CrawlerContract
 
     public function translate(CrawlerContent $content, string $target): CrawlerContent
     {
-        $components = $this->createCrawlerContentTranslation($content, $content->lang ?? 'en', $target);
         $newContent = $content->replicate();
-        $newContent->components = $components->translate();
+        $newContent->components = $this->translateCrawlerContent($content, $target);
         $newContent->status = CrawlerContent::STATUS_PENDING;
         $newContent->lang = $target;
         $newContent->is_source = false;
@@ -165,6 +163,13 @@ class Crawler implements CrawlerContract
         );
 
         return $post;
+    }
+
+    public function translateCrawlerContent(CrawlerContent $content, string $target): array
+    {
+        $translater = $this->createCrawlerContentTranslation($content, $content->lang ?? 'en', $target);
+
+        return $translater->translate();
     }
 
     protected function checkAndInsertLinks(array $items, CrawlerPage $page): array

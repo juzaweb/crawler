@@ -38,6 +38,7 @@ use Juzaweb\CMS\Models\Model;
  * @property int $is_source
  * @property-read CrawlerContent $children
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerContent whereIsSource($value)
+ * @property-read \Juzaweb\Crawler\Models\CrawlerPage $page
  */
 class CrawlerContent extends Model
 {

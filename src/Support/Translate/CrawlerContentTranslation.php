@@ -10,11 +10,15 @@
 
 namespace Juzaweb\Crawler\Support\Translate;
 
-use Illuminate\Support\Str;
 use Juzaweb\Crawler\Models\CrawlerContent;
 
 class CrawlerContentTranslation
 {
+    protected array $translateComponents = [
+        'title',
+        'content'
+    ];
+
     public function __construct(
         protected CrawlerContent $content,
         protected string $source,
@@ -25,13 +29,18 @@ class CrawlerContentTranslation
     public function translate(): array
     {
         $components = [];
-        $replaces = $this->content->page->translate_replaces ?? [];
+        $replaces = $this->content->page->website->translate_replaces ?? [];
 
         foreach ($this->content->components as $key => $component) {
+            if (!in_array($key, $this->translateComponents)) {
+                $components[$key] = $component;
+                continue;
+            }
+
             $translater = new TranslateBBCode($this->source, $this->target, $component);
             $translate = $translater->translate();
             foreach ($replaces as $replace) {
-                $translate = Str::replace($replace['search'], $replace['replace'], $translate);
+                $translate = str_ireplace($replace['search'], $replace['replace'], $translate);
             }
             $components[$key] = $translate;
         }

@@ -49,6 +49,8 @@ use Illuminate\Support\Carbon;
  * @mixin \Eloquent
  * @property int|null $parent_post_id
  * @method static Builder|CrawlerPage whereParentPostId($value)
+ * @property string $lang
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereLang($value)
  */
 class CrawlerPage extends Model
 {

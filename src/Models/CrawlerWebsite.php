@@ -36,6 +36,8 @@ use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereFilter($params = [])
  * @method static \Illuminate\Database\Eloquent\Builder|CrawlerWebsite whereTemplateClass($value)
+ * @property array|null $translate_replaces
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereTranslateReplaces($value)
  */
 class CrawlerWebsite extends Model
 {

@@ -23,10 +23,11 @@ trait UseNoneReplace
 
         foreach ($dom->find('pre code') as $e) {
             $key = $this->generateNoneReplaceKey();
-            $text = str_replace($e->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);
+            $text = str_replace($e->parent()->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);
             $this->noneReplace[$key] = ['text' => $e->text(), 'lang' => $this->detachLangTagCode($e)];
         }
 
+        $dom = $this->dom($text);
         foreach ($dom->find('pre') as $e) {
             $key = $this->generateNoneReplaceKey();
             $text = str_replace($e->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);

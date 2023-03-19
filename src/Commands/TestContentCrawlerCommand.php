@@ -6,13 +6,13 @@ use Illuminate\Console\Command;
 use Juzaweb\CMS\Traits\CommandData;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 
-class LinkCrawlerCommand extends Command
+class TestContentCrawlerCommand extends Command
 {
     use CommandData;
 
-    protected $name = 'crawler:test-links';
+    protected $name = 'crawler:test-contents';
 
-    protected $description = 'Craw links from url command.';
+    protected $description = 'Craw content for test from url command.';
 
     public function handle()
     {
@@ -24,7 +24,7 @@ class LinkCrawlerCommand extends Command
 
         $this->setCommandData('template', $template);
 
-        $results = app(CrawlerContract::class)->crawLinksUrl(
+        $results = app(CrawlerContract::class)->crawContentUrl(
             $url,
             app($template)
         );
