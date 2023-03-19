@@ -25,6 +25,8 @@ class ContentCrawlerJob implements ShouldQueue
 
     public int $timeout = 30;
 
+    public int $tries = 5;
+
     public function __construct(protected CrawlerLink $link)
     {
     }

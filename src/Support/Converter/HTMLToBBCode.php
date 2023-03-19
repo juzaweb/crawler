@@ -10,11 +10,12 @@
 
 namespace Juzaweb\Crawler\Support\Converter;
 
-use Illuminate\Support\Str;
-use Juzaweb\CMS\Support\HtmlDom;
+use Juzaweb\Crawler\Support\Traists\UseNoneReplace;
 
 class HTMLToBBCode
 {
+    use UseNoneReplace;
+
     protected array $noneReplace = [];
 
     public static function toBBCode(?string $text): null|string
@@ -35,77 +36,6 @@ class HTMLToBBCode
         $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
         $text = $this->parseNoneReplace($text);
         return trim($text);
-    }
-
-    protected function dom($text): bool|HtmlDom
-    {
-        return str_get_html($text);
-    }
-
-    protected function noneReplace($text)
-    {
-        if (!$dom = $this->dom($text)) {
-            return $text;
-        }
-
-        foreach ($dom->find('pre code') as $e) {
-            $key = $this->generateNoneReplaceKey();
-            $text = str_replace($e->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);
-            $this->noneReplace[$key] = ['text' => $e->text(), 'lang' => $this->detachLangTagCode($e)];
-        }
-
-        foreach ($dom->find('pre') as $e) {
-            $key = $this->generateNoneReplaceKey();
-            $text = str_replace($e->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);
-            $this->noneReplace[$key] = ['text' => $e->text(), 'lang' => $this->detachLangTagCode($e)];
-        }
-
-        return $text;
-    }
-
-    protected function detachLangTagCode($e): ?string
-    {
-        if ($e->hasAttribute('data-lang')) {
-            return $e->{'data-lang'};
-        }
-
-        $classes = explode(' ', $e->getAttribute('class') ?? '');
-        $class = array_filter($classes, fn($class) => str_contains($class, 'language-'));
-        if ($class) {
-            $lang = explode('-', $class[0]);
-            if (!empty($lang[1])) {
-                return $lang[1];
-            }
-        }
-
-        // CodeMirror
-        if ($setting = $e->getAttribute('data-setting')) {
-            if (is_json($setting)) {
-                $setting = json_decode($setting, true);
-                if (!empty($setting['language'])) {
-                    return Str::lower($setting['language']);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    protected function parseNoneReplace($text): null|string
-    {
-        foreach ($this->noneReplace as $index => $item) {
-            $replace = $item['lang']
-                ? '[code lang='. $item['lang'] .']' . $this->parseCodeText($item['text']) . '[/code]'
-                : '[code]' . $this->parseCodeText($item['text']) . '[/code]';
-            $text = str_replace('[none_replace-'. $index .'][/none_replace-'. $index .']', $replace, $text);
-        }
-
-        return $text;
-    }
-
-    protected function parseCodeText(string $text): string
-    {
-        return html_entity_decode(strip_tags(str_replace(["<br>", "<br/>", "<br />"], "\n", $text)), ENT_COMPAT);
     }
 
     protected function replaceLinks($text): array|string
@@ -282,15 +212,6 @@ class HTMLToBBCode
         }
 
         return $text;
-    }
-
-    protected function generateNoneReplaceKey(): string
-    {
-        do {
-            $str = Str::uuid()->toString();
-        } while (isset($this->noneReplace[$str]));
-
-        return $str;
     }
 
     protected function escUrl(?string $url): null|string

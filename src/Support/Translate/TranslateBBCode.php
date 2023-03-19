@@ -4,12 +4,14 @@ namespace Juzaweb\Crawler\Support\Translate;
 
 use Illuminate\Support\Facades\Log;
 use Juzaweb\CMS\Contracts\GoogleTranslate;
-use Juzaweb\CMS\Support\HtmlDom;
 use Juzaweb\Crawler\Support\Converter\BBCodeToHTML;
 use Juzaweb\Crawler\Support\Converter\HTMLToBBCode;
+use Juzaweb\Crawler\Support\Traists\UseNoneReplace;
 
 class TranslateBBCode
 {
+    use UseNoneReplace;
+
     protected string $source;
     protected string $target;
     protected string $text;
@@ -26,8 +28,7 @@ class TranslateBBCode
 
     public function translate(): string|null
     {
-        $this->noneReplace();
-        $transText = HTMLToBBCode::toBBCode($this->text);
+        $transText = HTMLToBBCode::toBBCode($this->noneReplace($this->text));
         $texts = preg_split('|[[\/\!]*?[^\[\]]*?]|si', $transText, -1, PREG_SPLIT_NO_EMPTY);
         $translate = app(GoogleTranslate::class);
 
@@ -82,17 +83,11 @@ class TranslateBBCode
             sleep(2);
         }
 
-        $this->text = BBCodeToHTML::toHTML($transText);
-        $this->parseNoneReplace();
+        $this->text = BBCodeToHTML::toHTML($this->parseNoneReplace($transText));
         return $this->text;
     }
 
-    protected function dom(): bool|HtmlDom
-    {
-        return str_get_html($this->text);
-    }
-
-    protected function noneReplace(): void
+    protected function noneReplace2(): void
     {
         foreach ($this->dom()->find('pre') as $index => $e) {
             $this->text = str_replace(
@@ -104,7 +99,7 @@ class TranslateBBCode
         }
     }
 
-    protected function parseNoneReplace(): void
+    protected function parseNoneReplace2(): void
     {
         foreach ($this->noneReplace as $index => $item) {
             $this->text = str_replace(
