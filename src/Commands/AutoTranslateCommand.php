@@ -28,7 +28,12 @@ class AutoTranslateCommand extends Command
             return;
         }
 
-        $targets = ['vi'];
+        if (!((bool) get_config('crawler_enable_translate', 0))) {
+            $this->error('Translate is not enable.');
+            return;
+        }
+
+        $targets = get_config('crawler_translate_languages', []);
         $job = 1;
         foreach ($targets as $target) {
             $contents = CrawlerContent::with(['link.website'])

@@ -78,6 +78,7 @@
                                 @component('crawler::website.components.replace_item', [
                                     'marker' => $index,
                                     'model' => $model,
+                                    'item' => $replace,
                                 ])
 
                                 @endcomponent

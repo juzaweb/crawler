@@ -23,9 +23,10 @@ class AutoPostCommand extends Command
             ->limit(20)
             ->get();
 
+        $skipSource = (bool) get_config('crawler_skip_origin_content', 0);
         $crawler = app(CrawlerContract::class);
         foreach ($contents as $content) {
-            if ($content->is_source && 1) {
+            if ($content->is_source && $skipSource) {
                 $content->update(['status' => CrawlerContent::STATUS_DONE]);
                 continue;
             }
