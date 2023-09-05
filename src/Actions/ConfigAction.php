@@ -3,6 +3,7 @@
 namespace Juzaweb\Crawler\Actions;
 
 use Juzaweb\CMS\Abstracts\Action;
+use Juzaweb\Crawler\Models\CrawlerContent;
 
 class ConfigAction extends Action
 {
@@ -14,9 +15,24 @@ class ConfigAction extends Action
     public function handle(): void
     {
         $this->addAction(Action::BACKEND_INIT, [$this, 'addAdminConfig']);
+        $this->addAction(Action::BACKEND_INIT, [$this, 'addResouces']);
+        $this->addAction('post_types.form.left', [$this, 'addFormPost']);
     }
 
-    public function addAdminConfig()
+    public function addResouces()
+    {
+        //
+    }
+
+    public function addFormPost($model): void
+    {
+        $content = CrawlerContent::with(['link'])->where('post_id', $model->id)->first();
+        if ($content) {
+            echo "<a href=\"{$content->link->url}\" target='_blank' rel='noreferrer'>Original post</a>";
+        }
+    }
+
+    public function addAdminConfig(): void
     {
         $this->hookAction->registerSettingPage(
             'crawler',
@@ -24,6 +40,7 @@ class ConfigAction extends Action
                 'label' => trans('cms::app.setting'),
                 'menu' => [
                     'parent' => 'crawler',
+                    'position' => 99,
                 ]
             ]
         );
@@ -38,12 +55,26 @@ class ConfigAction extends Action
 
         $this->hookAction->registerConfig(
             [
+                'crawler_enable' => [
+                    'type' => 'select',
+                    'label' => 'Enable Crawler',
+                    'form' => 'crawler',
+                    'data' => [
+                        'options' => [
+                            0 => trans('cms::app.disabled'),
+                            1 => trans('cms::app.enable')
+                        ],
+                    ]
+                ],
                 'crawler_skip_origin_content' => [
                     'type' => 'select',
                     'label' => 'Skip origin content',
                     'form' => 'crawler',
                     'data' => [
-                        'options' => [0 => trans('cms::app.disabled'), 1 => trans('cms::app.enable')],
+                        'options' => [
+                            0 => trans('cms::app.disabled'),
+                            1 => trans('cms::app.enable')
+                        ],
                     ]
                 ],
                 'crawler_enable_translate' => [
@@ -51,7 +82,10 @@ class ConfigAction extends Action
                     'label' => 'Enable Translate',
                     'form' => 'crawler',
                     'data' => [
-                        'options' => [0 => trans('cms::app.disabled'), 1 => trans('cms::app.enable')],
+                        'options' => [
+                            0 => trans('cms::app.disabled'),
+                            1 => trans('cms::app.enable')
+                        ],
                     ]
                 ],
                 'crawler_translate_languages' => [
@@ -64,7 +98,46 @@ class ConfigAction extends Action
                             ->mapWithKeys(fn($item) => [$item['code'] => $item['name']])
                             ->toArray(),
                     ]
-                ]
+                ],
+                'crawler_enable_proxy' => [
+                    'type' => 'select',
+                    'label' => 'Enable Proxy',
+                    'form' => 'crawler',
+                    'data' => [
+                        'options' => [
+                            0 => trans('cms::app.disabled'),
+                            1 => trans('cms::app.enable')
+                        ],
+                    ]
+                ],
+                'crawler_without_proxy' => [
+                    'type' => 'select',
+                    'label' => 'Crawl without proxy',
+                    'form' => 'crawler',
+                    'data' => [
+                        'options' => [
+                            1 => trans('cms::app.enable'),
+                            0 => trans('cms::app.disabled'),
+                        ],
+                        'default' => 1,
+                    ]
+                ],
+                'crawler_auto_publish_posts' => [
+                    'type' => 'select',
+                    'label' => 'Auto Publish Posts',
+                    'form' => 'crawler',
+                    'data' => [
+                        'options' => [
+                            0 => trans('cms::app.disabled'),
+                            1 => trans('cms::app.enable'),
+                        ],
+                    ]
+                ],
+                'crawler_auto_publish_posts_per_day' => [
+                    'type' => 'text',
+                    'label' => 'Number of published posts per day',
+                    'form' => 'crawler',
+                ],
             ]
         );
     }

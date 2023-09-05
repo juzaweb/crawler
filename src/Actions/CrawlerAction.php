@@ -2,7 +2,7 @@
 /**
  * JUZAWEB CMS - The Best CMS for Laravel Project
  *
- * @package    juzaweb/cms
+ * @package    juzaweb/juzacms
  * @author     The Anh Dang <dangtheanh16@gmail.com>
  * @link       https://juzaweb.com/cms
  * @license    MIT
@@ -12,49 +12,29 @@ namespace Juzaweb\Crawler\Actions;
 
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
-use Juzaweb\Crawler\Support\Templates\LaravelNewsCom;
-use Juzaweb\Crawler\Support\Templates\MediumCom;
-use Juzaweb\Crawler\Support\Templates\TruyenFullVN;
+use Juzaweb\Crawler\Support\Templates\Xenforo;
 
 class CrawlerAction extends Action
 {
-    public function handle()
+    public function handle(): void
     {
         $this->addAction(Action::BACKEND_INIT, [$this, 'addAddminMenu']);
         $this->addAction(Action::INIT_ACTION, [$this, 'registerCrawlerTemplates']);
         //$this->addAction(Action::BACKEND_CALL_ACTION, [$this, 'addScriptAdmin']);
     }
 
-    public function registerCrawlerTemplates()
+    public function registerCrawlerTemplates(): void
     {
-        $args = [
-            'name' => 'TruyenFull.vn',
-            'class' => TruyenFullVN::class,
-        ];
-
         $this->hookAction->registerCrawlerTemplate(
-            'truyenfullvn',
-            $args
-        );
-
-        $this->hookAction->registerCrawlerTemplate(
-            'medium',
+            'xenforo',
             [
-                'name' => 'Medium.com',
-                'class' => MediumCom::class,
-            ]
-        );
-
-        $this->hookAction->registerCrawlerTemplate(
-            'laravel-news',
-            [
-                'name' => 'Laravel-News.com',
-                'class' => LaravelNewsCom::class,
+                'name' => 'Xenforo Forum',
+                'class' => Xenforo::class,
             ]
         );
     }
 
-    public function addScriptAdmin()
+    public function addScriptAdmin(): void
     {
         $ver = app('plugins')->find('juzaweb/crawler')->getVersion();
 
@@ -65,7 +45,7 @@ class CrawlerAction extends Action
         );
     }
 
-    public function addAddminMenu()
+    public function addAddminMenu(): void
     {
         HookAction::registerAdminPage(
             'crawler',
@@ -83,6 +63,39 @@ class CrawlerAction extends Action
                 'title' => trans('crawler::content.websites'),
                 'menu' => [
                     'position' => 1,
+                    'parent' => 'crawler'
+                ]
+            ]
+        );
+
+        HookAction::registerAdminPage(
+            'crawler.testing',
+            [
+                'title' => trans('crawler::content.testing'),
+                'menu' => [
+                    'position' => 20,
+                    'parent' => 'crawler'
+                ]
+            ]
+        );
+
+        HookAction::registerAdminPage(
+            'crawler.import-links',
+            [
+                'title' => trans('Import links'),
+                'menu' => [
+                    'position' => 50,
+                    'parent' => 'crawler'
+                ]
+            ]
+        );
+
+        HookAction::registerAdminPage(
+            'crawler.stats',
+            [
+                'title' => trans('crawler::content.analytics'),
+                'menu' => [
+                    'position' => 89,
                     'parent' => 'crawler'
                 ]
             ]

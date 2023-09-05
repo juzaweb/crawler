@@ -6,7 +6,9 @@
             "name": "Crawler",
             "domain": "crawler",
             "cms_min": "1.0",
-            "version": "1.0",
+            "version": "1.0"
+        },
+        "laravel": {
             "providers": [
                 "Juzaweb\\Crawler\\Providers\\CrawlerServiceProvider"
             ]
@@ -15,6 +17,7 @@
     "autoload": {
         "psr-4": {
             "Juzaweb\\Crawler\\": "src/"
-        }
+        },
+        "files": ["src/Helpers/helpers.php"]
     }
 }

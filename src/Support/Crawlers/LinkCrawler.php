@@ -2,7 +2,7 @@
 /**
  * JUZAWEB CMS - The Best CMS for Laravel Project
  *
- * @package    juzaweb/cms
+ * @package    juzaweb/juzacms
  * @author     Juzaweb Team <admin@juzaweb.com>
  * @link       https://juzaweb.com
  * @license    MIT
@@ -11,8 +11,11 @@
 namespace Juzaweb\Crawler\Support\Crawlers;
 
 use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
+use Juzaweb\Crawler\Exceptions\HtmlDomCrawlerException;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
+use Juzaweb\Crawler\Interfaces\TemplateHasClean;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
+use RuntimeException;
 
 class LinkCrawler extends CrawlerAbstract
 {
@@ -24,17 +27,19 @@ class LinkCrawler extends CrawlerAbstract
         if (!$isResource) {
             return $this->crawLinkViaElement(
                 $url,
+                $template,
                 $template->getLinkElement(),
                 $template->getLinkElementAttribute()
             );
         }
 
         if (!$template instanceof TemplateHasResource) {
-            throw new \Exception('Template is not a instanceof '. TemplateHasResource::class);
+            throw new RuntimeException('Template is not a instanceof '.TemplateHasResource::class);
         }
 
         return $this->crawLinkViaElement(
             $url,
+            $template,
             $template->getLinkResourceElement(),
             $template->getLinkElementAttribute()
         );
@@ -42,12 +47,23 @@ class LinkCrawler extends CrawlerAbstract
 
     public function crawLinkViaElement(
         string $url,
+        CrawlerTemplate $template,
         string $element,
         string $elementAttribute = 'href'
     ): array {
         $html = $this->createHTMLDomFromUrl($url);
 
-        $elements = $html->find($element);
+        if ($template instanceof TemplateHasClean) {
+            $template->clean($html);
+        }
+
+        try {
+            $elements = $html->find($element);
+        } catch (HtmlDomCrawlerException $e) {
+            throw new HtmlDomCrawlerException(
+                $e->getMessage()." in {$url}",
+            );
+        }
 
         if (empty($elements)) {
             return [];
