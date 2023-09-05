@@ -2,7 +2,7 @@
 /**
  * JUZAWEB CMS - The Best CMS for Laravel Project
  *
- * @package    juzaweb/cms
+ * @package    juzaweb/juzacms
  * @author     Juzaweb Team <admin@juzaweb.com>
  * @link       https://juzaweb.com
  * @license    MIT
@@ -12,8 +12,11 @@ namespace Juzaweb\Crawler\Support\Crawlers;
 
 use Illuminate\Support\Arr;
 use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
+use Juzaweb\Crawler\Exceptions\ContentCrawlerException;
+use Juzaweb\Crawler\Exceptions\HtmlDomCrawlerException;
 use Juzaweb\Crawler\Interfaces\CrawlerElement as CrawlerElementInterface;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
+use Juzaweb\Crawler\Interfaces\TemplateHasClean;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Support\CrawlerElement;
 use Juzaweb\Crawler\Support\HtmlDomCrawler;
@@ -35,18 +38,20 @@ class ContentCrawler extends CrawlerAbstract
     public function getContentsOfPost(string $url, CrawlerTemplate $template): array
     {
         $contents = $this->createHTMLDomFromUrl($url);
-        $domain = get_domain_by_url($url);
-        $contents->removeInternalLink($domain);
+
+        if ($template instanceof TemplateHasClean) {
+            $template->clean($contents);
+        }
 
         $result = [];
         $elementData = $template->getDataElements();
 
         if ($removes = Arr::get($elementData, 'removes', [])) {
-            $this->removeElements($removes, $contents);
+            $this->removeElements($removes, $contents, $url);
         }
 
         foreach ($elementData['data'] ?? [] as $code => $el) {
-            $element = $this->createCrawlerElement($el);
+            $element = $this->createCrawlerElement($el, $url);
             Arr::set($result, $code, $element->getValue($contents));
         }
 
@@ -56,23 +61,25 @@ class ContentCrawler extends CrawlerAbstract
     public function getContensOfResource(string $url, CrawlerTemplate $template): array
     {
         if (!$template instanceof TemplateHasResource) {
-            throw new \Exception('Template is not a instanceof ['. TemplateHasResource::class .']');
+            throw new ContentCrawlerException('Template is not a instanceof ['. TemplateHasResource::class .']');
         }
 
         $result = [];
         $contents = $this->createHTMLDomFromUrl($url);
 
+        if ($template instanceof TemplateHasClean) {
+            $template->clean($contents);
+        }
+
         $elementData = $template->getDataResourceElements();
-        $domain = get_domain_by_url($url);
-        $contents->removeInternalLink($domain);
 
         foreach ($elementData as $key => $resource) {
             if ($removes = Arr::get($resource, 'removes', [])) {
-                $this->removeElements($removes, $contents);
+                $this->removeElements($removes, $contents, $url);
             }
 
             foreach ($resource['data'] ?? [] as $code => $el) {
-                $element = new CrawlerElement($el);
+                $element = $this->createCrawlerElement($el, $url);
                 Arr::set($result, "$key.{$code}", $element->getValue($contents));
             }
         }
@@ -80,7 +87,7 @@ class ContentCrawler extends CrawlerAbstract
         return $result;
     }
 
-    protected function removeElements(array $removes, HtmlDomCrawler &$contents): void
+    protected function removeElements(array $removes, HtmlDomCrawler $contents, ?string $url = null): void
     {
         foreach ($removes as $remove) {
             $selector = $remove;
@@ -90,16 +97,20 @@ class ContentCrawler extends CrawlerAbstract
                 $type = (int) Arr::get($remove, 'type', 1);
             }
 
-            $contents->removeElement($selector, $type);
+            try {
+                $contents->removeElement($selector, $type);
+            } catch (HtmlDomCrawlerException $e) {
+                throw new ContentCrawlerException($e->getMessage() . " Link {$url}");
+            }
         }
     }
 
-    protected function createCrawlerElement(string|array $el): CrawlerElementInterface
+    protected function createCrawlerElement(string|array $el, string $url): CrawlerElementInterface
     {
         if ($crawler = Arr::get($el, 'crawler_element')) {
-            return app($crawler, ['element' => $el]);
+            return app($crawler, ['element' => $el, 'url' => $url]);
         }
 
-        return new CrawlerElement($el);
+        return new CrawlerElement($el, $url);
     }
 }

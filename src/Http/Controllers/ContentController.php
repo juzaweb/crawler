@@ -2,134 +2,86 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
-use Juzaweb\Crawler\Models\CrawlerContent;
-use Juzaweb\Crawler\Models\CrawlerTemplate;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Juzaweb\CMS\Abstracts\DataTable;
 use Juzaweb\CMS\Http\Controllers\BackendController;
+use Juzaweb\CMS\Traits\ResourceController;
+use Juzaweb\Crawler\Http\Datatables\CrawlerContentDatatable;
+use Juzaweb\Crawler\Jobs\TranslateCrawlerContentJob;
+use Juzaweb\Crawler\Models\CrawlerContent;
+use Juzaweb\Crawler\Models\CrawlerWebsite;
 
 class ContentController extends BackendController
 {
-    public function index($template_id)
+    use ResourceController;
+
+    protected string $viewPrefix = 'crawler::content';
+    protected CrawlerWebsite $website;
+
+    public function reGet(Request $request, $websiteId, $id): JsonResponse|RedirectResponse
     {
-        $template = CrawlerTemplate::findOrFail($template_id);
-        return view('backend.leech.content.index', [
-            'template' => $template,
-            'title' => 'Leech Content',
-        ]);
-    }
+        $content = CrawlerContent::find($id);
 
-    public function form($id = null)
-    {
-        $model = CrawlerContent::firstOrNew(['id' => $id]);
-        return view('backend.leech.content.form', [
-            'model' => $model,
-        ]);
-    }
+        DB::beginTransaction();
+        try {
+            $content->reget(true);
 
-    public function save(Request $request)
-    {
-        $this->validate($request, [
-            'ids' => 'required',
-        ]);
-
-        return $this->success([
-            'message' => 'Saved successful.',
-        ], true);
-    }
-
-    public function getData($template_id, Request $request)
-    {
-        $sort = $request->input('sort', 'name');
-        $order = $request->input('order', 'desc');
-        $offset = $request->input('offset', 0);
-        $limit = $request->input('limit', 20);
-
-        $search = $request->input('search');
-        $status = $request->input('status');
-
-        $query = CrawlerContent::query();
-        $query->with('template');
-        $query->where('template_id', '=', $template_id);
-
-        if ($search) {
-            $query->where(function (Builder $builder) use ($search) {
-                $builder->orWhere('url', 'like', '%'. $search .'%');
-            });
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
 
-        if (!is_null($status)) {
-            $query->where('status', '=', $status);
-        }
-
-        $count = $query->count();
-        $query->orderBy($sort, $order);
-        $query->offset($offset);
-        $query->limit($limit);
-        $rows = $query->get();
-        foreach ($rows as $row) {
-            //$row->edit_url = route('backend.leech.content.edit', [$row->id]);
-            $row->component_data = json_decode($row->components);
-            $row->translate_url = route('backend.leech.translate', [$row->id]);
-        }
-
-        return response()->json([
-            'total' => $count,
-            'rows' => $rows
-        ]);
+        return $this->success('Re-get Content success');
     }
 
-    public function publish(Request $request)
+    public function reTranslate(Request $request, $websiteId, $id): JsonResponse|RedirectResponse
     {
-        $this->validate($request, [
-            'ids' => 'required',
-        ]);
+        $content = CrawlerContent::find($id);
 
-        $ids = $request->input('ids');
-        $status = $request->input('status');
+        $content->retrans();
 
-        CrawlerContent::whereIn('id', $ids)
-            ->update([
-                'status' => $status,
-            ]);
-
-        return $this->success([
-            'message' => 'Saved successful.',
-        ], true);
+        return $this->success('Re-tranlating...');
     }
 
-    public function remove(Request $request)
+    protected function getBreadcrumbPrefix(...$params)
     {
-        $this->validate($request, [
-            'ids' => 'required',
-        ]);
-
-        $ids = $request->input('ids', []);
-
-        CrawlerContent::whereIn('id', $ids)
-            ->delete();
-
-        return $this->success([
-            'message' => 'Deleted successful.',
-        ], true);
+        $this->addBreadcrumb(
+            [
+                'title' => 'Websites',
+                'url' => route('admin.crawler.websites.index'),
+            ]
+        );
     }
 
-    public function releech(Request $request)
+    protected function getDataTable(...$params): DataTable
     {
-        $this->validate($request, [
-            'id' => 'required',
-        ]);
+        $dataTable = new CrawlerContentDatatable();
+        $dataTable->mountData($params[0]);
+        return $dataTable;
+    }
 
-        $content = CrawlerContent::find($request->post('id'));
+    protected function validator(array $attributes, ...$params): \Illuminate\Contracts\Validation\Validator
+    {
+        return Validator::make(
+            $attributes,
+            [
+                // Rules
+            ]
+        );
+    }
 
-        $content->update([
-            'status' => 2,
-        ]);
+    protected function getModel(...$params): string
+    {
+        return CrawlerContent::class;
+    }
 
-        $content->link()->update([
-            'status' => 2,
-        ]);
-
-        return $this->success('Successfull.', true);
+    protected function getTitle(...$params): string
+    {
+        return trans('crawler::content.crawler_contents');
     }
 }

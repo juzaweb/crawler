@@ -12,6 +12,14 @@ class WebsiteDatatable extends DataTable
     public function columns(): array
     {
         return [
+            'actions' => [
+                'label' => trans('cms::app.actions'),
+                'width' => '10%',
+                'formatter' => fn($value, $row, $index) => view(
+                    'crawler::website.components.actions',
+                    compact('value', 'row', 'index')
+                ),
+            ],
             'domain' => [
                 'label' => trans('crawler::content.website'),
                 'formatter' => [$this, 'rowActionsFormatter']
@@ -21,21 +29,6 @@ class WebsiteDatatable extends DataTable
                 'width' => '15%',
                 'formatter' => function ($value, $row, $index) {
                     return class_basename($value);
-                }
-            ],
-            'has_ssl' => [
-                'label' => trans('crawler::content.has_ssl'),
-                'width' => '10%',
-                'align' => 'center',
-                'formatter' => function ($value, $row, $index) {
-                    return \Field::checkbox(
-                        '',
-                        'toggle_has_ssl',
-                        [
-                            'checked' => $value == 1,
-                            'disabled' => true,
-                        ]
-                    )->render();
                 }
             ],
             'active' => [

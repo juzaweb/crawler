@@ -2,7 +2,7 @@
 /**
  * JUZAWEB CMS - Laravel CMS for Your Project
  *
- * @package    juzaweb/cms
+ * @package    juzaweb/juzacms
  * @author     The Anh Dang
  * @link       https://juzaweb.com
  * @license    GNU V2
@@ -24,14 +24,33 @@ trait UseNoneReplace
         foreach ($dom->find('pre code') as $e) {
             $key = $this->generateNoneReplaceKey();
             $text = str_replace($e->parent()->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);
-            $this->noneReplace[$key] = ['text' => $e->text(), 'lang' => $this->detachLangTagCode($e)];
+            $this->noneReplace[$key] = [
+                'text' => $e->innertext(),
+                'lang' => $this->detachLangTagCode($e),
+                'target' => 'code',
+            ];
         }
 
         $dom = $this->dom($text);
         foreach ($dom->find('pre') as $e) {
             $key = $this->generateNoneReplaceKey();
             $text = str_replace($e->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);
-            $this->noneReplace[$key] = ['text' => $e->text(), 'lang' => $this->detachLangTagCode($e)];
+            $this->noneReplace[$key] = [
+                'text' => $e->innertext(),
+                'lang' => $this->detachLangTagCode($e),
+                'target' => 'code',
+            ];
+        }
+
+        $dom = $this->dom($text);
+        foreach ($dom->find('code') as $e) {
+            $key = $this->generateNoneReplaceKey();
+            $text = str_replace($e->outertext, '[none_replace-'. $key .'][/none_replace-'. $key .']', $text);
+            $this->noneReplace[$key] = [
+                'text' => $e->innertext(),
+                'lang' => $this->detachLangTagCode($e),
+                'target' => 'code_inline',
+            ];
         }
 
         return $text;
@@ -41,8 +60,8 @@ trait UseNoneReplace
     {
         foreach ($this->noneReplace as $index => $item) {
             $replace = $item['lang']
-                ? '[code lang='. $item['lang'] .']' . $this->parseCodeText($item['text']) . '[/code]'
-                : '[code]' . $this->parseCodeText($item['text']) . '[/code]';
+                ? "[{$item['target']} lang={$item['lang']}]". $this->parseCodeText($item['text'])."[/{$item['target']}]"
+                : "[{$item['target']}]" . $this->parseCodeText($item['text']) . "[/{$item['target']}]";
             $text = str_replace('[none_replace-'. $index .'][/none_replace-'. $index .']', $replace, $text);
         }
 
@@ -51,10 +70,13 @@ trait UseNoneReplace
 
     protected function parseCodeText(string $text): string
     {
-        return html_entity_decode(
-            strip_tags(str_replace(["<br>", "<br/>", "<br />"], "\n", $text)),
-            ENT_COMPAT
-        );
+        if ($this->isTextHtml($text)) {
+            $text = str_replace(["<br>", "<br/>", "<br />"], "\n", $text);
+            $text = str_replace(["</div>", "</p>"], ["</div>\n", "</p>\n"], $text);
+            return strip_tags($text);
+        }
+
+        return $text;
     }
 
     protected function detachLangTagCode($e): ?string
@@ -66,9 +88,11 @@ trait UseNoneReplace
         $classes = explode(' ', $e->getAttribute('class') ?? '');
         $class = array_filter($classes, fn($class) => str_contains($class, 'language-'));
         if ($class) {
-            $lang = explode('-', $class[0]);
-            if (!empty($lang[1])) {
-                return $lang[1];
+            if (isset($class[0])) {
+                $lang = explode('-', $class[0]);
+                if (!empty($lang[1])) {
+                    return $this->parseLangCodeToClass($lang[1]);
+                }
             }
         }
 
@@ -77,12 +101,26 @@ trait UseNoneReplace
             if (is_json($setting)) {
                 $setting = json_decode($setting, true);
                 if (!empty($setting['language'])) {
-                    return Str::lower($setting['language']);
+                    return $this->parseLangCodeToClass(Str::lower($setting['language']));
                 }
             }
         }
 
         return null;
+    }
+
+    protected function parseLangCodeToClass(string $lang): string
+    {
+        switch ($lang) {
+            case 'blade':
+                $lang = 'html';
+                break;
+            case 'typescript':
+                $lang = 'javascript';
+                break;
+        }
+
+        return $lang;
     }
 
     protected function generateNoneReplaceKey(): string
@@ -97,5 +135,10 @@ trait UseNoneReplace
     protected function dom($text): bool|HtmlDom
     {
         return str_get_html($text);
+    }
+
+    protected function isTextHtml(string $text): bool
+    {
+        return $text != strip_tags($text);
     }
 }

@@ -2,10 +2,15 @@
 
 namespace Juzaweb\Crawler\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Models\Model;
+use Juzaweb\CMS\Traits\ResourceModel;
+use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Juzaweb\Crawler\Jobs\TranslateCrawlerContentJob;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerContent
@@ -32,21 +37,36 @@ use Juzaweb\CMS\Models\Model;
  * @method static Builder|CrawlerContent wherePostId($value)
  * @method static Builder|CrawlerContent whereStatus($value)
  * @method static Builder|CrawlerContent whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property int|null $resource_id
  * @method static Builder|CrawlerContent whereResourceId($value)
  * @property int $is_source
  * @property-read CrawlerContent $children
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerContent whereIsSource($value)
- * @property-read \Juzaweb\Crawler\Models\CrawlerPage $page
+ * @method static Builder|CrawlerContent whereIsSource($value)
+ * @property-read CrawlerPage $page
+ * @property int|null $website_id
+ * @property string|null $blogger_post_id
+ * @property-read CrawlerWebsite|null $website
+ * @method static Builder|CrawlerContent whereBloggerPostId($value)
+ * @method static Builder|CrawlerContent whereWebsiteId($value)
+ * @property-read Post|null $post
+ * @method static Builder|CrawlerContent whereFilter($params = [])
  */
 class CrawlerContent extends Model
 {
+    use ResourceModel;
+
     const STATUS_PENDING = 'pending';
     const STATUS_DONE = 'done';
     const STATUS_ERROR = 'error';
-
+    const STATUS_TRANSLATING = 'translating';
+    const STATUS_POSTTING = 'posting';
+    const STATUS_REGET = 'reget';
+    public $casts = [
+        'components' => 'array',
+    ];
     protected $table = 'crawler_contents';
+    protected string $fieldName = 'id';
     protected $fillable = [
         'components',
         'lang',
@@ -54,13 +74,27 @@ class CrawlerContent extends Model
         'page_id',
         'post_id',
         'resource_id',
+        'website_id',
         'status',
         'is_source',
     ];
 
-    public $casts = [
-        'components' => 'array',
-    ];
+    public static function statuses(): array
+    {
+        return [
+            self::STATUS_PENDING => trans('cms::app.pending'),
+            self::STATUS_DONE => trans('crawler::content.done'),
+            self::STATUS_ERROR => trans('cms::app.error'),
+            self::STATUS_TRANSLATING => trans('crawler::content.translating'),
+            self::STATUS_POSTTING => trans('crawler::content.posting'),
+            self::STATUS_REGET => trans('crawler::content.reget'),
+        ];
+    }
+
+    public function website(): BelongsTo
+    {
+        return $this->belongsTo(CrawlerWebsite::class, 'website_id', 'id');
+    }
 
     public function link(): BelongsTo
     {
@@ -75,5 +109,61 @@ class CrawlerContent extends Model
     public function children(): BelongsTo
     {
         return $this->belongsTo(CrawlerContent::class, 'link_id', 'link_id');
+    }
+
+    public function post(): BelongsTo
+    {
+        return $this->belongsTo(Post::class, 'post_id', 'id');
+    }
+
+    public function reget(bool $sync = false): bool
+    {
+        if (!$this->is_source) {
+            return true;
+        }
+
+        if ($sync) {
+            app(CrawlerContract::class)->crawContentLink($this->link);
+
+            $this->link->update(['status' => CrawlerLink::STATUS_DONE]);
+
+            return true;
+        }
+
+        if ($this->link->status == CrawlerLink::STATUS_PENDING) {
+            return true;
+        }
+
+        $this->link->update(['status' => CrawlerLink::STATUS_PENDING]);
+
+        $this->update(['status' => CrawlerContent::STATUS_REGET]);
+
+        return true;
+    }
+
+    public function retrans(): bool
+    {
+        $sourceContent = $this->sourceContent();
+
+        if ($sourceContent == null) {
+            return false;
+        }
+
+        $sourceContent->update(['status' => self::STATUS_TRANSLATING]);
+
+        TranslateCrawlerContentJob::dispatch($sourceContent, $this->lang)->onQueue(
+            config('crawler.queue.translate')
+        );
+
+        return true;
+    }
+
+    public function sourceContent(): CrawlerContent|null|static
+    {
+        if ($this->is_source) {
+            return $this;
+        }
+
+        return self::query()->where(['link_id' => $this->link_id, 'is_source' => true])->first();
     }
 }

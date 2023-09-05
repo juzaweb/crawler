@@ -2,7 +2,7 @@
 /**
  * JUZAWEB CMS - The Best CMS for Laravel Project
  *
- * @package    juzaweb/cms
+ * @package    juzaweb/juzacms
  * @author     The Anh Dang <dangtheanh16@gmail.com>
  * @link       https://juzaweb.com/cms
  * @license    MIT
@@ -18,9 +18,13 @@ class HTMLToBBCode
 
     protected array $noneReplace = [];
 
-    public static function toBBCode(?string $text): null|string
+    public static function toBBCode(?string $text, bool $decode = true): null|string
     {
-        return app(static::class)->convert($text);
+        if ($decode) {
+            return app(static::class)->convert($text);
+        } else {
+            return app(static::class)->convertWithoutDecode($text);
+        }
     }
 
     public function convert(?string $text): null|string
@@ -34,6 +38,20 @@ class HTMLToBBCode
         $text = str_replace(["<br>", "<br/>", "<br />"], "\n", $text);
         $text = strip_tags($text);
         $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        $text = $this->parseNoneReplace($text);
+        return trim($text);
+    }
+
+    public function convertWithoutDecode(?string $text): null|string
+    {
+        $text = $this->noneReplace($text);
+        $text = $this->replaceTabs($text);
+        $text = $this->replaceLinks($text);
+        $text = $this->replaceImgs($text);
+        $text = $this->replaceIframe($text);
+        $text = str_replace("\t", "", $text);
+        $text = str_replace(["<br>", "<br/>", "<br />"], "\n", $text);
+        $text = strip_tags($text);
         $text = $this->parseNoneReplace($text);
         return trim($text);
     }
@@ -62,8 +80,11 @@ class HTMLToBBCode
         }
 
         foreach ($dom->find('picture') as $e) {
-            $imgUrls = explode(',', $e->find('source', 0)->srcset ?? '');
-            $imgUrl = trim(explode(' ', $imgUrls[0])[0]);
+            $urlSrc = $e->find('source', 0)->srcset ?? $e->find('source', 0)->{'data-srcset'} ?? '';
+            $imgUrls = array_map(fn($item) => trim($item), explode(',', $urlSrc));
+            $imgUrl = trim(explode(' ', $imgUrls[count($imgUrls) - 1])[0]);
+            $imgUrl = str_replace('.jpg.webp', '.jpg', $imgUrl);
+            $imgUrl = str_replace('.png.webp', '.png', $imgUrl);
 
             if ($imgUrl) {
                 $text = str_replace(
@@ -90,6 +111,11 @@ class HTMLToBBCode
             if (isset($e->{'data-lazy-src'}) && is_url($e->{'data-lazy-src'})) {
                 $imgUrl = $e->{'data-lazy-src'};
             }
+
+            /*if (empty($imgUrl) && isset($e->{'data-srcset'})) {
+                $split = explode(', ', $e->{'data-srcset'});
+                $img = $split[count($split) - 1];
+            }*/
 
             $text = str_replace(
                 $e->outertext,
@@ -171,6 +197,34 @@ class HTMLToBBCode
     {
         if (!$dom = $this->dom($text)) {
             return $text;
+        }
+
+        foreach ($dom->find('table') as $e) {
+            $text = str_replace($e->outertext, '[table]'. trim($e->innertext) .'[/table]', $text);
+        }
+
+        foreach ($dom->find('thead') as $e) {
+            $text = str_replace($e->outertext, '[thead]'. trim($e->innertext) .'[/thead]', $text);
+        }
+
+        foreach ($dom->find('tbody') as $e) {
+            $text = str_replace($e->outertext, '[tbody]'. trim($e->innertext) .'[/tbody]', $text);
+        }
+
+        foreach ($dom->find('tfoot') as $e) {
+            $text = str_replace($e->outertext, '[tfoot]'. trim($e->innertext) .'[/tfoot]', $text);
+        }
+
+        foreach ($dom->find('caption') as $e) {
+            $text = str_replace($e->outertext, '[caption]'. trim($e->innertext) .'[/caption]', $text);
+        }
+
+        foreach ($dom->find('tr') as $e) {
+            $text = str_replace($e->outertext, '[tr]'. trim($e->innertext) .'[/tr]', $text);
+        }
+
+        foreach ($dom->find('td') as $e) {
+            $text = str_replace($e->outertext, '[td]'. trim($e->innertext) .'[/td]', $text);
         }
 
         foreach ($dom->find('p') as $e) {
