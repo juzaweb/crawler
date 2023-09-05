@@ -15,8 +15,8 @@ return new class extends Migration {
                 $table->bigIncrements('id');
                 $table->string('url', 300);
                 $table->string('url_hash', 40)->unique();
-                $table->unsignedBigInteger('website_id')->index();
-                $table->unsignedBigInteger('page_id')->index();
+                $table->unsignedBigInteger('website_id');
+                $table->unsignedBigInteger('page_id');
                 $table->string('status', 10)->default('pending');
                 $table->text('error')->nullable();
                 $table->boolean('crawed')->default(0);

@@ -15,22 +15,24 @@
 
                 <input type="hidden" name="pages[{{ $marker }}][id]" value="{{ $model->id ?? '' }}">
 
-                @component('cms::components.tabs', [
-                    'tabs' => [
-                        'info' => ['label' => 'Page Info'],
-                        'taxonomies' => ['label' => 'Taxonomies']
-                    ]
-                ])
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="#p{{ $marker }}_info-tab" class="nav-link active" id="p{{ $marker }}_info-label" data-toggle="tab" role="tab" data-turbolinks="false">Page Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#p{{ $marker }}_taxonomies-tab" class="nav-link" id="p{{ $marker }}_taxonomies-label" data-toggle="tab" role="tab" data-turbolinks="false">Taxonomies</a>
+                    </li>
+                </ul>
 
-                    @slot('tab_info')
+                <div class="tab-content">
+                    <div class="tab-pane p-3 active" id="p{{ $marker }}_info-tab" role="tabpanel" aria-labelledby="p{{ $marker }}_info-label">
                         @include('crawler::website.components.tabs.tab_info')
-                    @endslot
-
-                    @slot('tab_taxonomies')
+                    </div>
+                    <div class="tab-pane p-3" id="p{{ $marker }}_taxonomies-tab" role="tabpanel" aria-labelledby="p{{ $marker }}_taxonomies-label">
                         @include('crawler::website.components.tabs.tab_taxonomies')
-                    @endslot
+                    </div>
+                </div>
 
-                @endcomponent
 
             </div>
             <div class="modal-footer">

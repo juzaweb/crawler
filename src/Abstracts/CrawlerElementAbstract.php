@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Crawler\Abstracts;
 
+use Illuminate\Support\Arr;
 use Juzaweb\CMS\Support\HtmlDomNode;
 use Juzaweb\Crawler\Support\Converter\BBCodeToHTML;
 use Juzaweb\Crawler\Support\Converter\HTMLToBBCode;
@@ -24,15 +25,19 @@ abstract class CrawlerElementAbstract
     public string $selector;
     public ?int $index;
     public ?string $attr = null;
+    public array $removes = [];
+    public array $skipIndexs = [];
 
     protected string|array $element;
 
-    public function __construct(string|array $element)
+    public function __construct(string|array $element, protected string $url)
     {
         $this->element = $element;
         $this->selector = $this->getSelector();
         $this->index = $this->getIndex();
         $this->attr = $this->getAttribute();
+        $this->removes = $this->getRemoves();
+        $this->skipIndexs = $this->getSkipIndexs();
     }
 
     public function getSelector(): string
@@ -53,8 +58,31 @@ abstract class CrawlerElementAbstract
         return $this->element['index'] ?? null;
     }
 
+    public function getRemoves(): array
+    {
+        if (is_string($this->element)) {
+            return [];
+        }
+
+        return $this->element['removes'] ?? [];
+    }
+
+    public function getSkipIndexs()
+    {
+        $skips = $this->element['skip_indexs'] ?? [];
+        if (!is_array($skips)) {
+            $skips = [$skips];
+        }
+
+        return $skips;
+    }
+
     public function getValue(HtmlDomCrawler $domCrawler): null|array|string
     {
+        if ($this->removes) {
+            $this->removeElements($domCrawler);
+        }
+
         $elements = $domCrawler->find(
             $this->selector,
             $this->index
@@ -67,8 +95,16 @@ abstract class CrawlerElementAbstract
         /* Convert to bbcode to remove HTML format */
         if (is_null($this->index)) {
             $result = [];
-            foreach ($elements as $item) {
+            foreach ($elements as $index => $item) {
+                if (in_array($index, $this->skipIndexs)) {
+                    continue;
+                }
+
                 $text = HTMLToBBCode::toBBCode($this->getHtmlNodeValue($item));
+                if (empty($text)) {
+                    continue;
+                }
+
                 $result[] = BBCodeToHTML::toHTML($text);
             }
         } else {
@@ -88,6 +124,20 @@ abstract class CrawlerElementAbstract
         return $this->element['attr'] ?? null;
     }
 
+    protected function removeElements(HtmlDomCrawler &$contents): void
+    {
+        foreach ($this->removes as $remove) {
+            $selector = $remove;
+            $type = 1;
+            if (is_array($remove)) {
+                $selector = $remove['selector'];
+                $type = (int) Arr::get($remove, 'type', 1);
+            }
+
+            $contents->removeElement($selector, $type);
+        }
+    }
+
     protected function getHtmlNodeValue(HtmlDomNode $node)
     {
         if ($this->attr) {
@@ -95,6 +145,7 @@ abstract class CrawlerElementAbstract
         }
 
         if (is_string($this->element)) {
+            $this->removeInternalLink($node);
             return $node->innertext();
         }
 
@@ -109,9 +160,45 @@ abstract class CrawlerElementAbstract
         }
 
         if ($val == static::$VALUE_OUTERTEXT) {
+            $this->removeInternalLink($node);
             return $node->outertext();
         }
 
+        $this->removeInternalLink($node);
         return $node->innertext();
+    }
+
+    protected function removeInternalLink(HtmlDomNode &$node): void
+    {
+        $domain = get_domain_by_url($this->url);
+
+        $links = $node->find('a');
+
+        foreach ($links as $item) {
+            if (is_url($item->href)) {
+                if ($domain == get_domain_by_url($item->href)) {
+                    $text = $item->text();
+                    $item->outertext = $text;
+                }
+
+                continue;
+            }
+
+            if (str_contains($item->href, '/url?q=')) {
+                $href = str_replace('/url?q=', '', $item->href);
+                $href = urldecode($href);
+                $href = base64_decode($href);
+
+                if (is_url($href)) {
+                    $text = '<a href="'. $href .'">'. $item->text() .'</a>';
+                } else {
+                    $text = $item->text();
+                }
+            } else {
+                $text = $item->text();
+            }
+
+            $item->outertext = $text;
+        }
     }
 }

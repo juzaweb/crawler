@@ -10,13 +10,12 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
-use Illuminate\Support\Arr;
 use Juzaweb\Backend\Http\Controllers\Backend\PageController;
 use Juzaweb\Backend\Models\Taxonomy;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\CMS\Traits\ResourceController;
 use Juzaweb\Crawler\Http\Datatables\WebsiteDatatable;
-use Juzaweb\Crawler\Models\CrawlerPage;
+use Juzaweb\Crawler\Jobs\ReplaceTranslateJob;
 use Juzaweb\Crawler\Models\CrawlerWebsite;
 
 class WebsiteController extends PageController
@@ -30,31 +29,9 @@ class WebsiteController extends PageController
 
     protected function afterSave($data, $model, ...$params)
     {
-        $pages = [];
-        foreach (Arr::get($data, 'pages', []) as $page) {
-            $url = trim(Arr::get($page, 'url'));
-
-            $pages[] = CrawlerPage::updateOrCreate(
-                [
-                    'id' => Arr::get($page, 'id'),
-                ],
-                [
-                    'url' => $url,
-                    'url_hash' => sha1($url),
-                    'url_with_page' => Arr::get($page, 'url_with_page'),
-                    'post_type' => Arr::get($page, 'post_type'),
-                    'lang' => Arr::get($page, 'lang', 'en'),
-                    'category_ids' => Arr::get($page, 'category_ids', []),
-                    'active' => Arr::get($page, 'active', 0),
-                    'website_id' => $model->id,
-                ]
-            )->id;
+        if ($model->wasChanged('translate_replaces')) {
+            ReplaceTranslateJob::dispatch($model);
         }
-
-        CrawlerPage::where('website_id', '=', $model->id)
-            ->where('is_resource_page', '=', 0)
-            ->whereNotIn('id', $pages)
-            ->delete();
     }
 
     protected function getDataForForm($model, ...$params): array
@@ -62,9 +39,6 @@ class WebsiteController extends PageController
         $data = $this->DataForForm($model, ...$params);
         $data['templates'] = HookAction::getCrawlerTemplates();
         $data['types'] = HookAction::getPostTypes();
-        $data['pages'] = $model->pages()->where(['is_resource_page' => 0])->get();
-        $data['taxonomies'] = Taxonomy::where(['post_type' => 'posts'])->limit(10)->get();
-        $data['languages'] = config('locales');
         return $data;
     }
 

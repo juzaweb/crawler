@@ -3,9 +3,10 @@
 namespace Juzaweb\Crawler\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Juzaweb\CMS\Models\Model;
+use Juzaweb\CMS\Traits\ResourceModel;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerPage
@@ -51,9 +52,15 @@ use Illuminate\Support\Carbon;
  * @method static Builder|CrawlerPage whereParentPostId($value)
  * @property string $lang
  * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereLang($value)
+ * @property int|null $max_page
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereMaxPage($value)
  */
 class CrawlerPage extends Model
 {
+    use ResourceModel;
+
+    protected string $fieldName = 'url';
+
     protected $table = 'crawler_pages';
 
     protected $fillable = [
@@ -69,6 +76,7 @@ class CrawlerPage extends Model
         'parent_post_id',
         'is_resource_page',
         'lang',
+        'max_page',
     ];
 
     public $casts = [

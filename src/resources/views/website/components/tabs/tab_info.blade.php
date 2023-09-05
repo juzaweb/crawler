@@ -24,3 +24,5 @@
         'default' => 'en',
     ]
 ) }}
+
+{{ Field::text('Max page', "pages[{$marker}][max_page]", ['value' => $model->max_page ?? '']) }}

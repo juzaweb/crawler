@@ -15,6 +15,15 @@ use Juzaweb\Crawler\Support\HtmlDomCrawler;
 
 abstract class CrawlerAbstract
 {
+    protected string|array|null $proxy = null;
+
+    public function withProxy(string|array|null $proxy): static
+    {
+        $this->proxy = $proxy;
+
+        return $this;
+    }
+
     protected function createHTMLDomFromUrl($url): HtmlDomCrawler
     {
         $contents = $this->getContentUrl($url);
@@ -36,6 +45,11 @@ abstract class CrawlerAbstract
 
     protected function getClient(): Client
     {
-        return new Client(['timeout' => 20]);
+        $options = ['timeout' => 20];
+        if ($this->proxy) {
+            $options['proxy'] = $this->proxy;
+        }
+
+        return new Client($options);
     }
 }

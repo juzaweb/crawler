@@ -24,6 +24,7 @@ class BBCodeToHTML
         $text = $this->replaceTabs($text, $alt);
         $text = trim($text);
         $text = str_replace("\t", "", $text);
+        $text = str_replace("\n", "<br>", $text);
         return str_replace("<br><br>", "<br>", $text);
     }
 
@@ -43,16 +44,15 @@ class BBCodeToHTML
             $text
         );
 
+        $basicTags = ['p', 'b', 'i', 'u', 'h3', 'ul', 'ol', 'li'];
+        $find = collect($basicTags)->map(fn($item) => "[{$item}]")->toArray();
+        $find = collect($basicTags)->map(fn($item) => "[/{$item}]")->merge($find)->toArray();
+        $replace = collect($basicTags)->map(fn($item) => "<{$item}>")->toArray();
+        $replace = collect($basicTags)->map(fn($item) => "</{$item}>")->merge($replace)->toArray();
+
+        $text = str_replace($find, $replace, $text);
+
         $find = [
-            "/\n/",
-            '~\[p\](.*?)\[/p\]~s',
-            '~\[b\](.*?)\[/b\]~s',
-            '~\[i\](.*?)\[/i\]~s',
-            '~\[u\](.*?)\[/u\]~s',
-            '~\[h3\](.*?)\[/h3\]~s',
-            '~\[ul\](.*?)\[/ul\]~s',
-            '~\[ol\](.*?)\[/ol\]~s',
-            '~\[li\](.*?)\[/li\]~s',
             '~\[quote\](.*?)\[/quote\]~s',
             '~\[size=(.*?)\](.*?)\[/size\]~s',
             '~\[color=(.*?)\](.*?)\[/color\]~s',
@@ -61,20 +61,20 @@ class BBCodeToHTML
             '~\[img\]((https?)://.*?)\[/img\]~s',
             '~\[img\](.*?)\[/img\]~s',
             '~\[embed\](.*?)\[/embed\]~s',
+            '~\[code_inline\](.*?)\[/code_inline\]~s',
+            '~\[code_inline lang=([a-zA-Z0-9]+)\](.*?)\[/code_inline\]~s',
             '~\[code lang=([a-zA-Z0-9]+)\](.*?)\[/code\]~s',
             '~\[code\](.*?)\[/code\]~s',
+            '~\[table\](.*?)\[/table\]~s',
+            '~\[thead\](.*?)\[/thead\]~s',
+            '~\[tbody\](.*?)\[/tbody\]~s',
+            '~\[tfoot\](.*?)\[/tfoot\]~s',
+            '~\[caption\](.*?)\[/caption\]~s',
+            '~\[tr\](.*?)\[/tr\]~s',
+            '~\[td\](.*?)\[/td\]~s',
         ];
 
         $replace = [
-            '<br>',
-            '<p>$1</p>',
-            '<strong>$1</strong>',
-            '<i>$1</i>',
-            '<u>$1</u>',
-            '<h3>$1</h3>',
-            '<ul>$1</ul>',
-            '<ol>$1</ol>',
-            '<li>$1</li>',
             '<pre><code>$1</code></pre>',
             '<span style="font-size:$1px;">$2</span>',
             '<span style="color:$1;">$2</span>',
@@ -85,8 +85,17 @@ class BBCodeToHTML
             '<div class="embed-responsive">'.
             '<iframe src="$1" class="embed-responsive-item" allowfullscreen></iframe>'
             .'</div>',
+            '<code>$1</code>',
+            '<code class="language-$1">$2</code>',
             '<pre><code class="language-$1">$2</code></pre>',
             '<pre><code>$1</code></pre>',
+            '<table>$1</table>',
+            '<thead>$1</thead>',
+            '<tbody>$1</tbody>',
+            '<tfoot>$1</tfoot>',
+            '<caption>$1</caption>',
+            '<tr>$1</tr>',
+            '<td>$1</td>',
         ];
 
         return preg_replace($find, $replace, $text);

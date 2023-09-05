@@ -4,9 +4,9 @@ namespace Juzaweb\Crawler\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Juzaweb\Crawler\Jobs\TranslateCrawlerContentJob;
+use Juzaweb\Crawler\Jobs\TranslateCrawlerContentsJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -14,18 +14,11 @@ class AutoTranslateCommand extends Command
 {
     protected $name = 'crawler:translate';
 
-    protected int $jonDepaySecond = 60;
-
     protected $description = 'Translate contents command.';
 
-    public function handle()
+    public function handle(): void
     {
-        if ($this->isGoogleTranslateLock()) {
-            $this->error(
-                'Translate locked: Google detected unusual traffic from your computer network,'
-                .' try again later (2 - 48 hours)'
-            );
-
+        if (!get_config('crawler_enable')) {
             return;
         }
 
@@ -34,33 +27,57 @@ class AutoTranslateCommand extends Command
             return;
         }
 
+        if (!get_config('crawler_enable_proxy') && $this->isGoogleTranslateLock()) {
+            $this->error(
+                'Translate locked: Google detected unusual traffic from your computer network,'
+                .' try again later (2 - 48 hours)'
+            );
+
+            return;
+        }
+
+        $skipSource = (bool) get_config('crawler_skip_origin_content', 0);
+        if ($skipSource) {
+            CrawlerContent::with(['link.page', 'link.website'])
+                ->where(['status' => CrawlerContent::STATUS_PENDING, 'is_source' => true])
+                ->whereNull('post_id')
+                ->whereNull('resource_id')
+                ->update(['status' => CrawlerContent::STATUS_DONE]);
+        }
+
         $targets = get_config('crawler_translate_languages', []);
         $limit = (int) $this->option('limit');
-        $job = 1;
-        foreach ($targets as $index => $target) {
-            $contents = CrawlerContent::with(['link.website'])
-                ->where(['status' => CrawlerContent::STATUS_DONE, 'is_source' => true])
-                ->whereDoesntHave('children', fn($q) => $q->where('lang', $target))
-                ->orderBy('id', 'ASC')
-                ->limit($limit)
-                ->get();
+        $crawlerQueue = config('crawler.queue.crawler');
 
-            foreach ($contents as $content) {
-                try {
-                    TranslateCrawlerContentJob::dispatch($content, $target)
-                        ->delay(Carbon::now()->addSeconds($job * $this->jonDepaySecond));
-                } catch (\Exception $e) {
-                    report($e);
+        foreach ($targets as $index => $target) {
+            $fnTranslation = function () use ($target, $crawlerQueue, $limit) {
+                $contents = CrawlerContent::with(['link.website'])
+                    ->where(['status' => CrawlerContent::STATUS_DONE, 'is_source' => true])
+                    ->whereDoesntHave('children', fn ($q) => $q->where('lang', $target))
+                    ->whereHas('page', fn ($q) => $q->where(['active' => 1]))
+                    ->orderBy('id', 'ASC')
+                    ->limit($limit)
+                    ->lockForUpdate()
+                    ->get(['id'])
+                    ->pluck('id')
+                    ->toArray();
+
+                if (empty($contents)) {
+                    return;
                 }
 
-                $this->info("Translate {$content->id} in process...");
+                CrawlerContent::whereIn('id', $contents)
+                    ->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
 
-                $job++;
-                sleep(1);
-            }
+                TranslateCrawlerContentsJob::dispatch($contents, $target)->onQueue($crawlerQueue);
+
+                $this->info("Translating ". count($contents) ." posts to {$target}");
+            };
+
+            DB::transaction($fnTranslation);
 
             if (isset($targets[$index + 1])) {
-                sleep(3);
+                sleep(2);
             }
         }
     }
@@ -86,7 +103,7 @@ class AutoTranslateCommand extends Command
     protected function getOptions(): array
     {
         return [
-            ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 20],
+            ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 100],
         ];
     }
 }

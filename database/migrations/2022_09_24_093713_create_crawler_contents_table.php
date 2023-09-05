@@ -14,9 +14,9 @@ return new class extends Migration {
                 $table->bigIncrements('id');
                 $table->json('components');
                 $table->string('lang', 5)->default('en')->index();
-                $table->unsignedBigInteger('link_id')->unique();
-                $table->unsignedBigInteger('page_id')->index();
-                $table->unsignedBigInteger('post_id')->nullable()->index();
+                $table->unsignedBigInteger('link_id');
+                $table->unsignedBigInteger('page_id');
+                $table->unsignedBigInteger('post_id')->nullable();
                 $table->unsignedBigInteger('resource_id')->nullable()->index();
                 $table->string('status')->default('pending');
                 $table->timestamps();

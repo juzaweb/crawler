@@ -2,8 +2,8 @@
 
 namespace Juzaweb\Crawler\Support\Translate;
 
-use Illuminate\Support\Facades\Log;
 use Juzaweb\CMS\Contracts\GoogleTranslate;
+use Juzaweb\Crawler\Exceptions\TranslateBBCodeException;
 use Juzaweb\Crawler\Support\Converter\BBCodeToHTML;
 use Juzaweb\Crawler\Support\Converter\HTMLToBBCode;
 use Juzaweb\Crawler\Support\Traists\UseNoneReplace;
@@ -17,6 +17,7 @@ class TranslateBBCode
     protected string $text;
     protected string $preview;
     protected array $noneReplace = [];
+    protected string|array|null $proxy = null;
 
     public function __construct($source, $target, $text, $preview = false)
     {
@@ -26,17 +27,23 @@ class TranslateBBCode
         $this->preview = $preview;
     }
 
+    public function withProxy(string|array $proxy): static
+    {
+        $this->proxy = $proxy;
+
+        return $this;
+    }
+
     public function translate(): string|null
     {
         $transText = HTMLToBBCode::toBBCode($this->noneReplace($this->text));
         $texts = preg_split('|[[\/\!]*?[^\[\]]*?]|si', $transText, -1, PREG_SPLIT_NO_EMPTY);
         $translate = app(GoogleTranslate::class);
+        if ($this->proxy) {
+            $translate = $translate->withProxy($this->proxy);
+        }
 
         foreach ($texts as $textrow) {
-            if ($this->excludeTranslate($textrow)) {
-                continue;
-            }
-
             if ($this->excludeTranslate($textrow)) {
                 continue;
             }
@@ -55,23 +62,28 @@ class TranslateBBCode
             }
 
             try {
-                $cv_text = html_entity_decode(trim($textrow), ENT_QUOTES, 'UTF-8');
-                $trans = $translate->translate($this->source, $this->target, $cv_text);
-                if ($trans === false) {
-                    return false;
-                }
+                $cvText = html_entity_decode(trim($textrow), ENT_QUOTES, 'UTF-8');
+                $trans = $translate->translate($this->source, $this->target, $cvText);
             } catch (\Exception $exception) {
                 if ($this->preview) {
                     dd(trim($textrow), $exception->getMessage());
                 }
-
-                Log::error(json_encode([trim($textrow), $exception->getMessage()]));
-                return false;
+                throw new TranslateBBCodeException($exception->getMessage());
             }
 
-            $transText = preg_replace(
-                '/' . preg_quote($textrow, '/') . '/',
-                $before . $trans . $after,
+            $find = '/\[.*?\](*SKIP)(*FAIL)|'. preg_quote($textrow, '/') .'/';
+
+            $transText = preg_replace_callback(
+                $find,
+                function ($matches) use ($trans, $before, $after) {
+                    if (ctype_upper($matches[0])){
+                        $trans = mb_strtoupper($trans);
+                    } else if (ctype_upper(mb_substr($matches[0], 0, 1))){
+                        $trans = ucfirst($trans);
+                    }
+
+                    return $before . $trans . $after;
+                },
                 $transText,
                 1
             );
@@ -83,8 +95,28 @@ class TranslateBBCode
             sleep(2);
         }
 
-        $this->text = BBCodeToHTML::toHTML($this->parseNoneReplace($transText));
+        $transText = BBCodeToHTML::toHTML($transText);
+        $this->text = $this->replaceCodeText($this->parseNoneReplace($transText));
         return $this->text;
+    }
+
+    protected function replaceCodeText(string $text): string
+    {
+        $find = [
+            '~\[code_inline\](.*?)\[/code_inline\]~s',
+            '~\[code_inline lang=([a-zA-Z0-9]+)\](.*?)\[/code_inline\]~s',
+            '~\[code lang=([a-zA-Z0-9]+)\](.*?)\[/code\]~s',
+            '~\[code\](.*?)\[/code\]~s',
+        ];
+
+        $replace = [
+            '<code>$1</code>',
+            '<code class="language-$1">$2</code>',
+            '<pre><code class="language-$1">$2</code></pre>',
+            '<pre><code>$1</code></pre>',
+        ];
+
+        return preg_replace($find, $replace, $text);
     }
 
     protected function excludeTranslate($text): bool

@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler\Support;
 
 use Juzaweb\CMS\Support\HtmlDom;
 use Juzaweb\CMS\Support\HtmlDomNode;
+use Juzaweb\Crawler\Exceptions\HtmlDomCrawlerException;
 
 class HtmlDomCrawler
 {
@@ -25,6 +26,8 @@ class HtmlDomCrawler
     public function find(string $selector, ?int $index = null): HtmlDom|HtmlDomNode|array|bool|null
     {
         $html = str_get_html($this->content);
+
+        throw_unless($html, new HtmlDomCrawlerException("Can't Dom Html content"));
 
         if (is_null($index)) {
             return @$html->find($selector);
@@ -53,6 +56,8 @@ class HtmlDomCrawler
     public function removeElement(string $selector, int $type, int $index = null): void
     {
         $html = str_get_html($this->content);
+
+        throw_unless($html, new HtmlDomCrawlerException("Can't Dom Html content"));
 
         $contents = $html->find($selector, $index);
 
@@ -117,7 +122,7 @@ class HtmlDomCrawler
                 $href = base64_decode($href);
 
                 if (is_url($href)) {
-                    $text = '<a href="'. $href .'">'. $item->text() .'</a>';
+                    $text = '<a href="'.$href.'">'.$item->text().'</a>';
                 } else {
                     $text = $item->text();
                 }
@@ -131,5 +136,17 @@ class HtmlDomCrawler
         $html->load($html->save());
 
         $this->content = $html->root->outertext;
+    }
+
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
     }
 }

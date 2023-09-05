@@ -4,37 +4,62 @@ namespace Juzaweb\Crawler\Http\Datatables;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Juzaweb\Backend\Models\Taxonomy;
 use Juzaweb\CMS\Abstracts\DataTable;
 use Juzaweb\Crawler\Models\CrawlerPage;
+use Juzaweb\Crawler\Models\CrawlerWebsite;
 
 class CrawlerPageDatatable extends DataTable
 {
-    /**
-     * Columns datatable
-     *
-     * @return array
-     */
-    public function columns()
+    protected CrawlerWebsite $website;
+
+    public function mount(int $webId)
+    {
+        $this->website = CrawlerWebsite::find($webId);
+    }
+
+    public function columns(): array
     {
         return [
-            // 'title' => [
-            //     'label' => trans('cms::app.title'),
-            //     'formatter' => [$this, 'rowActionsFormatter'],
-            // ],
             'url' => [
                 'label' => trans('crawler::content.url'),
+                'formatter' => [$this, 'rowActionsFormatter'],
             ],
-            'url_with_page' => [
-                'label' => trans('crawler::content.url_with_page'),
+            'next_page' => [
+                'label' => trans('crawler::content.next_page'),
+                'width' => '5%',
+                'align' => 'center',
             ],
             'post_type' => [
                 'label' => trans('crawler::content.post_type'),
+                'width' => '10%',
             ],
-            'is_resource_page' => [
-                'label' => trans('crawler::content.is_resource_page'),
+            'taxonomies' => [
+                'label' => trans('crawler::content.taxonomies'),
+                'width' => '15%',
+                'sortable' => false,
+                'formatter' => function ($value, $row, $index) {
+                    return Taxonomy::whereIn('id', $row->category_ids['categories'] ?? [])
+                        ->orderBy('level', 'ASC')
+                        ->get(['name'])
+                        ->pluck('name')
+                        ->join(' » ');
+                },
             ],
             'active' => [
-                'label' => trans('crawler::content.active'),
+                'label' => trans('cms::app.active'),
+                'width' => '10%',
+                'align' => 'center',
+                'formatter' => function ($value, $row, $index) {
+                    return \Field::checkbox(
+                        '',
+                        'toggle_active',
+                        [
+                            'checked' => $value == 1,
+                            'disabled' => true,
+                        ]
+                    )->render();
+                }
             ],
             'created_at' => [
                 'label' => trans('cms::app.created_at'),
@@ -53,14 +78,14 @@ class CrawlerPageDatatable extends DataTable
      * @param array $data
      * @return Builder
      */
-    public function query($data)
+    public function query($data): Builder
     {
-        $query = CrawlerPage::query();
+        $query = CrawlerPage::query()->where(['website_id' => $this->website->id]);
 
         if ($keyword = Arr::get($data, 'keyword')) {
             $query->where(
                 function (Builder $q) use ($keyword) {
-                    // $q->where('title', JW_SQL_LIKE, '%'. $keyword .'%');
+                    $q->where('url', JW_SQL_LIKE, '%'. $keyword .'%');
                 }
             );
         }
