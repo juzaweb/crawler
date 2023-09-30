@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Crawler\Support\Converter;
 
+use Illuminate\Support\Arr;
 use Juzaweb\Crawler\Support\Traists\UseNoneReplace;
 
 class HTMLToBBCode
@@ -81,7 +82,7 @@ class HTMLToBBCode
 
         foreach ($dom->find('picture') as $e) {
             $urlSrc = $e->find('source', 0)->srcset ?? $e->find('source', 0)->{'data-srcset'} ?? '';
-            $imgUrls = array_map(fn($item) => trim($item), explode(',', $urlSrc));
+            $imgUrls = array_map(fn ($item) => trim($item), explode(',', $urlSrc));
             $imgUrl = trim(explode(' ', $imgUrls[count($imgUrls) - 1])[0]);
             $imgUrl = str_replace('.jpg.webp', '.jpg', $imgUrl);
             $imgUrl = str_replace('.png.webp', '.png', $imgUrl);
@@ -116,6 +117,13 @@ class HTMLToBBCode
                 $split = explode(', ', $e->{'data-srcset'});
                 $img = $split[count($split) - 1];
             }*/
+
+            if (str_contains($imgUrl, '/proxy.php')) {
+                parse_str(parse_url($imgUrl, \PHP_URL_QUERY), $urlParse);
+                if ($img = Arr::get($urlParse, 'image')) {
+                    $imgUrl = $img;
+                }
+            }
 
             $text = str_replace(
                 $e->outertext,
@@ -198,6 +206,14 @@ class HTMLToBBCode
         if (!$dom = $this->dom($text)) {
             return $text;
         }
+
+        foreach ($dom->find('blockquote') as $e) {
+            $text = str_replace($e->outertext, "[QUOTE]". trim($e->innertext) ."[/QUOTE]", $text);
+        }
+
+        // foreach ($dom->find('.bbCodeBlock--quote .bbCodeBlock-expandContent') as $e) {
+        //     $text = str_replace($e->outertext, "[QUOTE]". trim($e->innertext) ."[/QUOTE]", $text);
+        // }
 
         foreach ($dom->find('table') as $e) {
             $text = str_replace($e->outertext, '[table]'. trim($e->innertext) .'[/table]', $text);

@@ -2,8 +2,13 @@
 
 namespace Juzaweb\Crawler\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Juzaweb\CMS\Models\Model;
+use Kirschbaum\PowerJoins\PowerJoins;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerLink
@@ -17,33 +22,35 @@ use Juzaweb\CMS\Models\Model;
  * @property mixed|null $error
  * @property int $crawed
  * @property int $active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Juzaweb\Crawler\Models\CrawlerPage $page
- * @property-read \Juzaweb\Crawler\Models\CrawlerWebsite $website
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink query()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereCrawed($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereError($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink wherePageId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereUrlHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerLink whereWebsiteId($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read CrawlerPage $page
+ * @property-read CrawlerWebsite $website
+ * @method static Builder|CrawlerLink newModelQuery()
+ * @method static Builder|CrawlerLink newQuery()
+ * @method static Builder|CrawlerLink query()
+ * @method static Builder|CrawlerLink whereActive($value)
+ * @method static Builder|CrawlerLink whereCrawed($value)
+ * @method static Builder|CrawlerLink whereCreatedAt($value)
+ * @method static Builder|CrawlerLink whereError($value)
+ * @method static Builder|CrawlerLink whereId($value)
+ * @method static Builder|CrawlerLink wherePageId($value)
+ * @method static Builder|CrawlerLink whereStatus($value)
+ * @method static Builder|CrawlerLink whereUpdatedAt($value)
+ * @method static Builder|CrawlerLink whereUrl($value)
+ * @method static Builder|CrawlerLink whereUrlHash($value)
+ * @method static Builder|CrawlerLink whereWebsiteId($value)
+ * @mixin Eloquent
  */
 class CrawlerLink extends Model
 {
-    const STATUS_PENDING = 'pending';
-    const STATUS_INACTIVE = 'inactive';
-    const STATUS_DONE = 'done';
-    const STATUS_ERROR = 'error';
-    const STATUS_PROCESSING = 'processing';
+    use PowerJoins;
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_INACTIVE = 'inactive';
+    public const STATUS_DONE = 'done';
+    public const STATUS_ERROR = 'error';
+    public const STATUS_PROCESSING = 'processing';
 
     protected $table = 'crawler_links';
 
@@ -74,5 +81,10 @@ class CrawlerLink extends Model
     public function page(): BelongsTo
     {
         return $this->belongsTo(CrawlerPage::class, 'page_id', 'id');
+    }
+
+    public function contents(): HasMany
+    {
+        return $this->hasMany(CrawlerContent::class, 'link_id', 'id');
     }
 }

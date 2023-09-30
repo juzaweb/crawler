@@ -14,6 +14,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Backend\Models\Post;
@@ -47,13 +48,13 @@ class PostContentsJob implements ShouldQueue
         Taxonomy::setFlushCacheOnUpdate(false);
 
         foreach ($contents as $content) {
-            DB::beginTransaction();
             try {
-                $crawler->savePost($content);
-
-                DB::commit();
+                DB::transaction(
+                    function () use ($content, $crawler) {
+                        $crawler->savePost($content);
+                    }
+                );
             } catch (\Throwable $e) {
-                DB::rollBack();
                 report($e);
                 $content->update(
                     [
@@ -62,5 +63,10 @@ class PostContentsJob implements ShouldQueue
                 );
             }
         }
+    }
+
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping())->releaseAfter(120)];
     }
 }

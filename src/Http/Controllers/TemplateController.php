@@ -2,6 +2,8 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Juzaweb\Crawler\Helpers\Leech\LeechListItems;
@@ -20,13 +22,13 @@ class TemplateController extends BackendController
         getDataForForm as DataForForm;
     }
 
-    protected $viewPrefix = 'crawler::template';
+    protected string $viewPrefix = 'crawler::template';
 
     /**
      * @param array $data
      * @param CrawlerTemplate $model
      */
-    public function afterSave($data, $model, ...$params)
+    public function afterSave($data, $model, ...$params): void
     {
         $this->tAfterSave($data, $model);
 
@@ -34,9 +36,7 @@ class TemplateController extends BackendController
         $pageIds = [];
         foreach ($pages as $page) {
             $p = $model->pages()->updateOrCreate(
-                [
-                    'id' => $page['page_id'],
-                ],
+                ['id' => $page['page_id']],
                 $page
             );
 
@@ -48,7 +48,7 @@ class TemplateController extends BackendController
             ->delete();
     }
 
-    protected function parseDataForSave(array $attributes, ...$params)
+    protected function parseDataForSave(array $attributes, ...$params): array
     {
         $data = $this->DataForSave($attributes);
         if (empty($data['auto_leech'])) {
@@ -62,14 +62,14 @@ class TemplateController extends BackendController
         return $data;
     }
 
-    protected function getDataForForm($model, ...$params)
+    protected function getDataForForm($model, ...$params): array
     {
         $data = $this->DataForForm($model, ...$params);
         $data['linkPreview'] = action([static::class, 'preview']);
         return $data;
     }
 
-    public function preview(Request $request)
+    public function preview(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'pages.*.list_url' => 'required',
@@ -96,7 +96,7 @@ class TemplateController extends BackendController
         );
     }
 
-    public function copy(Request $request)
+    public function copy(Request $request): JsonResponse|RedirectResponse
     {
         $this->validate($request, [
             'ids' => 'required',
@@ -127,15 +127,14 @@ class TemplateController extends BackendController
         ]);
     }
 
-    protected function getDataTable(...$params)
+    protected function getDataTable(...$params): TemplateDatatable
     {
-        $dataTable = new TemplateDatatable();
-        return $dataTable;
+        return new TemplateDatatable();
     }
 
-    protected function validator(array $attributes, ...$params)
+    protected function validator(array $attributes, ...$params): \Illuminate\Validation\Validator
     {
-        $validator = Validator::make(
+        return Validator::make(
             $attributes,
             [
                 'name' => 'required',
@@ -147,16 +146,14 @@ class TemplateController extends BackendController
                 'pages.*.list_url' => 'required',
             ]
         );
-
-        return $validator;
     }
 
-    protected function getModel(...$params)
+    protected function getModel(...$params): string
     {
         return CrawlerTemplate::class;
     }
 
-    protected function getTitle(...$params)
+    protected function getTitle(...$params): string
     {
         return trans('crawler::content.templates');
     }

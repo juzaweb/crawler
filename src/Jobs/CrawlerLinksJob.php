@@ -27,8 +27,10 @@ class CrawlerLinksJob implements ShouldQueue
 
     public int $timeout = 60;
 
-    public function __construct(protected CrawlerPage $page)
-    {
+    public function __construct(
+        protected CrawlerPage $page,
+        protected int $pageNumber
+    ) {
     }
 
     public function handle(): void
@@ -41,11 +43,19 @@ class CrawlerLinksJob implements ShouldQueue
                 $proxy = app(ProxyManager::class)->random()?->toGuzzleHttpProxy();
             }
 
-            return app(CrawlerContract::class)->crawPageLinks($this->page, $proxy);
+            $results = app(CrawlerContract::class)->crawPageLinks(
+                $this->page,
+                $this->pageNumber,
+                $proxy
+            );
+
+            $this->page->touch();
+
+            return $results;
         };
 
         try {
-            $crawl = DB::transaction($fnCrawl);
+            DB::transaction($fnCrawl);
 
             // if ($crawl == 0) {
             //     if ($page->next_page == 1) {
@@ -55,14 +65,14 @@ class CrawlerLinksJob implements ShouldQueue
             //     return $page->next_page;
             // }
 
-            if ($crawl == 0 && $this->page->next_page > 1) {
-                $this->page->update(
-                    [
-                        'crawler_date' => now(),
-                        'next_page' => 1,
-                    ]
-                );
-            }
+            // if ($crawl == 0 && $this->page->next_page > 1) {
+            //     $this->page->update(
+            //         [
+            //             'crawler_date' => now(),
+            //             'next_page' => 1,
+            //         ]
+            //     );
+            // }
         } catch (RequestException $e) {
             report($e);
 

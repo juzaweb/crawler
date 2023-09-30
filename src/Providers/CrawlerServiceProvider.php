@@ -11,18 +11,7 @@ use Juzaweb\CMS\Support\HookAction;
 use Juzaweb\CMS\Support\ServiceProvider;
 use Juzaweb\Crawler\Actions\ConfigAction;
 use Juzaweb\Crawler\Actions\CrawlerAction;
-use Juzaweb\Crawler\Commands\AutoTranslateCommand;
-use Juzaweb\Crawler\Commands\Crawler\AutoContentCrawlerCommand;
-use Juzaweb\Crawler\Commands\Crawler\AutoLinkCrawlerCommand;
-use Juzaweb\Crawler\Commands\CrawlerLinkManualCommand;
-use Juzaweb\Crawler\Commands\FindLinkCommand;
-use Juzaweb\Crawler\Commands\Poster\AutoPostCommand;
-use Juzaweb\Crawler\Commands\Poster\AutoPublishPostCommand;
-use Juzaweb\Crawler\Commands\ReplaceContentTranslateAgainCommand;
-use Juzaweb\Crawler\Commands\ReplaceTranslateAgainCommand;
-use Juzaweb\Crawler\Commands\Tester\TestContentCrawlerCommand;
-use Juzaweb\Crawler\Commands\Tester\TestLinkCrawlerCommand;
-use Juzaweb\Crawler\Commands\Tester\TestTranslateCrawlerCommand;
+use Juzaweb\Crawler\Commands;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Support\Crawler;
@@ -53,7 +42,7 @@ class CrawlerServiceProvider extends ServiceProvider
             'getCrawlerTemplates',
             function (string $key = null) {
                 if ($key) {
-                    return $this->globalData->get('crawler_template.' . $key);
+                    return $this->globalData->get("crawler_template.{$key}");
                 }
 
                 return new Collection($this->globalData->get('crawler_template'));
@@ -62,18 +51,20 @@ class CrawlerServiceProvider extends ServiceProvider
 
         $this->commands(
             [
-                TestLinkCrawlerCommand::class,
-                TestContentCrawlerCommand::class,
-                AutoLinkCrawlerCommand::class,
-                AutoContentCrawlerCommand::class,
-                AutoTranslateCommand::class,
-                AutoPostCommand::class,
-                TestTranslateCrawlerCommand::class,
-                ReplaceTranslateAgainCommand::class,
-                ReplaceContentTranslateAgainCommand::class,
-                FindLinkCommand::class,
-                AutoPublishPostCommand::class,
-                CrawlerLinkManualCommand::class,
+                Commands\Tester\TestLinkCrawlerCommand::class,
+                Commands\Tester\TestContentCrawlerCommand::class,
+                Commands\Crawler\AutoLinkCrawlerCommand::class,
+                Commands\Crawler\AutoContentCrawlerCommand::class,
+                Commands\AutoTranslateCommand::class,
+                Commands\Poster\AutoPostCommand::class,
+                Commands\Tester\TestTranslateCrawlerCommand::class,
+                Commands\ReplaceTranslateAgainCommand::class,
+                Commands\ReplaceContentTranslateAgainCommand::class,
+                Commands\FindLinkCommand::class,
+                Commands\Poster\AutoPublishPostCommand::class,
+                Commands\CrawlerLinkManualCommand::class,
+                Commands\ImportTemplateCommand::class,
+                Commands\Crawler\AutoContentCrawlerWithBusCommand::class,
             ]
         );
 
@@ -97,11 +88,12 @@ class CrawlerServiceProvider extends ServiceProvider
         $this->app->booted(
             function () {
                 $schedule = $this->app->make(Schedule::class);
-                $schedule->command('crawler:contents')->everyFiveMinutes();
-                $schedule->command('crawler:links')->everyFiveMinutes();
-                $schedule->command('crawler:translate')->everyFiveMinutes();
-                $schedule->command(AutoPostCommand::class)->hourlyAt('9');
-                $schedule->command(AutoPublishPostCommand::class)->hourlyAt('12');
+                //$schedule->command('crawler:contents')->everyFiveMinutes();
+                $schedule->command(Commands\Crawler\AutoLinkCrawlerCommand::class)->everyFiveMinutes();
+                //$schedule->command('crawler:translate')->everyFiveMinutes();
+                //$schedule->command(AutoPostCommand::class)->everyFiveMinutes();
+                $schedule->command(Commands\Crawler\AutoContentCrawlerWithBusCommand::class)->everyFiveMinutes();
+                $schedule->command(Commands\Poster\AutoPublishPostCommand::class)->hourlyAt('12');
             }
         );
     }

@@ -29,14 +29,14 @@ class ReplaceTranslateJob implements ShouldQueue
     {
     }
 
-    public function handle()
+    public function handle(): void
     {
         $replaces = $this->website?->translate_replaces;
         if (empty($replaces)) {
             return;
         }
 
-        $searchs = collect($replaces)->pluck('search')->map(fn($item) => "/{$item}/ui")->toArray();
+        $searchs = collect($replaces)->pluck('search')->map(fn($item) => "/". preg_quote($item, '/') ."/ui")->toArray();
         $replaces = collect($replaces)
             ->mapWithKeys(fn($item) => [getReplaceSearchKey($item['search']) => $item['replace']])
             ->toArray();

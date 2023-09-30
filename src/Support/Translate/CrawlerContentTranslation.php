@@ -59,7 +59,12 @@ class CrawlerContentTranslation
     {
         $results = [];
         foreach ($texts as $key => $text) {
-            $results[$key] = $this->translateContent($text);
+            if (is_array($text)) {
+                $results[$key] = $text;
+                $results[$key]['content'] = $this->translateContent($text['content']);
+            } else {
+                $results[$key] = $this->translateContent($text);
+            }
         }
 
         return $results;
@@ -72,9 +77,11 @@ class CrawlerContentTranslation
         }
 
         $replaces = $this->content->page->website->translate_replaces ?? [];
-        $searchs = collect($replaces)->pluck('search')->map(fn($item) => "/{$item}/ui")->toArray();
+        $searchs = collect($replaces)->pluck('search')
+            ->map(fn ($item) => "/". preg_quote($item, '/') ."/ui")
+            ->toArray();
         $replaces = collect($replaces)
-            ->mapWithKeys(fn($item) => [getReplaceSearchKey($item['search']) => $item['replace']])
+            ->mapWithKeys(fn ($item) => [getReplaceSearchKey($item['search']) => $item['replace']])
             ->toArray();
 
         $translater = new TranslateBBCode($this->source, $this->target, $text);

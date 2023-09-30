@@ -10,8 +10,11 @@
 
 namespace Juzaweb\Crawler\Actions;
 
+use Illuminate\Support\Str;
 use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
+use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
 use Juzaweb\Crawler\Support\Templates\Xenforo;
 
 class CrawlerAction extends Action
@@ -32,6 +35,18 @@ class CrawlerAction extends Action
                 'class' => Xenforo::class,
             ]
         );
+
+        $templates = CrawlerTemplate::get();
+
+        foreach ($templates as $template) {
+            $this->hookAction->registerCrawlerTemplate(
+                $template->id,
+                [
+                    'name' => $template->name,
+                    'class' => DatabaseTemplate::class,
+                ]
+            );
+        }
     }
 
     public function addScriptAdmin(): void

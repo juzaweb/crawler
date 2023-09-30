@@ -45,10 +45,10 @@ class BBCodeToHTML
         );
 
         $basicTags = ['p', 'b', 'i', 'u', 'h3', 'ul', 'ol', 'li'];
-        $find = collect($basicTags)->map(fn($item) => "[{$item}]")->toArray();
-        $find = collect($basicTags)->map(fn($item) => "[/{$item}]")->merge($find)->toArray();
-        $replace = collect($basicTags)->map(fn($item) => "<{$item}>")->toArray();
-        $replace = collect($basicTags)->map(fn($item) => "</{$item}>")->merge($replace)->toArray();
+        $find = collect($basicTags)->map(fn ($item) => "[{$item}]")->toArray();
+        $find = collect($basicTags)->map(fn ($item) => "[/{$item}]")->merge($find)->toArray();
+        $replace = collect($basicTags)->map(fn ($item) => "<{$item}>")->toArray();
+        $replace = collect($basicTags)->map(fn ($item) => "</{$item}>")->merge($replace)->toArray();
 
         $text = str_replace($find, $replace, $text);
 
@@ -59,7 +59,10 @@ class BBCodeToHTML
             '~\[url\](.*?)\[/url\]~s',
             '~\[url=(.*?)\](.*?)\[/url\]~s',
             '~\[img\]((https?)://.*?)\[/img\]~s',
+            '~\[img=([0-9]+)\]((https?)://.*?)\[/img\]~s',
+            '~\[img\](data:.*?)\[/img\]~s',
             '~\[img\](.*?)\[/img\]~s',
+            '~\[img=([0-9]+)\](.*?)\[/img\]~s',
             '~\[embed\](.*?)\[/embed\]~s',
             '~\[code_inline\](.*?)\[/code_inline\]~s',
             '~\[code_inline lang=([a-zA-Z0-9]+)\](.*?)\[/code_inline\]~s',
@@ -72,6 +75,7 @@ class BBCodeToHTML
             '~\[caption\](.*?)\[/caption\]~s',
             '~\[tr\](.*?)\[/tr\]~s',
             '~\[td\](.*?)\[/td\]~s',
+            '~\[QUOTE\](.*?)\[/QUOTE\]~s',
         ];
 
         $replace = [
@@ -81,7 +85,10 @@ class BBCodeToHTML
             '<a href="$1" rel="nofollow" target="_blank">$1</a>',
             '<a href="$1" rel="nofollow" target="_blank">$2</a>',
             '<img src="$1" alt="'. e($alt) .'" />',
+            '<img width="$1" src="$2" alt="'. e($alt) .'" />',
+            '<img src="$1" alt="'. e($alt) .'" />',
             '<img src="'. $imageUrl .'$1" alt="'. e($alt) .'" />',
+            '<img width="$1" src="'. $imageUrl .'$2" alt="'. e($alt) .'" />',
             '<div class="embed-responsive">'.
             '<iframe src="$1" class="embed-responsive-item" allowfullscreen></iframe>'
             .'</div>',
@@ -96,6 +103,7 @@ class BBCodeToHTML
             '<caption>$1</caption>',
             '<tr>$1</tr>',
             '<td>$1</td>',
+            '<blockquote>$1</blockquote>',
         ];
 
         return preg_replace($find, $replace, $text);

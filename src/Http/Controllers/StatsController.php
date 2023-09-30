@@ -41,7 +41,7 @@ class StatsController extends PageController
             ->where('payload', 'like', '%ContentCrawlerJob%')
             ->count();
         $jobTranslatings = Job::where(['queue' => config('crawler.queue.translate')])
-            ->where('payload', 'like', '%TranslateCrawlerContentJob%')
+            ->where('payload', 'like', '%TranslateContentJob%')
             ->count();
 
         $diskFree = Cache::store('file')->remember(

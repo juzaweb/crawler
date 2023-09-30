@@ -2,6 +2,9 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\CMS\Http\Controllers\BackendController;
@@ -9,7 +12,7 @@ use Juzaweb\Crawler\Contracts\CrawlerContract;
 
 class TestingController extends BackendController
 {
-    public function index(): \Illuminate\Contracts\View\View
+    public function index(): View
     {
         $title = 'Testing';
         $templates = HookAction::getCrawlerTemplates();
@@ -21,7 +24,7 @@ class TestingController extends BackendController
         );
     }
 
-    public function test(Request $request): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+    public function test(Request $request): JsonResponse|RedirectResponse
     {
         $url = $request->input('url');
         $template = $request->input('template');

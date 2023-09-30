@@ -3,7 +3,6 @@
 namespace Juzaweb\Crawler\Commands\Poster;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\Backend\Models\Taxonomy;
@@ -14,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 class AutoPostCommand extends Command
 {
     protected $name = 'crawler:posts';
+
     protected $description = 'Command post crawler content.';
 
     public function handle(): void
@@ -33,46 +33,21 @@ class AutoPostCommand extends Command
             ->chunkById(
                 50,
                 function ($rows) use (&$job, $queue) {
-                    DB::beginTransaction();
-                    try {
-                        $contentIds = $rows->pluck('id')->toArray();
+                    $contentIds = DB::transaction(
+                        function () use ($rows, $queue) {
+                            $contentIds = $rows->pluck('id')->toArray();
 
-                        PostContentsJob::dispatch($contentIds)
-                            ->onQueue($queue)
-                            ->delay(Carbon::now()->addSeconds($job * 110));
+                            PostContentsJob::dispatch($contentIds)->onQueue($queue);
 
-                        CrawlerContent::whereIn('id', $contentIds)
-                            ->update(['status' => CrawlerContent::STATUS_POSTTING]);
+                            CrawlerContent::whereIn('id', $contentIds)
+                                ->update(['status' => CrawlerContent::STATUS_POSTTING]);
 
-                        DB::commit();
-                    } catch (\Throwable $e) {
-                        DB::rollBack();
-                        throw $e;
-                    }
+                            return $contentIds;
+                        }
+                    );
 
                     $this->info("Posting ". count($contentIds) ." contents...");
 
-                    /*foreach ($rows as $content) {
-                        $content->update(['status' => CrawlerContent::STATUS_POSTTING]);
-
-                        DB::beginTransaction();
-                        try {
-                            $crawler->savePost($content);
-
-                            DB::commit();
-                        } catch (\Throwable $e) {
-                            DB::rollBack();
-                            report($e);
-                            $content->update(
-                                [
-                                    'status' => CrawlerContent::STATUS_ERROR,
-                                ]
-                            );
-                        }
-
-                        $this->info("Post content id ". $content->id);
-                        sleep(1);
-                    }*/
                     $job ++;
                 }
             );
