@@ -57,10 +57,6 @@
                     'checked' => (bool) ($model->active ?? true)
                 ]) }}
 
-                @php
-                    $templateOptions = $templates->mapWithKeys(fn($item) => [$item['class'] => $item['name']]);
-                @endphp
-
                 {{ Field::select($model, 'template_class', ['options' => $templateOptions]) }}
             </div>
         </div>

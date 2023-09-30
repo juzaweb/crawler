@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler\Support\Templates;
 
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface;
 use Juzaweb\Crawler\Support\CrawlerElement;
+use Juzaweb\Crawler\Support\CrawlerElements\XenforoCommentCrawlerElement;
 
 class Xenforo extends CrawlerTemplate implements CrawlerTemplateInterface
 {
@@ -39,14 +40,29 @@ class Xenforo extends CrawlerTemplate implements CrawlerTemplateInterface
                     'attr' => 'content',
                     'index' => 0,
                 ],
+                'author' => [
+                    'selector' => '.username',
+                    'index' => 0,
+                ],
                 'comments' => [
                     'selector' => '.message-body .bbWrapper',
                     'skip_indexs' => 0,
+                    'crawler_element' => XenforoCommentCrawlerElement::class,
+                ],
+                'tags' => [
+                    'selector' => '.js-tagList a',
+                    'value' => CrawlerElement::$VALUE_TEXT,
                 ]
             ],
             'removes' => [
                 'script',
-            ]
+                '.bbCodeBlock-expandLink',
+                '.bbCodeBlock-title',
+                'img.smilie',
+            ],
+            'replaces' => [
+                'http/' => 'http://',
+            ],
         ];
     }
 }

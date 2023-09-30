@@ -17,6 +17,7 @@ use Juzaweb\CMS\Traits\ResourceController;
 use Juzaweb\Crawler\Http\Datatables\WebsiteDatatable;
 use Juzaweb\Crawler\Jobs\ReplaceTranslateJob;
 use Juzaweb\Crawler\Models\CrawlerWebsite;
+use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
 
 class WebsiteController extends PageController
 {
@@ -27,7 +28,7 @@ class WebsiteController extends PageController
 
     protected string $viewPrefix = 'crawler::website';
 
-    protected function afterSave($data, $model, ...$params)
+    protected function afterSave($data, $model, ...$params): void
     {
         if ($model->wasChanged('translate_replaces')) {
             ReplaceTranslateJob::dispatch($model);
@@ -39,6 +40,17 @@ class WebsiteController extends PageController
         $data = $this->DataForForm($model, ...$params);
         $data['templates'] = HookAction::getCrawlerTemplates();
         $data['types'] = HookAction::getPostTypes();
+        $data['templateOptions'] = $data['templates']->mapWithKeys(
+            function ($item, $key) {
+                if (is_numeric($key)) {
+                    return [$key => $item['name']];
+                }
+
+                return [
+                    $item['class'] => $item['name']
+                ];
+            }
+        );
         return $data;
     }
 
@@ -46,10 +58,14 @@ class WebsiteController extends PageController
     {
         $data = $this->DataForSave($attributes, ...$params);
         $data['translate_replaces'] = array_values($data['translate_replaces'] ?? []);
+        if (is_numeric($data['template_class'])) {
+            $data['template_id'] = $data['template_class'];
+        }
 
         if (empty($data['active'])) {
             $data['active'] = 0;
         }
+
         return $data;
     }
 

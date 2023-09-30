@@ -2,7 +2,11 @@
 
 namespace Juzaweb\Crawler\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Juzaweb\Crawler\Models\CrawRemoveElement
@@ -10,22 +14,22 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $element
  * @property int $template_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement query()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereElement($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereTemplateId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder|CrawRemoveElement newModelQuery()
+ * @method static Builder|CrawRemoveElement newQuery()
+ * @method static Builder|CrawRemoveElement query()
+ * @method static Builder|CrawRemoveElement whereCreatedAt($value)
+ * @method static Builder|CrawRemoveElement whereElement($value)
+ * @method static Builder|CrawRemoveElement whereId($value)
+ * @method static Builder|CrawRemoveElement whereTemplateId($value)
+ * @method static Builder|CrawRemoveElement whereUpdatedAt($value)
+ * @mixin Eloquent
  * @property int|null $index
- * @property-read \Juzaweb\Crawler\Models\CrawlerTemplate|null $template
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereIndex($value)
+ * @property-read CrawlerTemplate|null $template
+ * @method static Builder|CrawRemoveElement whereIndex($value)
  * @property int $type 1: Remove all, 2: Remove html
- * @method static \Illuminate\Database\Eloquent\Builder|CrawRemoveElement whereType($value)
+ * @method static Builder|CrawRemoveElement whereType($value)
  */
 class CrawRemoveElement extends Model
 {
@@ -39,7 +43,7 @@ class CrawRemoveElement extends Model
 
     public $timestamps = false;
 
-    public function template()
+    public function template(): BelongsTo
     {
         return $this->belongsTo(CrawlerTemplate::class, 'template_id', 'id');
     }

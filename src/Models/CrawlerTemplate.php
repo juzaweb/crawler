@@ -2,6 +2,10 @@
 
 namespace Juzaweb\Crawler\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Juzaweb\CMS\Models\Language;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\ResourceModel;
@@ -16,40 +20,45 @@ use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
  * @property string|null $link_element
  * @property mixed|null $data_elements
  * @property string|null $custom_class
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Language|null $language
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate query()
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereCustomClass($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereDataElements($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereFilter($params = [])
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereLinkElement($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|CrawlerTemplate whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static Builder|CrawlerTemplate newModelQuery()
+ * @method static Builder|CrawlerTemplate newQuery()
+ * @method static Builder|CrawlerTemplate query()
+ * @method static Builder|CrawlerTemplate whereCreatedAt($value)
+ * @method static Builder|CrawlerTemplate whereCustomClass($value)
+ * @method static Builder|CrawlerTemplate whereDataElements($value)
+ * @method static Builder|CrawlerTemplate whereFilter($params = [])
+ * @method static Builder|CrawlerTemplate whereId($value)
+ * @method static Builder|CrawlerTemplate whereLinkElement($value)
+ * @method static Builder|CrawlerTemplate whereName($value)
+ * @method static Builder|CrawlerTemplate whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class CrawlerTemplate extends Model
 {
     use ResourceModel;
 
-    const STATUS_ACTIVE = 'active';
-    const STATUS_INACTIVE = 'inactive';
-    const STATUS_DONE = 'done';
-    const STATUS_ERROR = 'error';
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_INACTIVE = 'inactive';
+    public const STATUS_DONE = 'done';
+    public const STATUS_ERROR = 'error';
 
     protected $table = 'crawler_templates';
 
     protected $fillable = [
+        'name',
         'link_element',
         'data_elements',
-        'custom_class'
+        'custom_class',
     ];
 
-    public function language(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    protected $casts = [
+        'data_elements' => 'array',
+    ];
+
+    public function language(): BelongsTo
     {
         return $this->belongsTo(Language::class, 'lang', 'code');
     }

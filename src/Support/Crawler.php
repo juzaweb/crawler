@@ -45,15 +45,15 @@ class Crawler implements CrawlerContract
         $this->hookAction = $app[HookActionContract::class];
     }
 
-    public function crawPageLinks(CrawlerPage $page, string|array|null $proxy = null): bool|int
+    public function crawPageLinks(CrawlerPage $page, int $pageNumber, string|array|null $proxy = null): bool|int
     {
         $template = $page->website->getTemplateClass();
 
         $crawUrl = $page->url;
-        if ($page->next_page > 1 && $page->url_with_page) {
+        if ($pageNumber > 1 && $page->url_with_page) {
             $crawUrl = str_replace(
                 ['{page}'],
-                [$page->next_page],
+                [$pageNumber],
                 $page->url_with_page
             );
         }
@@ -220,17 +220,6 @@ class Crawler implements CrawlerContract
             if (method_exists($template, 'createdPostEvent')) {
                 $template->createdPostEvent($post, $data);
             }
-
-            if ($comments = Arr::get($data, 'comments')) {
-                $min = 30;
-                foreach ($comments as $comment) {
-                    AddCommentToPostJob::dispatch($post, $comment)
-                        ->onQueue($queue)
-                        ->delay(Carbon::now()->addMinutes($min));
-
-                    $min += random_int(20, 50);
-                }
-            }
         }
 
         $updateData = [
@@ -243,6 +232,15 @@ class Crawler implements CrawlerContract
         }
 
         $content->update($updateData);
+
+        if ($comments = Arr::get($data, 'comments')) {
+            //$min = 1;
+            foreach ($comments as $comment) {
+                AddCommentToPostJob::dispatchSync($post, $comment);
+
+                //$min += random_int(3, 5);
+            }
+        }
 
         return $post;
     }
@@ -261,7 +259,7 @@ class Crawler implements CrawlerContract
     {
         $colection = collect($items)
             ->map(
-                fn($item) => [
+                fn ($item) => [
                     'url' => $item,
                     'url_hash' => sha1($item),
                     'website_id' => $page->website->id,
@@ -280,12 +278,12 @@ class Crawler implements CrawlerContract
             ->filter(fn ($url) => is_url($url['url']) && !isset($urls[$url['url_hash']]))
             ->keyBy('url_hash');
 
-        $urlHashs = $colection->keys()->toArray();
+        // $urlHashs = $colection->keys()->toArray();
         $data = $colection->values()->toArray();
 
         DB::table(CrawlerLink::getTableName())->lockForUpdate()->insert($data);
 
-        $this->crawlerContents($urlHashs);
+        // $this->crawlerContents($urlHashs);
 
         return $data;
     }
@@ -345,14 +343,14 @@ class Crawler implements CrawlerContract
         }
 
         $createdBy = User::where(['is_fake' => true])->inRandomOrder()->first();
+        if (empty($createdBy)) {
+            $createdBy = User::inRandomOrder()->first();
+        }
 
         $postImporter = $this->postImporter->setDownloadThumbnail(false)
             ->setDownloadContentImages(false);
 
-        if ($createdBy) {
-            $postImporter->setCreatedBy($createdBy->id);
-        }
-
+        $postImporter->setCreatedBy($createdBy->id);
         $taxonomies = $this->hookAction->getTaxonomies($data['type']);
 
         foreach ($taxonomies as $key => $taxonomy) {

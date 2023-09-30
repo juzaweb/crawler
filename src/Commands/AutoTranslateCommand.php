@@ -48,13 +48,15 @@ class AutoTranslateCommand extends Command
         $targets = get_config('crawler_translate_languages', []);
         $limit = (int) $this->option('limit');
         $crawlerQueue = config('crawler.queue.crawler');
+        $contentId = $this->option('contentId');
 
         foreach ($targets as $index => $target) {
-            $fnTranslation = function () use ($target, $crawlerQueue, $limit) {
+            $fnTranslation = function () use ($target, $crawlerQueue, $limit, $contentId) {
                 $contents = CrawlerContent::with(['link.website'])
                     ->where(['status' => CrawlerContent::STATUS_DONE, 'is_source' => true])
                     ->whereDoesntHave('children', fn ($q) => $q->where('lang', $target))
                     ->whereHas('page', fn ($q) => $q->where(['active' => 1]))
+                    ->when($contentId, fn ($q) => $q->where('id', $contentId))
                     ->orderBy('id', 'ASC')
                     ->limit($limit)
                     ->lockForUpdate()
@@ -104,6 +106,7 @@ class AutoTranslateCommand extends Command
     {
         return [
             ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 100],
+            ['contentId', null, InputOption::VALUE_OPTIONAL, 'The content id.', null],
         ];
     }
 }

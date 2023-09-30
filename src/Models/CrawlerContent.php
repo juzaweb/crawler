@@ -56,17 +56,21 @@ class CrawlerContent extends Model
 {
     use ResourceModel;
 
-    const STATUS_PENDING = 'pending';
-    const STATUS_DONE = 'done';
-    const STATUS_ERROR = 'error';
-    const STATUS_TRANSLATING = 'translating';
-    const STATUS_POSTTING = 'posting';
-    const STATUS_REGET = 'reget';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_DONE = 'done';
+    public const STATUS_ERROR = 'error';
+    public const STATUS_TRANSLATING = 'translating';
+    public const STATUS_POSTTING = 'posting';
+    public const STATUS_REGET = 'reget';
+
     public $casts = [
         'components' => 'array',
     ];
+
     protected $table = 'crawler_contents';
+
     protected string $fieldName = 'id';
+
     protected $fillable = [
         'components',
         'lang',
@@ -108,7 +112,7 @@ class CrawlerContent extends Model
 
     public function children(): BelongsTo
     {
-        return $this->belongsTo(CrawlerContent::class, 'link_id', 'link_id');
+        return $this->belongsTo(__CLASS__, 'link_id', 'link_id');
     }
 
     public function post(): BelongsTo

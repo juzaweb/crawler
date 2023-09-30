@@ -45,7 +45,7 @@ abstract class CrawlerAbstract
 
     protected function getClient(): Client
     {
-        $options = ['timeout' => 20];
+        $options = ['timeout' => 20, 'connect_timeout' => 10];
         if ($this->proxy) {
             $options['proxy'] = $this->proxy;
         }

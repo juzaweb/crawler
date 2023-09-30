@@ -12,7 +12,9 @@ use Symfony\Component\Console\Input\InputOption;
 class AutoLinkCrawlerCommand extends Command
 {
     protected $name = 'crawler:links';
+
     protected $description = 'Craw links command.';
+
     protected int $limitCrawTimesPerPage = 10;
 
     public function handle(): int
@@ -26,29 +28,38 @@ class AutoLinkCrawlerCommand extends Command
 
         $job = 0;
         foreach ($pages as $page) {
-            $times = 1;
-            while (true) {
-                if ($times > $page->next_page || $times > $this->limitCrawTimesPerPage) {
+            $nextPage = $page->next_page;
+            $totalPages = min($this->limitCrawTimesPerPage, $nextPage);
+
+            for ($times = 1; $times <= $totalPages; $times++) {
+                if ($times > $nextPage) {
                     break;
                 }
 
-                CrawlerLinksJob::dispatch($page)->onQueue($queue)
+                CrawlerLinksJob::dispatch($page, $nextPage)->onQueue($queue)
                     ->delay(Carbon::now()->addSeconds($job * 10));
 
                 $this->info("Craw {$page->url} in process...");
 
-                $nextPage = $this->getNextPage($page);
+                if ($page->max_page) {
+                    $nextPage--;
+                } else {
+                    $nextPage++;
+                }
 
-                $page->update(
-                    [
-                        'crawler_date' => now(),
-                        'next_page' => $nextPage,
-                    ]
-                );
-
-                $times++;
                 $job++;
             }
+
+            if ($nextPage < 1) {
+                $nextPage = 1;
+            }
+
+            $page->update(
+                [
+                    'crawler_date' => now(),
+                    'next_page' => $nextPage,
+                ]
+            );
         }
 
         return self::SUCCESS;
@@ -57,8 +68,8 @@ class AutoLinkCrawlerCommand extends Command
     protected function getPages(): Collection
     {
         $query = CrawlerPage::with(['website.template'])
-            ->where(['active' => 1])
-            ->whereHas('website', fn ($q) => $q->where(['active' => 1]));
+            ->joinRelationship('website')
+            ->where(['crawler_pages.active' => true, 'crawler_websites.active' => true]);
 
         if ($this->option('is_resource')) {
             $query->where(['is_resource_page' => 1]);

@@ -8,21 +8,22 @@
  * @license    GNU V2
  */
 
-namespace Juzaweb\Crawler\Jobs;
+namespace Juzaweb\Crawler\Jobs\Bus;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
+use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Proxies\Contracts\ProxyManager;
 use Juzaweb\Proxies\Models\Proxy;
 use Throwable;
 
-class TranslateCrawlerContentJob implements ShouldQueue
+class TranslateContentJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -36,7 +37,7 @@ class TranslateCrawlerContentJob implements ShouldQueue
 
     protected int $reQueueDelay = 600;
 
-    public function __construct(protected CrawlerContent $content, protected string $target)
+    public function __construct(protected CrawlerLink $link, protected string $target)
     {
     }
 
@@ -57,7 +58,7 @@ class TranslateCrawlerContentJob implements ShouldQueue
             $proxy = app(ProxyManager::class)->free();
 
             if ($proxy === null) {
-                $this->reQueuejob();
+                $this->release($this->reQueueDelay);
                 return;
             }
 
@@ -68,15 +69,9 @@ class TranslateCrawlerContentJob implements ShouldQueue
             return;
         }
 
-        $this->reQueuejob();
+        $this->release($this->reQueueDelay);
     }
 
-    /**
-     * Handle a job failure.
-     *
-     * @param  Throwable  $exception
-     * @return void
-     */
     public function failed(Throwable $exception): void
     {
         if ($this->isServerTranslate) {
@@ -91,25 +86,19 @@ class TranslateCrawlerContentJob implements ShouldQueue
     protected function translate(?Proxy $proxy = null): bool
     {
         $crawler = app(CrawlerContract::class);
+        $content = $this->link->contents()->where(['is_source' => 1])->first();
 
         try {
-            $crawler->translate($this->content, $this->target, $proxy?->toGuzzleHttpProxy());
+            $crawler->translate($content, $this->target, $proxy?->toGuzzleHttpProxy());
 
-            $this->content->update(['status' => CrawlerContent::STATUS_DONE]);
+            $content->update(['status' => CrawlerContent::STATUS_DONE]);
         } catch (Throwable $e) {
-            $this->content->update(['status' => CrawlerContent::STATUS_ERROR]);
+            $content->update(['status' => CrawlerContent::STATUS_ERROR]);
             report($e);
             return false;
         }
 
         return true;
-    }
-
-    protected function reQueuejob(): void
-    {
-        sleep(30);
-
-        $this->release($this->reQueueDelay);
     }
 
     protected function unlockServerTranslate(): bool
@@ -138,7 +127,7 @@ class TranslateCrawlerContentJob implements ShouldQueue
             JSON_THROW_ON_ERROR
         );
 
-        if (($data['time'] + 7200) < time()) {
+        if ($data['time'] + 7200 < time()) {
             $this->unlockServerTranslate();
             return false;
         }
