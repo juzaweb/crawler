@@ -13,5 +13,7 @@ return [
         'crawler' => env('CRAWLER_QUEUE', 'default'),
 
         'translate' => env('CRAWLER_TRANSLATE_QUEUE', 'default'),
+
+        'translate_high' => env('CRAWLER_TRANSLATE_HIGH_QUEUE'),
     ]
 ];

@@ -47,6 +47,9 @@ class CrawlerWebsite extends Model
 {
     use ResourceModel;
 
+    public const QUEUE_DEFAULT = 'default';
+    public const QUEUE_HIGH = 'high';
+
     protected $table = 'crawler_websites';
 
     protected string $fieldName = 'domain';
@@ -58,6 +61,7 @@ class CrawlerWebsite extends Model
         'template_id',
         'template_class',
         'translate_replaces',
+        'queue',
     ];
 
     protected $casts = ['translate_replaces' => 'array'];

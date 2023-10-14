@@ -33,7 +33,12 @@ class PostContentJob implements ShouldQueue
     public function handle(): void
     {
         $crawler = app(CrawlerContract::class);
+        /** @var CrawlerContent $content */
         $content = $this->link->contents()->where(['lang' => $this->target])->first();
+
+        throw_if($content === null, new \Exception('Content not found'));
+
+        throw_if($content->post_id !== null, new \Exception('Content is already posted'));
 
         try {
             DB::transaction(fn () => $crawler->savePost($content));

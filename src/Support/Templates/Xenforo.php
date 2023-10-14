@@ -63,6 +63,8 @@ class Xenforo extends CrawlerTemplate implements CrawlerTemplateInterface
             'replaces' => [
                 'http/' => 'http://',
             ],
+            'page_regex' => '(.*)\/forums\/([a-z0-9\-]+)\.([0-9]+)\/',
+            'page_suffix' => 'page-{page}',
         ];
     }
 }

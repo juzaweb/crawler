@@ -11,12 +11,14 @@
 namespace Juzaweb\Crawler\Commands\Crawler;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Juzaweb\Crawler\Jobs\Bus\ContentCrawlerJob;
 use Juzaweb\Crawler\Jobs\Bus\PostContentJob;
 use Juzaweb\Crawler\Jobs\Bus\TranslateContentJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
+use Juzaweb\Crawler\Models\CrawlerWebsite;
 use Symfony\Component\Console\Input\InputOption;
 
 class AutoContentCrawlerWithBusCommand extends Command
@@ -34,6 +36,7 @@ class AutoContentCrawlerWithBusCommand extends Command
         $limit = $this->option('limit');
         $queue = config('crawler.queue.crawler');
         $translateQueue = config('crawler.queue.translate');
+        $translateQueueHigh = config('crawler.queue.translate_high') ?? $translateQueue;
 
         $skipSource = (bool) get_config('crawler_skip_origin_content', 0);
         if ($skipSource) {
@@ -57,6 +60,7 @@ class AutoContentCrawlerWithBusCommand extends Command
             ->when($this->option('is_resource'), fn($q) => $q->where(['crawler_pages.is_resource_page' => 1]))
             ->orderBy('crawler_links.id', 'ASC');
 
+        /** @var Collection|CrawlerLink[] $links */
         $links = $query->limit($limit)->get();
 
         if ($links->isEmpty()) {
@@ -68,10 +72,12 @@ class AutoContentCrawlerWithBusCommand extends Command
         foreach ($links as $link) {
             $link->update(['status' => CrawlerLink::STATUS_PROCESSING]);
 
+            $transQueue = $link->website->queue == CrawlerWebsite::QUEUE_HIGH ? $translateQueueHigh : $translateQueue;
+
             Bus::chain(
                 [
                     (new ContentCrawlerJob($link))->onQueue($queue),
-                    (new TranslateContentJob($link, $targets[0]))->onQueue($translateQueue),
+                    (new TranslateContentJob($link, $targets[0]))->onQueue($transQueue),
                     (new PostContentJob($link, $targets[0]))->onQueue($queue),
                 ]
             )->dispatch();

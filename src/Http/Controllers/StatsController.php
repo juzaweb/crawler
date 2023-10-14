@@ -40,7 +40,13 @@ class StatsController extends PageController
         $jobContents = Job::where(['queue' => config('crawler.queue.crawler')])
             ->where('payload', 'like', '%ContentCrawlerJob%')
             ->count();
-        $jobTranslatings = Job::where(['queue' => config('crawler.queue.translate')])
+        $jobTranslatings = Job::whereIn(
+            'queue',
+            [
+                config('crawler.queue.translate'),
+                config('crawler.queue.translate_high'),
+            ]
+        )
             ->where('payload', 'like', '%TranslateContentJob%')
             ->count();
 

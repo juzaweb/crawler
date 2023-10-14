@@ -9,18 +9,30 @@ use Illuminate\Http\Request;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\CMS\Http\Controllers\BackendController;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
+use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
 
 class TestingController extends BackendController
 {
     public function index(): View
     {
         $title = 'Testing';
-        $templates = HookAction::getCrawlerTemplates();
+        $templateOptions = HookAction::getCrawlerTemplates()->mapWithKeys(
+            function ($item, $key) {
+                if (is_numeric($key)) {
+                    return [$key => $item['name']];
+                }
+
+                return [
+                    $item['class'] => $item['name']
+                ];
+            }
+        );
         $testingData = session()->get('crawler_testing_data');
 
         return view(
             'crawler::testing.index',
-            compact('title', 'templates', 'testingData')
+            compact('title', 'templateOptions', 'testingData')
         );
     }
 
@@ -32,17 +44,28 @@ class TestingController extends BackendController
 
         session()->put('crawler_testing_data', $request->all());
 
+        if (is_numeric($template)) {
+            $template = app()->make(
+                DatabaseTemplate::class,
+                [
+                    'template' => CrawlerTemplate::findOrFail($template),
+                ]
+            );
+        } else {
+            $template = app($template);
+        }
+
         switch ($option) {
             case 'link':
                 $results = app(CrawlerContract::class)->crawLinksUrl(
                     $url,
-                    app($template)
+                    $template
                 );
                 break;
             case 'content':
                 $results = app(CrawlerContract::class)->crawContentUrl(
                     $url,
-                    app($template)
+                    $template
                 );
                 break;
         }

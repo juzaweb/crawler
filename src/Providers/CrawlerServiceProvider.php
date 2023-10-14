@@ -55,7 +55,7 @@ class CrawlerServiceProvider extends ServiceProvider
                 Commands\Tester\TestContentCrawlerCommand::class,
                 Commands\Crawler\AutoLinkCrawlerCommand::class,
                 Commands\Crawler\AutoContentCrawlerCommand::class,
-                Commands\AutoTranslateCommand::class,
+                Commands\Translate\AutoTranslateCommand::class,
                 Commands\Poster\AutoPostCommand::class,
                 Commands\Tester\TestTranslateCrawlerCommand::class,
                 Commands\ReplaceTranslateAgainCommand::class,
@@ -65,6 +65,8 @@ class CrawlerServiceProvider extends ServiceProvider
                 Commands\CrawlerLinkManualCommand::class,
                 Commands\ImportTemplateCommand::class,
                 Commands\Crawler\AutoContentCrawlerWithBusCommand::class,
+                Commands\Translate\TranslateCommand::class,
+                Commands\MakeTemplateCommand::class,
             ]
         );
 

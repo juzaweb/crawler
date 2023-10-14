@@ -4,10 +4,6 @@
     <form class="form-ajax" method="post" data-success="show_results">
         <div class="row">
             <div class="col-md-4">
-                @php
-                    $templateOptions = $templates->mapWithKeys(fn($item) => [$item['class'] => $item['name']]);
-                @endphp
-
                 {{ Field::select('Template', 'template', ['options' => $templateOptions, 'value' => $testingData['template'] ?? null]) }}
 
                 {{ Field::text('URL', 'url', ['required' => true, 'value' => $testingData['url'] ?? null]) }}

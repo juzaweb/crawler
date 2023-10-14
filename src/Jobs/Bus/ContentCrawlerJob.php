@@ -17,6 +17,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Proxies\Contracts\ProxyManager;
 
@@ -40,9 +41,11 @@ class ContentCrawlerJob implements ShouldQueue
                         $proxy = app(ProxyManager::class)->random()?->toGuzzleHttpProxy();
                     }
 
-                    app(CrawlerContract::class)->crawContentLink($this->link, $proxy);
+                    $content = app(CrawlerContract::class)->crawContentLink($this->link, $proxy);
 
                     $this->link->update(['status' => CrawlerLink::STATUS_DONE]);
+
+                    $content->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
                 }
             );
         } catch (\Throwable $e) {
