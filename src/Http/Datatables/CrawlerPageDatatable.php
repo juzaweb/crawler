@@ -80,7 +80,7 @@ class CrawlerPageDatatable extends DataTable
      */
     public function query($data): Builder
     {
-        $query = CrawlerPage::query()->where(['website_id' => $this->website->id]);
+        $query = CrawlerPage::where(['website_id' => $this->website->id]);
 
         if ($keyword = Arr::get($data, 'keyword')) {
             $query->where(

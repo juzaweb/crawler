@@ -13,6 +13,7 @@ namespace Juzaweb\Crawler\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Juzaweb\Crawler\Models\CrawlerTemplate;
+use Juzaweb\Crawler\Models\CrawlerWebsite;
 use Juzaweb\Crawler\Support\CrawlerElement;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -40,11 +41,21 @@ class ImportTemplateCommand extends Command
                     'data_elements' => [
                         'data' => $this->parseData(Arr::get($web, 'data', [])),
                         'removes' => Arr::get($web, 'removes', []),
+                        'page_regex' => Arr::get($web, 'page_regex'),
+                        'page_suffix' => Arr::get($web, 'page_suffix'),
                     ],
                 ]
             );
 
-            $this->info("Imported template: {$template->name}");
+            $website = CrawlerWebsite::firstOrCreate(
+                ['domain' => $web['name']],
+                [
+                    'template_id' => $template->id,
+                    'template_class' => $template->id,
+                ]
+            );
+
+            $this->info("Imported template: {$template->name} for website: {$website->domain}");
         }
     }
 

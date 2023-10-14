@@ -30,11 +30,11 @@
                     <div class="col-md-12 mt-2">
                         <table class="table" id="table-replaces">
                             <thead>
-                                <tr>
-                                    <th>Search</th>
-                                    <th style="width: 50%;text-align: center">Replace</th>
-                                    <th style="width: 15%">Actions</th>
-                                </tr>
+                            <tr>
+                                <th>Search</th>
+                                <th style="width: 50%;text-align: center">Replace</th>
+                                <th style="width: 15%">Actions</th>
+                            </tr>
                             </thead>
                             <tbody>
                             @foreach($model->translate_replaces ?? [] as $index => $replace)
@@ -58,6 +58,11 @@
                 ]) }}
 
                 {{ Field::select($model, 'template_class', ['options' => $templateOptions]) }}
+
+                {{ Field::select($model, 'queue', [
+                    'options' => $queueOptions,
+                    'label' => __('Queue')
+                ]) }}
             </div>
         </div>
     @endcomponent

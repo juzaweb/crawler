@@ -15,6 +15,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
@@ -29,9 +31,9 @@ class TranslateContentJob implements ShouldQueue
 
     public int $timeout = 7200;
 
-    public bool $failOnTimeout = true;
-
     protected bool $isServerTranslate = false;
+
+    public bool $failOnTimeout = false;
 
     protected Proxy $proxy;
 
@@ -58,7 +60,7 @@ class TranslateContentJob implements ShouldQueue
             $proxy = app(ProxyManager::class)->free();
 
             if ($proxy === null) {
-                $this->release($this->reQueueDelay);
+                $this->reQueuejob();
                 return;
             }
 
@@ -69,7 +71,7 @@ class TranslateContentJob implements ShouldQueue
             return;
         }
 
-        $this->release($this->reQueueDelay);
+        $this->reQueuejob();
     }
 
     public function failed(Throwable $exception): void
@@ -86,7 +88,11 @@ class TranslateContentJob implements ShouldQueue
     protected function translate(?Proxy $proxy = null): bool
     {
         $crawler = app(CrawlerContract::class);
+
+        /** @var CrawlerContent $content */
         $content = $this->link->contents()->where(['is_source' => 1])->first();
+
+        throw_if($content === null, new \Exception('Content not found'));
 
         try {
             $crawler->translate($content, $this->target, $proxy?->toGuzzleHttpProxy());
@@ -133,5 +139,21 @@ class TranslateContentJob implements ShouldQueue
         }
 
         return true;
+    }
+
+    protected function reQueuejob(): void
+    {
+        $this->delete();
+
+        if ($this->job->isDeleted()) {
+            $queue = config('crawler.queue.crawler');
+
+            Bus::chain(
+                [
+                    (new TranslateContentJob($this->link, $this->target))->onQueue($this->queue),
+                    (new PostContentJob($this->link, $this->target))->onQueue($queue),
+                ]
+            )->delay(Carbon::now()->addSeconds($this->reQueueDelay))->dispatch();
+        }
     }
 }

@@ -79,6 +79,8 @@ class CrawlerElement implements CrawlerElementInterface
 
     public function getValue(HtmlDomCrawler $domCrawler): null|array|string
     {
+        $domCrawler->removeScript();
+
         if ($this->removes) {
             $this->removeElements($domCrawler);
         }

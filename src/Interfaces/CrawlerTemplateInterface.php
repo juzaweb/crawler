@@ -12,6 +12,8 @@ namespace Juzaweb\Crawler\Interfaces;
 
 interface CrawlerTemplateInterface
 {
+    public function getDataElements(): array;
+
     public function getLinkElementAttribute(): string;
 
     public function getLinkElement(): string;

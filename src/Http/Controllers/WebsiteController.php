@@ -51,6 +51,10 @@ class WebsiteController extends PageController
                 ];
             }
         );
+        $data['queueOptions'] = [
+            CrawlerWebsite::QUEUE_DEFAULT => __('Default'),
+            CrawlerWebsite::QUEUE_HIGH => __('High'),
+        ];
         return $data;
     }
 

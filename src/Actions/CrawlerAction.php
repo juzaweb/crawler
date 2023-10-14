@@ -95,6 +95,17 @@ class CrawlerAction extends Action
         );
 
         HookAction::registerAdminPage(
+            'crawler.import-pages',
+            [
+                'title' => trans('Import pages'),
+                'menu' => [
+                    'position' => 50,
+                    'parent' => 'crawler'
+                ]
+            ]
+        );
+
+        HookAction::registerAdminPage(
             'crawler.import-links',
             [
                 'title' => trans('Import links'),

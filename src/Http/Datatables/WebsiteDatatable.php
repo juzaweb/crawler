@@ -31,6 +31,11 @@ class WebsiteDatatable extends DataTable
                     return class_basename($value);
                 }
             ],
+            'queue' => [
+                'label' => __('Queue'),
+                'width' => '10%',
+                'align' => 'center',
+            ],
             'active' => [
                 'label' => trans('cms::app.status'),
                 'width' => '10%',
@@ -114,7 +119,7 @@ class WebsiteDatatable extends DataTable
         ];
     }
 
-    public function bulkActions($action, $ids)
+    public function bulkActions($action, $ids): void
     {
         switch ($action) {
             case 'delete':

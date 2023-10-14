@@ -11,6 +11,7 @@
 namespace Juzaweb\Crawler\Support\Crawlers;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Juzaweb\Crawler\Abstracts\CrawlerAbstract;
 use Juzaweb\Crawler\Exceptions\ContentCrawlerException;
 use Juzaweb\Crawler\Exceptions\HtmlDomCrawlerException;
@@ -52,7 +53,13 @@ class ContentCrawler extends CrawlerAbstract
 
         foreach ($elementData['data'] ?? [] as $code => $el) {
             $element = $this->createCrawlerElement($el, $url);
-            Arr::set($result, $code, $element->getValue($contents));
+            $value = $element->getValue($contents);
+
+            if ($code === 'tags') {
+                $value = $this->tagsFilter($value);
+            }
+
+            Arr::set($result, $code, $value);
         }
 
         return $result;
@@ -85,6 +92,29 @@ class ContentCrawler extends CrawlerAbstract
         }
 
         return $result;
+    }
+
+    protected function tagsFilter(null|array|string $value): array|string|null
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $removes = ['#'];
+
+        if (is_string($value)) {
+            return Str::replace($removes, '', $value);
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $key => $val) {
+                $value[$key] = $this->tagsFilter($val);
+            }
+
+            return $value;
+        }
+
+        return $value;
     }
 
     protected function removeElements(array $removes, HtmlDomCrawler $contents, ?string $url = null): void

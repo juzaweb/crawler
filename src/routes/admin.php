@@ -6,6 +6,7 @@ use Juzaweb\Crawler\Http\Controllers\TestingController;
 use Juzaweb\Crawler\Http\Controllers\WebsiteController;
 use Juzaweb\Crawler\Http\Controllers\ContentController;
 use Juzaweb\Crawler\Http\Controllers\ImportLinkController;
+use Juzaweb\Crawler\Http\Controllers\ImportPageController;
 
 Route::jwResource('crawler/websites', WebsiteController::class);
 
@@ -36,3 +37,9 @@ Route::post('crawler/testing', [TestingController::class, 'test']);
 
 Route::get('crawler/import-links', [ImportLinkController::class, 'index']);
 Route::post('crawler/import-links', [ImportLinkController::class, 'import']);
+
+Route::get('crawler/import-pages', [ImportPageController::class, 'index']);
+Route::get('crawler/import-pages/website-info', [ImportPageController::class, 'getWebsiteInfo']);
+Route::post('crawler/import-pages', [ImportPageController::class, 'import']);
+Route::post('crawler/import-pages/find', [ImportPageController::class, 'find'])
+    ->name('crawler.import-pages.find');
