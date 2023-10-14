@@ -2,9 +2,9 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
+use Juzaweb\CMS\Http\Controllers\BackendController;
 use Juzaweb\Crawler\Http\Datatables\LinkDatatable;
 use Juzaweb\Crawler\Models\CrawlerTemplate;
-use Juzaweb\CMS\Http\Controllers\BackendController;
 
 class LinkController extends BackendController
 {

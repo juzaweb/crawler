@@ -2,6 +2,7 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,7 +12,6 @@ use Juzaweb\CMS\Abstracts\DataTable;
 use Juzaweb\CMS\Http\Controllers\BackendController;
 use Juzaweb\CMS\Traits\ResourceController;
 use Juzaweb\Crawler\Http\Datatables\CrawlerContentDatatable;
-use Juzaweb\Crawler\Jobs\TranslateCrawlerContentJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerWebsite;
 
@@ -31,7 +31,7 @@ class ContentController extends BackendController
             $content->reget(true);
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -48,7 +48,7 @@ class ContentController extends BackendController
         return $this->success('Re-tranlating...');
     }
 
-    protected function getBreadcrumbPrefix(...$params)
+    protected function getBreadcrumbPrefix(...$params): void
     {
         $this->addBreadcrumb(
             [

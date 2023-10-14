@@ -11,13 +11,11 @@
 namespace Juzaweb\Crawler\Http\Controllers;
 
 use Juzaweb\Backend\Http\Controllers\Backend\PageController;
-use Juzaweb\Backend\Models\Taxonomy;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\CMS\Traits\ResourceController;
 use Juzaweb\Crawler\Http\Datatables\WebsiteDatatable;
 use Juzaweb\Crawler\Jobs\ReplaceTranslateJob;
 use Juzaweb\Crawler\Models\CrawlerWebsite;
-use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
 
 class WebsiteController extends PageController
 {
@@ -91,7 +89,7 @@ class WebsiteController extends PageController
         return CrawlerWebsite::class;
     }
 
-    protected function getTitle(...$params): array|string|null
+    protected function getTitle(...$params): string
     {
         return trans('crawler::content.websites');
     }

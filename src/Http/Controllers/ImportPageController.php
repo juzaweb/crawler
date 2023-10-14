@@ -49,7 +49,7 @@ class ImportPageController extends BackendController
         }
 
         $links = collect($links)
-            ->filter(fn ($item) => !empty($item['href']))
+            ->filter(fn($item) => !empty($item['href']))
             ->unique('url_hash');
 
         $exists = CrawlerPage::whereIn('url_hash', $links->pluck('url_hash'))
@@ -85,7 +85,7 @@ class ImportPageController extends BackendController
             $page->category_ids = ['categories' => [$request->input("categories.{$index}")]];
             $page->url = $href;
             $page->url_hash = sha1($href);
-            $page->url_with_page = $href . $dataElements['page_suffix'];
+            $page->url_with_page = $href.$dataElements['page_suffix'];
             $page->max_page = (int) $request->input("max_page.{$index}");
             $page->next_page = $page->max_page;
             $page->active = (bool) $request->input("active.{$index}");

@@ -17,7 +17,6 @@ use Juzaweb\CMS\Traits\ResourceController;
 class TemplateController extends BackendController
 {
     use ResourceController {
-        afterSave as tAfterSave;
         parseDataForSave as DataForSave;
         getDataForForm as DataForForm;
     }
@@ -25,13 +24,11 @@ class TemplateController extends BackendController
     protected string $viewPrefix = 'crawler::template';
 
     /**
-     * @param array $data
-     * @param CrawlerTemplate $model
+     * @param  array  $data
+     * @param  CrawlerTemplate  $model
      */
     public function afterSave($data, $model, ...$params): void
     {
-        $this->tAfterSave($data, $model);
-
         $pages = Arr::get($data, 'pages', []);
         $pageIds = [];
         foreach ($pages as $page) {
@@ -141,7 +138,7 @@ class TemplateController extends BackendController
                 'post_status' => 'required',
                 'user_id' => 'required|integer',
                 'auto_leech' => 'nullable|in:0,1',
-                'status'  => 'required|in:active,inactive,test',
+                'status' => 'required|in:active,inactive,test',
                 'pages.*.element_item' => 'required',
                 'pages.*.list_url' => 'required',
             ]

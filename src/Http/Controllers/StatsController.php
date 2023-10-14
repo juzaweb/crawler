@@ -53,7 +53,7 @@ class StatsController extends PageController
         $diskFree = Cache::store('file')->remember(
             'crawler_free_disk',
             3600,
-            fn () => format_size_units(disk_free_space('/')),
+            fn() => format_size_units(disk_free_space('/')),
         );
 
         return view(

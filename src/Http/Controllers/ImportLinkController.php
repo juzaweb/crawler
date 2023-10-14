@@ -3,6 +3,10 @@
 namespace Juzaweb\Crawler\Http\Controllers;
 
 use GuzzleHttp\Client;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Juzaweb\CMS\Http\Controllers\BackendController;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
@@ -10,7 +14,7 @@ use Juzaweb\Crawler\Models\CrawlerPage;
 
 class ImportLinkController extends BackendController
 {
-    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function index(): Factory|View
     {
         $title = trans('Import links');
         $importData = session()->get('crawler_import_data');
@@ -22,7 +26,7 @@ class ImportLinkController extends BackendController
         );
     }
 
-    public function import(Request $request): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+    public function import(Request $request): JsonResponse|RedirectResponse
     {
         $page = CrawlerPage::findOrFail($request->post('page'));
         session()->put('crawler_import_data', $request->all());

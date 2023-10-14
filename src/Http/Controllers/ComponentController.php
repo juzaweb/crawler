@@ -2,14 +2,15 @@
 
 namespace Juzaweb\Crawler\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Juzaweb\Crawler\Helpers\Converter\BBCodeToHtml;
-use Juzaweb\Crawler\Models\CrawlerTemplate;
-use Juzaweb\Crawler\Models\Component;
-use Juzaweb\Crawler\Models\CrawRemoveElement;
-use Juzaweb\Crawler\Helpers\Leech\LeechComponent;
 use Juzaweb\CMS\Http\Controllers\BackendController;
+use Juzaweb\Crawler\Helpers\Converter\BBCodeToHtml;
+use Juzaweb\Crawler\Helpers\Leech\LeechComponent;
+use Juzaweb\Crawler\Models\Component;
+use Juzaweb\Crawler\Models\CrawlerTemplate;
+use Juzaweb\Crawler\Models\CrawRemoveElement;
 
 class ComponentController extends BackendController
 {
@@ -91,7 +92,7 @@ class ComponentController extends BackendController
                 ->delete();
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
