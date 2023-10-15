@@ -42,7 +42,7 @@ class ContentCrawlerJob implements ShouldQueue
         $targets = get_config('crawler_translate_languages', []);
 
         try {
-            DB::transaction(
+            $content = DB::transaction(
                 function () {
                     $proxy = null;
                     if ((bool) get_config('crawler_enable_proxy', 0)) {
@@ -54,8 +54,16 @@ class ContentCrawlerJob implements ShouldQueue
                     $this->link->update(['status' => CrawlerLink::STATUS_DONE]);
 
                     $content->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
+
+                    return $content;
                 }
             );
+
+            $targets = collect($targets)->filter(
+                function ($item) use ($content) {
+                    return $item !== $content->lang;
+                }
+            )->values()->toArray();
 
             foreach ($targets as $target) {
                 Bus::chain(
