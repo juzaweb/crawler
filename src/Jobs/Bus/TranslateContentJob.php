@@ -155,5 +155,7 @@ class TranslateContentJob implements ShouldQueue
                 ]
             )->delay(Carbon::now()->addSeconds($this->reQueueDelay))->dispatch();
         }
+
+        $this->fail("reQueueDelay: {$this->reQueueDelay}");
     }
 }
