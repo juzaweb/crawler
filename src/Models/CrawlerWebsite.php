@@ -20,6 +20,7 @@ use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
  * @property string $domain
  * @property int $has_ssl
  * @property int $template_id
+ * @property string $queue
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection|CrawlerPage[] $pages

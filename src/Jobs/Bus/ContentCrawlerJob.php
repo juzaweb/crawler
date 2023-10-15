@@ -15,10 +15,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
+use Juzaweb\Crawler\Models\CrawlerWebsite;
 use Juzaweb\Proxies\Contracts\ProxyManager;
 
 class ContentCrawlerJob implements ShouldQueue
@@ -33,6 +35,12 @@ class ContentCrawlerJob implements ShouldQueue
 
     public function handle(): void
     {
+        $queue = config('crawler.queue.crawler');
+        $translateQueue = config('crawler.queue.translate');
+        $translateQueueHigh = config('crawler.queue.translate_high') ?? $translateQueue;
+        $transQueue = $this->link->website->queue == CrawlerWebsite::QUEUE_HIGH ? $translateQueueHigh : $translateQueue;
+        $targets = get_config('crawler_translate_languages', []);
+
         try {
             DB::transaction(
                 function () {
@@ -48,6 +56,15 @@ class ContentCrawlerJob implements ShouldQueue
                     $content->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
                 }
             );
+
+            foreach ($targets as $target) {
+                Bus::chain(
+                    [
+                        (new TranslateContentJob($this->link, $target))->onQueue($transQueue),
+                        (new PostContentJob($this->link, $target))->onQueue($queue),
+                    ]
+                )->dispatch();
+            }
         } catch (\Throwable $e) {
             $this->link->update(['status' => CrawlerLink::STATUS_ERROR]);
             throw $e;
