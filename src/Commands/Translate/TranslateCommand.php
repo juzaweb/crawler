@@ -57,6 +57,10 @@ class TranslateCommand extends Command
         }
 
         $targets = get_config('crawler_translate_languages', []);
+        if ($target = $this->option('target')) {
+            $targets = [$target];
+        }
+
         $limit = (int) $this->option('limit');
         $queue = config('crawler.queue.crawler');
         $contentId = $this->option('contentId');
@@ -136,6 +140,7 @@ class TranslateCommand extends Command
         return [
             ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 100],
             ['contentId', null, InputOption::VALUE_OPTIONAL, 'The content id.', null],
+            ['target', null, InputOption::VALUE_OPTIONAL, 'The target language translate.', null],
         ];
     }
 }
