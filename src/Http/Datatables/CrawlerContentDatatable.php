@@ -2,7 +2,8 @@
 
 namespace Juzaweb\Crawler\Http\Datatables;
 
-use Illuminate\Database\Eloquent\Builder;
+use Exception;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\CMS\Abstracts\DataTable;
@@ -23,12 +24,15 @@ class CrawlerContentDatatable extends DataTable
      *
      * @return array
      */
-    public function columns()
+    public function columns(): array
     {
         return [
             'title' => [
                 'label' => trans('cms::app.title'),
-                'formatter' => fn($value, $row, $index) => '<a href="'. route('admin.crawler.websites.contents.edit', [$row->website_id, $row->id]) .'">'.($row->components['title'] ?? 'N/A').'</a>',
+                'formatter' => fn($value, $row, $index)
+                => '<a href="'. route('admin.crawler.websites.contents.edit', [$row->website_id, $row->id]) .'">'
+                    .($row->components['title'] ?? 'N/A')
+                    .'</a>',
             ],
             'lang' => [
                 'label' => trans('crawler::content.lang'),
@@ -36,7 +40,8 @@ class CrawlerContentDatatable extends DataTable
             'link_id' => [
                 'label' => trans('crawler::content.link'),
                 'width' => '15%',
-                'formatter' => fn($value, $row, $index) => '<a href="'.$row->link->url.'" target="_blank" rel="noreferrer">'.$value.'</a>',
+                'formatter' => fn($value, $row, $index)
+                => '<a href="'.$row->link->url.'" target="_blank" rel="noreferrer">'.$value.'</a>',
             ],
             'page_id' => [
                 'label' => trans('crawler::content.page'),
@@ -69,10 +74,10 @@ class CrawlerContentDatatable extends DataTable
     /**
      * Query data datatable
      *
-     * @param array $data
+     * @param  array  $data
      * @return Builder
      */
-    public function query($data)
+    public function query(array $data): Builder
     {
         $query = CrawlerContent::where(['website_id' => $this->websiteId]);
         $source = Arr::get($data, 'is_source');
@@ -105,7 +110,7 @@ class CrawlerContentDatatable extends DataTable
         return array_merge($actions, parent::actions());
     }
 
-    public function bulkActions($action, $ids)
+    public function bulkActions($action, $ids): void
     {
         switch ($action) {
             case 'delete':
@@ -151,7 +156,7 @@ class CrawlerContentDatatable extends DataTable
                         $crawler->savePost($content);
 
                         DB::commit();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         DB::rollBack();
                         report($e);
                         $content->update(
