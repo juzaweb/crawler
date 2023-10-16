@@ -278,7 +278,7 @@ class Crawler implements CrawlerContract
             ->filter(fn ($url) => is_url($url['url']) && !isset($urls[$url['url_hash']]))
             ->keyBy('url_hash');
 
-        // $urlHashs = $colection->keys()->toArray();
+        $urlHashs = $colection->keys()->toArray();
         $data = $colection->values()->toArray();
 
         DB::table(CrawlerLink::getTableName())->lockForUpdate()->insert($data);
