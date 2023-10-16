@@ -143,6 +143,8 @@ class TranslateContentJob implements ShouldQueue
 
     protected function reQueuejob(): void
     {
+        sleep(3);
+
         $this->delete();
 
         if ($this->job->isDeleted()) {

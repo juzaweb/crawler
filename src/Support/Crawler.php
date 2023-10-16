@@ -25,7 +25,7 @@ use Juzaweb\Crawler\Exceptions\CrawlerException;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Jobs\AddCommentToPostJob;
-use Juzaweb\Crawler\Jobs\ContentCrawlerJob;
+use Juzaweb\Crawler\Jobs\Bus\ContentCrawlerJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
@@ -283,7 +283,7 @@ class Crawler implements CrawlerContract
 
         DB::table(CrawlerLink::getTableName())->lockForUpdate()->insert($data);
 
-        // $this->crawlerContents($urlHashs);
+        $this->crawlerContents($urlHashs);
 
         return $data;
     }
@@ -301,8 +301,7 @@ class Crawler implements CrawlerContract
 
             $job = 1;
             foreach ($links as $link) {
-                ContentCrawlerJob::dispatch($link)
-                    ->onQueue($queue)
+                ContentCrawlerJob::dispatch($link)->onQueue($queue)
                     ->delay(Carbon::now()->addSeconds($job * 20));
 
                 $link->update(['status' => CrawlerLink::STATUS_PROCESSING]);

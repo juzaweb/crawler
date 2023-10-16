@@ -12,6 +12,7 @@ namespace Juzaweb\Crawler\Commands\Crawler;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Juzaweb\Crawler\Jobs\Bus\ContentCrawlerJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
@@ -54,29 +55,28 @@ class AutoContentCrawlerWithBusCommand extends Command
             ->when($this->option('is_resource'), fn($q) => $q->where(['crawler_pages.is_resource_page' => 1]))
             ->orderBy('crawler_links.id', 'ASC');
 
-        /** @var Collection|CrawlerLink[] $links */
-        $links = $query->limit($limit)->get();
+        DB::transaction(
+            function () use ($query, $limit, $queue) {
+                /** @var Collection|CrawlerLink[] $links */
+                $links = $query->limit($limit)->get();
 
-        if ($links->isEmpty()) {
-            $this->info('No links found.');
-            return;
-        }
+                foreach ($links as $link) {
+                    $link->update(['status' => CrawlerLink::STATUS_PROCESSING]);
 
-        foreach ($links as $link) {
-            $link->update(['status' => CrawlerLink::STATUS_PROCESSING]);
+                    ContentCrawlerJob::dispatch($link)->onQueue($queue);
 
-            ContentCrawlerJob::dispatch($link)->onQueue($queue);
+                    $type = $link->page->is_resource_page ? 'Resource' : 'Post';
 
-            $type = $link->page->is_resource_page ? 'Resource' : 'Post';
-
-            $this->info("Creating {$type} from link {$link->url}");
-        }
+                    $this->info("Creating {$type} from link {$link->url}");
+                }
+            }
+        );
     }
 
     protected function getOptions(): array
     {
         return [
-            ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 50],
+            ['limit', null, InputOption::VALUE_OPTIONAL, 'The limit rows crawl per run.', 100],
             ['is_resource', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds per crawl.', false],
         ];
     }
