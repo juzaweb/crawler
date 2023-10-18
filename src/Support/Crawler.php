@@ -29,6 +29,7 @@ use Juzaweb\Crawler\Jobs\Bus\ContentCrawlerJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
+use Juzaweb\Crawler\Events\PostSuccess;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
 use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
 use Juzaweb\Crawler\Support\Translate\CrawlerContentTranslation;
@@ -240,6 +241,12 @@ class Crawler implements CrawlerContract
 
                 //$min += random_int(3, 5);
             }
+        }
+
+        try {
+            event(new PostSuccess($post, $content));
+        } catch (\Throwable $e) {
+            report($e);
         }
 
         return $post;
