@@ -90,10 +90,8 @@ class CrawlerServiceProvider extends ServiceProvider
         $this->app->booted(
             function () {
                 $schedule = $this->app->make(Schedule::class);
-                //$schedule->command('crawler:contents')->everyFiveMinutes();
                 $schedule->command(Commands\Crawler\AutoLinkCrawlerCommand::class)->everyFiveMinutes();
-                //$schedule->command('crawler:translate')->everyFiveMinutes();
-                //$schedule->command(AutoPostCommand::class)->everyFiveMinutes();
+                $schedule->command(Commands\Translate\AutoTranslateCommand::class)->everyFiveMinutes();
                 $schedule->command(Commands\Crawler\AutoContentCrawlerWithBusCommand::class)->everyFiveMinutes();
                 $schedule->command(Commands\Poster\AutoPublishPostCommand::class)->hourlyAt('12');
             }

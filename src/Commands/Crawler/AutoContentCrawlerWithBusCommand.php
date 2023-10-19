@@ -33,14 +33,14 @@ class AutoContentCrawlerWithBusCommand extends Command
         $limit = $this->option('limit');
         $queue = config('crawler.queue.crawler');
 
-        $skipSource = (bool) get_config('crawler_skip_origin_content', 0);
-        if ($skipSource) {
-            CrawlerContent::with([])
-                ->where(['status' => CrawlerContent::STATUS_PENDING, 'is_source' => true])
-                ->whereNull('post_id')
-                ->whereNull('resource_id')
-                ->update(['status' => CrawlerContent::STATUS_DONE]);
-        }
+        // $skipSource = (bool) get_config('crawler_skip_origin_content', 0);
+        // if ($skipSource) {
+        //     CrawlerContent::with([])
+        //         ->where(['status' => CrawlerContent::STATUS_PENDING, 'is_source' => true])
+        //         ->whereNull('post_id')
+        //         ->whereNull('resource_id')
+        //         ->update(['status' => CrawlerContent::STATUS_DONE]);
+        // }
 
         $query = CrawlerLink::with(
             [
