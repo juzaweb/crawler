@@ -4,10 +4,13 @@ namespace Juzaweb\Crawler\Commands\Translate;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Juzaweb\Crawler\Jobs\TranslateCrawlerContentsJob;
+use Juzaweb\Crawler\Jobs\Bus\PostContentJob;
+use Juzaweb\Crawler\Jobs\Bus\TranslateContentJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
+use Juzaweb\Crawler\Models\CrawlerWebsite;
 use Symfony\Component\Console\Input\InputOption;
 
 class AutoTranslateCommand extends Command
@@ -47,11 +50,20 @@ class AutoTranslateCommand extends Command
 
         $targets = get_config('crawler_translate_languages', []);
         $limit = (int) $this->option('limit');
-        $crawlerQueue = config('crawler.queue.crawler');
+        $queue = config('crawler.queue.crawler');
+        $translateQueue = config('crawler.queue.translate');
+        $translateQueueHigh = config('crawler.queue.translate_high') ?? $translateQueue;
         $contentId = $this->option('contentId');
 
         foreach ($targets as $index => $target) {
-            $fnTranslation = function () use ($target, $crawlerQueue, $limit, $contentId) {
+            $fnTranslation = function () use (
+                $target,
+                $queue,
+                $limit,
+                $contentId,
+                $translateQueue,
+                $translateQueueHigh
+            ) {
                 $contents = CrawlerContent::with(['link.website'])
                     ->where(['status' => CrawlerContent::STATUS_DONE, 'is_source' => true])
                     ->whereDoesntHave('children', fn ($q) => $q->where('lang', $target))
@@ -60,18 +72,23 @@ class AutoTranslateCommand extends Command
                     ->orderBy('id', 'ASC')
                     ->limit($limit)
                     ->lockForUpdate()
-                    ->get(['id'])
-                    ->pluck('id')
-                    ->toArray();
+                    ->get();
 
-                if (empty($contents)) {
-                    return;
-                }
-
-                CrawlerContent::whereIn('id', $contents)
+                CrawlerContent::whereIn('id', $contents->pluck('id'))
                     ->update(['status' => CrawlerContent::STATUS_TRANSLATING]);
 
-                TranslateCrawlerContentsJob::dispatch($contents, $target)->onQueue($crawlerQueue);
+                foreach ($contents as $content) {
+                    $transQueue = $content->link->website->queue == CrawlerWebsite::QUEUE_HIGH
+                        ? $translateQueueHigh
+                        : $translateQueue;
+
+                    Bus::chain(
+                        [
+                            (new TranslateContentJob($content->link, $target))->onQueue($transQueue),
+                            (new PostContentJob($content->link, $target))->onQueue($queue),
+                        ]
+                    )->dispatch();
+                }
 
                 $this->info("Translating ". count($contents) ." posts to {$target}");
             };
