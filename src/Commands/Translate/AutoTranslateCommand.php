@@ -7,6 +7,7 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Juzaweb\CMS\Models\Job;
 use Juzaweb\Crawler\Jobs\Bus\PostContentJob;
 use Juzaweb\Crawler\Jobs\Bus\TranslateContentJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
@@ -36,6 +37,22 @@ class AutoTranslateCommand extends Command
                 .' try again later (2 - 48 hours)'
             );
 
+            return;
+        }
+
+        // Check trans jobs in pending
+        $jobTranslatings = Job::whereIn(
+            'queue',
+            [
+                config('crawler.queue.translate'),
+                config('crawler.queue.translate_high'),
+            ]
+        )
+            ->where('payload', 'like', '%TranslateContentJob%')
+            ->count();
+
+        if ($jobTranslatings > 10000) {
+            $this->warn("Translate jobs in pending: {$jobTranslatings}");
             return;
         }
 
