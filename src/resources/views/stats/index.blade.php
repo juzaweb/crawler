@@ -80,56 +80,58 @@
     </style>
 
     <script type="text/javascript">
-        setTimeout(function () {
-            const ctx = document.getElementById('curve_chart');
-            let jsonData = $.ajax({
-                url: "{{ route('crawler.stats.crawler-chars') }}",
-                dataType: "json",
-                async: false
-            }).responseText;
+        $(function () {
+            setTimeout(function () {
+                const ctx = document.getElementById('curve_chart');
+                let jsonData = $.ajax({
+                    url: "{{ route('crawler.stats.crawler-chars') }}",
+                    dataType: "json",
+                    async: false
+                }).responseText;
 
-            jsonData = JSON.parse(jsonData);
-            let labels = [];
-            let crawContents = [];
-            let transContents = [];
-            let posts = [];
+                jsonData = JSON.parse(jsonData);
+                let labels = [];
+                let crawContents = [];
+                let transContents = [];
+                let posts = [];
 
-            $.each(jsonData, function (index, item) {
-                labels.push(item[0]);
-                crawContents.push(item[1]);
-                transContents.push(item[2]);
-                posts.push(item[3]);
-            });
+                $.each(jsonData, function (index, item) {
+                    labels.push(item[0]);
+                    crawContents.push(item[1]);
+                    transContents.push(item[2]);
+                    posts.push(item[3]);
+                });
 
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'New Contents',
-                            data: crawContents,
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'New Translate Contents',
-                            data: transContents,
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'New Posts',
-                            data: posts,
-                            borderWidth: 1
-                        }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'New Contents',
+                                data: crawContents,
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'New Translate Contents',
+                                data: transContents,
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'New Posts',
+                                data: posts,
+                                borderWidth: 1
+                            }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
-        }, 200);
+                });
+            }, 500);
+        });
     </script>
 @endsection
