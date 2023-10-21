@@ -69,10 +69,15 @@ class LinkCrawler extends CrawlerAbstract
             return [];
         }
 
+        $baseUrlMeta = $html->find('base', 0)->href ?? null;
+        if ($baseUrlMeta === '/') {
+            $baseUrlMeta = null;
+        }
+
         $items = [];
         foreach ($elements as $element) {
             $href = $element->getAttribute($elementAttribute);
-            $items[] = trim(get_full_url($href, $url));
+            $items[] = trim(get_full_url($href, $url, $baseUrlMeta));
         }
 
         return $items;
