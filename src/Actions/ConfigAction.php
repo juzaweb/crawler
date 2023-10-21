@@ -15,13 +15,7 @@ class ConfigAction extends Action
     public function handle(): void
     {
         $this->addAction(Action::BACKEND_INIT, [$this, 'addAdminConfig']);
-        $this->addAction(Action::BACKEND_INIT, [$this, 'addResouces']);
         $this->addAction('post_types.form.left', [$this, 'addFormPost']);
-    }
-
-    public function addResouces()
-    {
-        //
     }
 
     public function addFormPost($model): void
