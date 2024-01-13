@@ -14,7 +14,7 @@ class ConfigAction extends Action
      */
     public function handle(): void
     {
-        $this->addAction(Action::BACKEND_INIT, [$this, 'addAdminConfig']);
+        $this->addAction(Action::BACKEND_INIT, [$this, 'addAdminConfigs']);
         $this->addAction('post_types.form.left', [$this, 'addFormPost']);
     }
 
@@ -26,7 +26,7 @@ class ConfigAction extends Action
         }
     }
 
-    public function addAdminConfig(): void
+    public function addAdminConfigs(): void
     {
         $this->hookAction->registerSettingPage(
             'crawler',
