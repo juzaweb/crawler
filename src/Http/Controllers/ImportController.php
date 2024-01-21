@@ -88,6 +88,6 @@ class ImportController extends BackendController
             app($template)
         );
 
-        return $this->success($results);
+        return $this->success(['urls' => $results]);
     }
 }

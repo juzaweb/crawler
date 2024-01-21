@@ -19,7 +19,7 @@ class ImportAction extends Action
 {
     public function handle(): void
     {
-        $this->addAction('post_type.post-types.btn_group', [$this, 'addImportBtns']);
+        $this->addAction('post_type.post-types.btn_group_left', [$this, 'addImportBtns']);
         $this->addAction('post_type.post-types.index', [$this, 'addImportModal']);
         $this->addAction(Action::BACKEND_INIT, [$this, 'addImportAjax']);
     }
@@ -30,8 +30,7 @@ class ImportAction extends Action
             return;
         }
 
-        echo '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#crawler-import-modal">
-<i class="fa fa-download"></i> '. trans('cms::app.import') .'</button>';
+        echo e(view('crawler::components.import-btn', compact('setting')));
     }
 
     public function addImportModal(Collection $setting): void
@@ -67,6 +66,14 @@ class ImportAction extends Action
             [
                 'method' => 'POST',
                 'callback' => [ImportController::class, 'import'],
+            ]
+        );
+
+        $this->registerAdminAjax(
+            'crawler-import-page',
+            [
+                'method' => 'POST',
+                'callback' => [ImportController::class, 'importWithPage'],
             ]
         );
     }
