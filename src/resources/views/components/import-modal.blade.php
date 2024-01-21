@@ -1,5 +1,5 @@
 <div class="modal fade" id="crawler-import-modal" tabindex="-1" role="dialog" aria-labelledby="crawler-import-modal-label" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <form action="{{ admin_url('ajax/crawler-import') }}" method="post" class="form-ajax" data-notify="1" data-success="crawlerImportSuccess">
             <div class="modal-content">
                 <div class="modal-header">
@@ -34,5 +34,6 @@
 <script>
     function crawlerImportSuccess(form, res) {
         form.find('input[name=url]').val('');
+        table.refresh();
     }
 </script>
