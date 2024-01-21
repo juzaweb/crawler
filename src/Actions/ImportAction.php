@@ -52,7 +52,12 @@ class ImportAction extends Action
             }
         );
 
-        echo e(view('crawler::components.import-modal', compact('templateOptions', 'setting')));
+        $taxonomies = HookAction::getTaxonomies($setting->get('key'));
+
+        echo e(view(
+            'crawler::components.import-modal',
+            compact('templateOptions', 'setting', 'taxonomies')
+        ));
     }
 
     public function addImportAjax(): void

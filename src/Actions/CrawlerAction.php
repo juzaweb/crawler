@@ -15,6 +15,7 @@ use Juzaweb\CMS\Abstracts\Action;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\Crawler\Models\CrawlerTemplate;
 use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
+use Juzaweb\Crawler\Support\Templates\Rawstory;
 use Juzaweb\Crawler\Support\Templates\Xenforo;
 
 class CrawlerAction extends Action
@@ -33,6 +34,14 @@ class CrawlerAction extends Action
             [
                 'name' => 'Xenforo Forum',
                 'class' => Xenforo::class,
+            ]
+        );
+
+        $this->hookAction->registerCrawlerTemplate(
+            'rawstory',
+            [
+                'name' => 'Rawstory.com',
+                'class' => Rawstory::class,
             ]
         );
 

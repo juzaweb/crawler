@@ -12,13 +12,12 @@ namespace Juzaweb\Crawler\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Juzaweb\CMS\Contracts\HookActionContract;
 use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\CMS\Http\Controllers\BackendController;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Juzaweb\Crawler\Exceptions\CrawlerException;
 use Juzaweb\Crawler\Http\Requests\ImportRequest;
 
 class ImportController extends BackendController
@@ -34,42 +33,42 @@ class ImportController extends BackendController
     {
         $template = $request->input('template');
         $url = $request->input('url');
+        $type = $request->input('type');
 
-        $post = DB::transaction(
-            function () use ($template, $url) {
-                $data = app(CrawlerContract::class)->crawContentUrl(
-                    $url,
-                    app($template)
-                );
+        try {
+            $post = DB::transaction(
+                function () use ($template, $url, $request, $type) {
+                    $data = app(CrawlerContract::class)->crawContentUrl(
+                        $url,
+                        app($template)
+                    );
 
-                $taxonomies = $this->hookAction->getTaxonomies($data['type']);
-
-                foreach ($taxonomies as $key => $taxonomy) {
-                    if ($key != 'tags') {
-                        continue;
+                    if (empty($data['title']) && empty($data['content'])) {
+                        throw new CrawlerException("Cannot import get title and content url: {$url}");
                     }
 
-                    if ($taxs = Arr::get($data, $key)) {
-                        if (empty($data[$key])) {
-                            unset($data[$key]);
-                            continue;
-                        }
+                    $data['type'] = $type;
+                    $taxonomies = $this->hookAction->getTaxonomies($type)->keys();
+                    $taxonomies = $request->only($taxonomies->toArray());
 
-                        $data[$key] = [];
-                        foreach ($taxs as $tax) {
-                            $data[$key][] = ['name' => $tax, 'slug' => Str::slug($tax)];
-                        }
+                    foreach ($taxonomies as $taxonomy => $value) {
+                        $data[$taxonomy] = $value;
                     }
+
+                    return $this->postImporter->import($data);
                 }
-
-                return $this->postImporter->import($data);
-            }
-        );
+            );
+        } catch (CrawlerException $e) {
+            return $this->error($e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+            return $this->error("Cannot import url: {$url}");
+        }
 
         return $this->success(
             [
                 'message' => __('Crawler: :name imported successfully', ['name' => $post->title]),
-                'redirect' => route('admin.posts.edit', [$post->type, $post->id]),
+                //'redirect' => route('admin.posts.index', [$post->type]),
             ]
         );
     }

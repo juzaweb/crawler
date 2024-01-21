@@ -13,6 +13,14 @@
 
                     {{ Field::text(trans('crawler::content.url'), 'url') }}
 
+                    @foreach($taxonomies as $taxonomy)
+                        {{ Field::selectTaxonomy($taxonomy->get('label'), $taxonomy->get('taxonomy'), [
+                            'post_type' => $setting->get('key'),
+                            'taxonomy' => $taxonomy->get('taxonomy'),
+                            'multiple' => true,
+                        ]) }}
+                    @endforeach
+
                     <input type="hidden" name="type" value="{{ $setting->get('key') }}">
                 </div>
                 <div class="modal-footer">
