@@ -72,13 +72,7 @@ class CrawlerPageDatatable extends DataTable
         ];
     }
 
-    /**
-     * Query data datatable
-     *
-     * @param array $data
-     * @return Builder
-     */
-    public function query($data): Builder
+    public function query(array $data): Builder
     {
         $query = CrawlerPage::where(['website_id' => $this->website->id]);
 
@@ -93,7 +87,7 @@ class CrawlerPageDatatable extends DataTable
         return $query;
     }
 
-    public function bulkActions($action, $ids)
+    public function bulkActions($action, $ids): void
     {
         switch ($action) {
             case 'delete':

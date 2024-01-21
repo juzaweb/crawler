@@ -11,6 +11,7 @@ use Juzaweb\CMS\Support\HookAction;
 use Juzaweb\CMS\Support\ServiceProvider;
 use Juzaweb\Crawler\Actions\ConfigAction;
 use Juzaweb\Crawler\Actions\CrawlerAction;
+use Juzaweb\Crawler\Actions\ImportAction;
 use Juzaweb\Crawler\Commands;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
@@ -74,6 +75,7 @@ class CrawlerServiceProvider extends ServiceProvider
             [
                 CrawlerAction::class,
                 ConfigAction::class,
+                ImportAction::class,
             ]
         );
 

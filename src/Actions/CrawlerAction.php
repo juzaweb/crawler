@@ -21,7 +21,7 @@ class CrawlerAction extends Action
 {
     public function handle(): void
     {
-        $this->addAction(Action::BACKEND_INIT, [$this, 'addAddminMenu']);
+        $this->addAction(Action::BACKEND_INIT, [$this, 'addAdminMenus']);
         $this->addAction(Action::INIT_ACTION, [$this, 'registerCrawlerTemplates']);
         //$this->addAction(Action::BACKEND_CALL_ACTION, [$this, 'addScriptAdmin']);
     }
@@ -60,7 +60,7 @@ class CrawlerAction extends Action
         );
     }
 
-    public function addAddminMenu(): void
+    public function addAdminMenus(): void
     {
         HookAction::registerAdminPage(
             'crawler',
