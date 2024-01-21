@@ -33,7 +33,9 @@
 
 <script>
     function crawlerImportSuccess(form, res) {
-        form.find('input[name=url]').val('');
-        table.refresh();
+        if (res.status) {
+            form.find('input[name=url]').val('');
+            table.refresh();
+        }
     }
 </script>

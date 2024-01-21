@@ -19,7 +19,7 @@ class ImportRequest extends FormRequest
 
         return [
             'template' => ['required'],
-            'url' => ['required'],
+            'url' => ['required', 'url'],
             'type' => ['required', Rule::in($types)],
         ];
     }

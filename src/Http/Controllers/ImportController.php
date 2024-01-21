@@ -13,6 +13,7 @@ namespace Juzaweb\Crawler\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Contracts\HookActionContract;
 use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\CMS\Http\Controllers\BackendController;
@@ -47,6 +48,10 @@ class ImportController extends BackendController
                         throw new CrawlerException("Cannot import get title and content url: {$url}");
                     }
 
+                    if (Post::where(['type' => $type, 'title' => $data['title']])->exists()) {
+                        throw new CrawlerException("Cannot import duplicate title: {$data['title']}");
+                    }
+
                     $data['type'] = $type;
                     $taxonomies = $this->hookAction->getTaxonomies($type)->keys();
                     $taxonomies = $request->only($taxonomies->toArray());
@@ -73,8 +78,16 @@ class ImportController extends BackendController
         );
     }
 
-    public function importWithPage()
+    public function importWithPage(ImportRequest $request): JsonResponse|RedirectResponse
     {
-        
+        $template = $request->input('template');
+        $url = $request->input('url');
+
+        $results = app(CrawlerContract::class)->crawLinksUrl(
+            $url,
+            app($template)
+        );
+
+        return $this->success($results);
     }
 }
