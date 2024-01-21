@@ -1,6 +1,6 @@
 <div class="modal fade" id="crawler-import-modal" tabindex="-1" role="dialog" aria-labelledby="crawler-import-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <form action="{{ admin_url('ajax/crawler-import') }}" method="post" class="form-ajax" data-notify="1">
+        <form action="{{ admin_url('ajax/crawler-import') }}" method="post" class="form-ajax" data-notify="1" data-success="crawlerImportSuccess">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="crawler-import-modal-label">{{ __('Import') }}</h5>
@@ -30,3 +30,9 @@
         </form>
     </div>
 </div>
+
+<script>
+    function crawlerImportSuccess(form, res) {
+        form.find('input[name=url]').val('');
+    }
+</script>
