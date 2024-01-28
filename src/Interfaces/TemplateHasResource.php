@@ -15,4 +15,6 @@ interface TemplateHasResource
     public function getLinkResourceElement(): string;
 
     public function getDataResourceElements(): array;
+
+    public function getResourceUrlWithPage(): ?string;
 }

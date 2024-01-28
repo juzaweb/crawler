@@ -56,7 +56,7 @@ class ConfigAction extends Action
                     'data' => [
                         'options' => [
                             0 => trans('cms::app.disabled'),
-                            1 => trans('cms::app.enable')
+                            1 => trans('cms::app.enable'),
                         ],
                     ]
                 ],
@@ -69,28 +69,6 @@ class ConfigAction extends Action
                             0 => trans('cms::app.disabled'),
                             1 => trans('cms::app.enable')
                         ],
-                    ]
-                ],
-                'crawler_enable_translate' => [
-                    'type' => 'select',
-                    'label' => 'Enable Translate',
-                    'form' => 'crawler',
-                    'data' => [
-                        'options' => [
-                            0 => trans('cms::app.disabled'),
-                            1 => trans('cms::app.enable')
-                        ],
-                    ]
-                ],
-                'crawler_translate_languages' => [
-                    'type' => 'select',
-                    'label' => 'Translate languages',
-                    'form' => 'crawler',
-                    'data' => [
-                        'multiple' => true,
-                        'options' => collect(config('locales'))
-                            ->mapWithKeys(fn($item) => [$item['code'] => $item['name']])
-                            ->toArray(),
                     ]
                 ],
                 'crawler_enable_proxy' => [

@@ -60,20 +60,27 @@ class ContentCrawlerJob implements ShouldQueue
                 }
             );
 
-            $targets = collect($targets)->filter(
-                function ($item) use ($content) {
-                    return $item !== $content->lang;
-                }
-            )->values()->toArray();
+            $skipSource = (bool) get_config('crawler_skip_origin_content', 0);
 
-            foreach ($targets as $target) {
-                Bus::chain(
-                    [
-                        (new TranslateContentJob($this->link, $target))->onQueue($transQueue),
-                        (new PostContentJob($this->link, $target))->onQueue($queue),
-                    ]
-                )->dispatch();
+            if (!$skipSource) {
+                (new PostContentJob($this->link, $content->lang))->onQueue($queue);
             }
+
+            // Translate content
+            // $targets = collect($targets)->filter(
+            //     function ($item) use ($content) {
+            //         return $item !== $content->lang;
+            //     }
+            // )->values()->toArray();
+            //
+            // foreach ($targets as $target) {
+            //     Bus::chain(
+            //         [
+            //             (new TranslateContentJob($this->link, $target))->onQueue($transQueue),
+            //             (new PostContentJob($this->link, $target))->onQueue($queue),
+            //         ]
+            //     )->dispatch();
+            // }
         } catch (\Throwable $e) {
             $this->link->update(['status' => CrawlerLink::STATUS_ERROR]);
             throw $e;
