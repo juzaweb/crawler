@@ -14,7 +14,6 @@ use Juzaweb\Backend\Http\Controllers\Backend\PageController;
 use Juzaweb\CMS\Facades\HookAction;
 use Juzaweb\CMS\Traits\ResourceController;
 use Juzaweb\Crawler\Http\Datatables\WebsiteDatatable;
-use Juzaweb\Crawler\Jobs\ReplaceTranslateJob;
 use Juzaweb\Crawler\Models\CrawlerWebsite;
 
 class WebsiteController extends PageController
@@ -28,9 +27,9 @@ class WebsiteController extends PageController
 
     protected function afterSave($data, $model, ...$params): void
     {
-        if ($model->wasChanged('translate_replaces')) {
-            ReplaceTranslateJob::dispatch($model);
-        }
+        // if ($model->wasChanged('translate_replaces')) {
+        //     ReplaceTranslateJob::dispatch($model);
+        // }
     }
 
     protected function getDataForForm($model, ...$params): array

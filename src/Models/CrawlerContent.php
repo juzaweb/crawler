@@ -10,7 +10,7 @@ use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\ResourceModel;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
-use Juzaweb\Crawler\Jobs\TranslateCrawlerContentJob;
+use Juzaweb\CrawlerTranslate\Jobs\TranslateCrawlerContentJob;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerContent

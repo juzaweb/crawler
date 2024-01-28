@@ -21,6 +21,7 @@ use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerWebsite;
+use Juzaweb\CrawlerTranslate\Jobs\TranslateContentJob;
 use Juzaweb\Proxies\Contracts\ProxyManager;
 
 class ContentCrawlerJob implements ShouldQueue
