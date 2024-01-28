@@ -12,7 +12,12 @@
                     'Option',
                     'option',
                     [
-                        'options' => ['content' => 'Get Content', 'link' => 'Get Link'],
+                        'options' => [
+                            'content' => 'Get Content',
+                             'link' => 'Get Links',
+                             'resource_link' => 'Get Resource Links',
+                             'resource_content' => 'Get Resource Content',
+                        ],
                         'value' => $testingData['option'] ?? null,
                     ],
                 ) }}

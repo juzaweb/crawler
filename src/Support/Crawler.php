@@ -162,7 +162,7 @@ class Crawler implements CrawlerContract
 
         $template = $link->website->getTemplateClass();
         $isResource = (bool) $link->page->is_resource_page;
-        $queue = config('crawler.queue.crawler');
+        //$queue = config('crawler.queue.crawler');
 
         if ($isResource) {
             $resource = $this->importResourceData($content->components, $link);

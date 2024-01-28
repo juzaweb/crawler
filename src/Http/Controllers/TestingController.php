@@ -68,11 +68,29 @@ class TestingController extends BackendController
                     $template
                 );
                 break;
+            case 'resource_link':
+                $results = app(CrawlerContract::class)->crawLinksUrl(
+                    $url,
+                    $template,
+                    true
+                );
+                break;
+            case 'resource_content':
+                $results = app(CrawlerContract::class)->getContensOfResource(
+                    $url,
+                    $template
+                );
+                break;
         }
+
+        $view = match ($option) {
+            'link', 'resource_link' => 'crawler::testing.components.link_result',
+            'content', 'resource_content' => 'crawler::testing.components.content_result',
+        };
 
         return $this->success(
             [
-                'html' => view("crawler::testing.components.{$option}_result", compact('results'))
+                'html' => view($view, compact('results'))
                     ->render(),
                 'message' => 'Crawler success',
             ]

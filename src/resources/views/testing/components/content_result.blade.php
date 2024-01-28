@@ -5,7 +5,7 @@
 </div>
 
 @if(isset($results['thumbnail']))
-    <img src="{{ $results['thumbnail'] }}" class="w-100" />
+    <img src="{{ $results['thumbnail'] }}" class="mw-100" />
 @endif
 
 @foreach($results as $key => $result)
