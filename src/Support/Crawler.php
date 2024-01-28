@@ -32,7 +32,6 @@ use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
 use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
-use Juzaweb\CrawlerTranslate\Support\Translate\CrawlerContentTranslation;
 
 class Crawler implements CrawlerContract
 {
@@ -155,26 +154,6 @@ class Crawler implements CrawlerContract
         return $content;
     }
 
-    public function translate(CrawlerContent $content, string $target, string|array|null $proxy = null): CrawlerContent
-    {
-        if ($currentContent = $content->children()->where(['lang' => $target])->first()) {
-            $currentContent->components = $this->translateCrawlerContent($content, $target);
-            $currentContent->status = CrawlerContent::STATUS_PENDING;
-            $currentContent->save();
-            return $currentContent;
-        }
-
-        $newContent = $content->replicate();
-        $newContent->components = $this->translateCrawlerContent($content, $target, $proxy);
-        $newContent->status = CrawlerContent::STATUS_PENDING;
-        $newContent->lang = $target;
-        $newContent->is_source = false;
-        $newContent->post_id = null;
-        $newContent->resource_id = null;
-        $newContent->save();
-        return $newContent;
-    }
-
     public function savePost(CrawlerContent $content, CrawlerLink $link = null): Post|array
     {
         if ($link === null) {
@@ -250,16 +229,6 @@ class Crawler implements CrawlerContract
         }
 
         return $post;
-    }
-
-    public function translateCrawlerContent(
-        CrawlerContent $content,
-        string $target,
-        string|array|null $proxy = null
-    ): array {
-        $translater = $this->createCrawlerContentTranslation($content, $content->lang, $target, $proxy);
-
-        return $translater->translate();
     }
 
     public function checkAndInsertLinks(array $items, CrawlerPage $page): array
@@ -403,19 +372,6 @@ class Crawler implements CrawlerContract
         }
 
         return $post;
-    }
-
-    private function createCrawlerContentTranslation(
-        CrawlerContent $content,
-        string $source,
-        string $target,
-        string|array|null $proxy = null
-    ): CrawlerContentTranslation {
-        $translater = new CrawlerContentTranslation($content, $source, $target);
-        if ($proxy) {
-            return $translater->withProxy($proxy);
-        }
-        return $translater;
     }
 
     private function createLinkCrawler(): LinkCrawler

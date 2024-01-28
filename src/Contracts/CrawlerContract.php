@@ -49,9 +49,5 @@ interface CrawlerContract
 
     public function savePost(CrawlerContent $content);
 
-    public function translate(CrawlerContent $content, string $target, string|array|null $proxy = null): CrawlerContent;
-
-    public function translateCrawlerContent(CrawlerContent $content, string $target): array;
-
     public function checkAndInsertLinks(array $items, CrawlerPage $page): array;
 }
