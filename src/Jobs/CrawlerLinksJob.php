@@ -35,8 +35,6 @@ class CrawlerLinksJob implements ShouldQueue
 
     public function handle(): void
     {
-        $this->page->lockForUpdate();
-
         $fnCrawl = function () {
             $proxy = null;
             if ((bool) get_config('crawler_enable_proxy', 0)) {

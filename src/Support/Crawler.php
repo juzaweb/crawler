@@ -45,8 +45,12 @@ class Crawler implements CrawlerContract
         $this->hookAction = $app[HookActionContract::class];
     }
 
-    public function crawPageLinks(CrawlerPage $page, int $pageNumber, string|array|null $proxy = null): bool|int
-    {
+    public function crawPageLinks(
+        CrawlerPage $page,
+        int $pageNumber,
+        string|array|null $proxy = null,
+        bool $crawlContents = true
+    ): array {
         $template = $page->website->getTemplateClass();
 
         $crawUrl = $page->url;
@@ -65,9 +69,7 @@ class Crawler implements CrawlerContract
             $proxy
         );
 
-        $data = $this->checkAndInsertLinks($items, $page);
-
-        return count($data);
+        return $this->checkAndInsertLinks($items, $page, $crawlContents);
     }
 
     public function crawLinksUrl(
@@ -231,7 +233,11 @@ class Crawler implements CrawlerContract
         return $post;
     }
 
-    public function checkAndInsertLinks(array $items, CrawlerPage $page): array
+    public function checkAndInsertLinks(
+        array $items,
+        CrawlerPage $page,
+        bool $crawlContents = true
+    ): array
     {
         $colection = collect($items)
             ->map(
@@ -259,7 +265,9 @@ class Crawler implements CrawlerContract
 
         DB::table(CrawlerLink::getTableName())->lockForUpdate()->insert($data);
 
-        $this->crawlerContents($urlHashs);
+        if ($crawlContents) {
+            $this->crawlerContents($urlHashs);
+        }
 
         return $data;
     }
