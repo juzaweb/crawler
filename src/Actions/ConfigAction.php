@@ -22,7 +22,7 @@ class ConfigAction extends Action
     {
         $content = CrawlerContent::with(['link'])->where('post_id', $model->id)->first();
         if ($content) {
-            echo "<a href=\"{$content->link->url}\" target='_blank' rel='noreferrer'>Original post</a>";
+            echo "<a class='btn btn-primary' href=\"{$content->link->url}\" target='_blank' rel='noreferrer'>Original post</a>";
         }
     }
 
