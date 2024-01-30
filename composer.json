@@ -1,5 +1,6 @@
 {
     "name": "juzaweb/crawler",
+    "type": "juzaweb-plugin",
     "description": "",
     "extra": {
         "juzaweb": {

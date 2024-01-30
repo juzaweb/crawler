@@ -1,0 +1,18 @@
+<?php
+/**
+ * JUZAWEB CMS - Laravel CMS for Your Project
+ *
+ * @package    juzaweb/cms
+ * @author     The Anh Dang
+ * @link       https://juzaweb.com
+ * @license    GNU V2
+ */
+
+namespace Juzaweb\Crawler\Interfaces;
+
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+interface CrawlerPageEntity
+{
+    public function website(): BelongsTo;
+}

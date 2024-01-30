@@ -23,6 +23,7 @@ use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Events\PostSuccess;
 use Juzaweb\Crawler\Exceptions\CrawContentLinkException;
 use Juzaweb\Crawler\Exceptions\CrawlerException;
+use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
 use Juzaweb\Crawler\Jobs\AddCommentToPostJob;
@@ -46,7 +47,7 @@ class Crawler implements CrawlerContract
     }
 
     public function crawPageLinks(
-        CrawlerPage $page,
+        CrawlerPageEntity $page,
         int $pageNumber,
         string|array|null $proxy = null,
         bool $crawlContents = true
@@ -235,7 +236,7 @@ class Crawler implements CrawlerContract
 
     public function checkAndInsertLinks(
         array $items,
-        CrawlerPage $page,
+        CrawlerPageEntity $page,
         bool $crawlContents = true
     ): array
     {

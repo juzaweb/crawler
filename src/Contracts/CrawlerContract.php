@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Crawler\Contracts;
 
+use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
@@ -21,13 +22,13 @@ use Juzaweb\Crawler\Models\CrawlerPage;
 interface CrawlerContract
 {
     /**
-     * @param  CrawlerPage  $page
+     * @param  CrawlerPageEntity  $page
      * @param  int  $pageNumber
      * @param  string|array|null  $proxy
      * @return bool|int
      * @see \Juzaweb\Crawler\Support\Crawler::crawPageLinks()
      */
-    public function crawPageLinks(CrawlerPage $page, int $pageNumber, string|array|null $proxy = null): array;
+    public function crawPageLinks(CrawlerPageEntity $page, int $pageNumber, string|array|null $proxy = null): array;
 
     /**
      * @param  string  $url

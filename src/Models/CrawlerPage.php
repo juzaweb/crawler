@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\ResourceModel;
+use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerPage
@@ -55,7 +56,7 @@ use Juzaweb\CMS\Traits\ResourceModel;
  * @property int|null $max_page
  * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereMaxPage($value)
  */
-class CrawlerPage extends Model
+class CrawlerPage extends Model implements CrawlerPageEntity
 {
     use ResourceModel;
 
