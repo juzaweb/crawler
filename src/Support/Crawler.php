@@ -253,6 +253,7 @@ class Crawler implements CrawlerContract
             );
 
         $urls = CrawlerLink::whereIn('url_hash', $colection->pluck('url_hash')->toArray())
+            ->where('website_id', $page->website->id)
             ->get(['url_hash'])
             ->keyBy('url_hash')
             ->toArray();
@@ -267,19 +268,19 @@ class Crawler implements CrawlerContract
         DB::table(CrawlerLink::getTableName())->lockForUpdate()->insert($data);
 
         if ($crawlContents) {
-            $this->crawlerContents($urlHashs);
+            $this->crawlerContents($page, $urlHashs);
         }
 
         return $data;
     }
 
-    protected function crawlerContents(array $urlHashs): void
+    protected function crawlerContents(CrawlerPageEntity $page, array $urlHashs): void
     {
         $queue = config('crawler.queue.crawler');
 
         try {
             $links = CrawlerLink::with(['website', 'page'])
-                ->where(['status' => CrawlerLink::STATUS_PENDING])
+                ->where(['status' => CrawlerLink::STATUS_PENDING, 'website_id' => $page->website->id])
                 ->whereIn('url_hash', $urlHashs)
                 ->lockForUpdate()
                 ->get();
