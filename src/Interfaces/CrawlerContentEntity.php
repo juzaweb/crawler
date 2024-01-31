@@ -10,7 +10,7 @@
 
 namespace Juzaweb\Crawler\Interfaces;
 
-interface ContentEntity
+interface CrawlerContentEntity
 {
 
 }

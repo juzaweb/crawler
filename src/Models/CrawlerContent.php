@@ -10,6 +10,7 @@ use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\ResourceModel;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
 use Juzaweb\CrawlerTranslate\Jobs\TranslateCrawlerContentJob;
 
 /**
@@ -52,7 +53,7 @@ use Juzaweb\CrawlerTranslate\Jobs\TranslateCrawlerContentJob;
  * @property-read Post|null $post
  * @method static Builder|CrawlerContent whereFilter($params = [])
  */
-class CrawlerContent extends Model
+class CrawlerContent extends Model implements CrawlerContentEntity
 {
     use ResourceModel;
 
