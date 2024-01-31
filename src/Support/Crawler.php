@@ -23,6 +23,7 @@ use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Events\PostSuccess;
 use Juzaweb\Crawler\Exceptions\CrawContentLinkException;
 use Juzaweb\Crawler\Exceptions\CrawlerException;
+use Juzaweb\Crawler\Interfaces\CrawlerLinkEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
@@ -92,7 +93,7 @@ class Crawler implements CrawlerContract
         return $this->createContentCrawler()->crawContentsUrl($url, $template, $isResource);
     }
 
-    public function crawContentLink(CrawlerLink $link, string|array|null $proxy = null): CrawlerContent
+    public function crawContentLink(CrawlerLinkEntity $link, string|array|null $proxy = null): CrawlerContent
     {
         $template = $link->website->getTemplateClass();
 
@@ -157,7 +158,7 @@ class Crawler implements CrawlerContract
         return $content;
     }
 
-    public function savePost(CrawlerContent $content, CrawlerLink $link = null): Post|array
+    public function savePost(CrawlerContent $content, CrawlerLinkEntity $link = null): Post|array
     {
         if ($link === null) {
             $link = $content->link;
@@ -298,7 +299,7 @@ class Crawler implements CrawlerContract
         }
     }
 
-    protected function importResourceData(array $data, CrawlerLink $link): array
+    protected function importResourceData(array $data, CrawlerLinkEntity $link): array
     {
         $resources = [];
         foreach ($data as $key => $item) {
@@ -317,7 +318,7 @@ class Crawler implements CrawlerContract
         return $resources;
     }
 
-    protected function importPostData(array $data, CrawlerLink $link, CrawlerTemplate $template): Post
+    protected function importPostData(array $data, CrawlerLinkEntity $link, CrawlerTemplate $template): Post
     {
         throw_if(empty($data['title']), new CrawlerException('Data post empty title'));
 
