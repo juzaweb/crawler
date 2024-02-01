@@ -10,7 +10,8 @@
 
 namespace Juzaweb\Crawler\Abstracts;
 
-use GuzzleHttp\Client;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
 use Juzaweb\Crawler\Support\HtmlDomCrawler;
 
 abstract class CrawlerAbstract
@@ -38,18 +39,17 @@ abstract class CrawlerAbstract
 
     protected function getContentUrl($url): string
     {
-        $response = $this->getClient()->get($url);
+        $response = $this->getClient()->retry(3, 1000)->get($url);
 
-        return $response->getBody()->getContents();
+        return $response->throw()->body();
     }
 
-    protected function getClient(): Client
+    protected function getClient(): PendingRequest
     {
-        $options = ['timeout' => 20, 'connect_timeout' => 10];
         if ($this->proxy) {
-            $options['proxy'] = $this->proxy;
+            return Http::withOptions(['proxy' => $this->proxy])->timeout(20)->connectTimeout(10);
         }
 
-        return new Client($options);
+        return Http::timeout(20)->connectTimeout(10);;
     }
 }

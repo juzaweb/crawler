@@ -43,10 +43,15 @@ interface CrawlerContract
     /**
      * @param  CrawlerLinkEntity  $link
      * @param  string|array|null  $proxy
-     * @return CrawlerContent
+     * @param  string  $status
+     * @return CrawlerLinkEntity
      * @see \Juzaweb\Crawler\Support\Crawler::crawContentLink()
      */
-    public function crawContentLink(CrawlerLinkEntity $link, string|array|null $proxy = null): CrawlerContent;
+    public function crawContentLink(
+        CrawlerLinkEntity $link,
+        string|array|null $proxy = null,
+        string $status = CrawlerContent::STATUS_PENDING
+    ): CrawlerLinkEntity;
 
     public function savePost(CrawlerContent $content);
 

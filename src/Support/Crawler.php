@@ -93,8 +93,11 @@ class Crawler implements CrawlerContract
         return $this->createContentCrawler()->crawContentsUrl($url, $template, $isResource);
     }
 
-    public function crawContentLink(CrawlerLinkEntity $link, string|array|null $proxy = null): CrawlerContent
-    {
+    public function crawContentLink(
+        CrawlerLinkEntity $link,
+        string|array|null $proxy = null,
+        string $status = CrawlerContent::STATUS_PENDING
+    ): CrawlerLinkEntity {
         $template = $link->website->getTemplateClass();
 
         $isResource = (bool) $link->page->is_resource_page;
@@ -120,42 +123,38 @@ class Crawler implements CrawlerContract
             new CrawContentLinkException("Can't get title data link {$link->url}")
         );
 
-        DB::beginTransaction();
-        try {
-            $content = CrawlerContent::where(['link_id' => $link->id, 'lang' => $link->page->lang])->first();
-            if ($content) {
-                $status = $content->status;
-                if ($content->status == CrawlerContent::STATUS_REGET) {
-                    $status = CrawlerContent::STATUS_DONE;
+        return DB::transaction(
+            function () use ($link, $data, $status) {
+                $content = CrawlerContent::where(['link_id' => $link->id, 'lang' => $link->page->lang])->first();
+                if ($content) {
+                    $status = $content->status;
+                    if ($content->status == CrawlerContent::STATUS_REGET) {
+                        $status = CrawlerContent::STATUS_DONE;
+                    }
+
+                    $content->update(
+                        [
+                            'components' => $data,
+                            'status' => $status,
+                        ]
+                    );
+
+                    return $content;
                 }
 
-                $content->update(
-                    [
-                        'components' => $data,
-                        'status' => $status,
-                    ]
-                );
-            } else {
-                $content = CrawlerContent::create(
+                return CrawlerContent::create(
                     [
                         'components' => $data,
                         'is_source' => true,
                         'link_id' => $link->id,
                         'page_id' => $link->page_id,
                         'lang' => $link->page->lang,
-                        'status' => CrawlerContent::STATUS_PENDING,
+                        'status' => $status,
                         'website_id' => $link->website_id,
                     ]
                 );
             }
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-        return $content;
+        );
     }
 
     public function savePost(CrawlerContent $content, CrawlerLinkEntity $link = null): Post|array
