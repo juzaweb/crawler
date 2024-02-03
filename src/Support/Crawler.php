@@ -23,6 +23,7 @@ use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Events\PostSuccess;
 use Juzaweb\Crawler\Exceptions\CrawContentLinkException;
 use Juzaweb\Crawler\Exceptions\CrawlerException;
+use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerLinkEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
@@ -93,11 +94,10 @@ class Crawler implements CrawlerContract
         return $this->createContentCrawler()->crawContentsUrl($url, $template, $isResource);
     }
 
-    public function crawContentLink(
+    public function crawContentLinkWithoutSave(
         CrawlerLinkEntity $link,
-        string|array|null $proxy = null,
-        string $status = CrawlerContent::STATUS_PENDING
-    ): CrawlerLinkEntity {
+        string|array|null $proxy = null
+    ): array {
         $template = $link->website->getTemplateClass();
 
         $isResource = (bool) $link->page->is_resource_page;
@@ -122,6 +122,16 @@ class Crawler implements CrawlerContract
             empty($data['title']),
             new CrawContentLinkException("Can't get title data link {$link->url}")
         );
+
+        return $data;
+    }
+
+    public function crawContentLink(
+        CrawlerLinkEntity $link,
+        string|array|null $proxy = null,
+        string $status = CrawlerContent::STATUS_PENDING
+    ): CrawlerContentEntity {
+        $data = $this->crawContentLinkWithoutSave($link, $proxy);
 
         return DB::transaction(
             function () use ($link, $data, $status) {

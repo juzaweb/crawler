@@ -10,6 +10,7 @@
 
 namespace Juzaweb\Crawler\Contracts;
 
+use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerLinkEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
@@ -51,7 +52,7 @@ interface CrawlerContract
         CrawlerLinkEntity $link,
         string|array|null $proxy = null,
         string $status = CrawlerContent::STATUS_PENDING
-    ): CrawlerLinkEntity;
+    ): CrawlerContentEntity;
 
     public function savePost(CrawlerContent $content);
 

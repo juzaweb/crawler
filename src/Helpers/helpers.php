@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
+
 function replaceTranslate($searchs, $replaces, $text, &$count): string|null
 {
     return preg_replace_callback(
@@ -29,4 +32,13 @@ function replaceTranslate($searchs, $replaces, $text, &$count): string|null
 function getReplaceSearchKey(string $search): string
 {
     return mb_strtolower($search);
+}
+
+function makeCrawlerRequest(?string $proxy = null): PendingRequest
+{
+    if ($proxy) {
+        return Http::withOptions(['proxy' => $proxy])->timeout(20)->connectTimeout(10);
+    }
+
+    return Http::timeout(20)->connectTimeout(10);
 }
