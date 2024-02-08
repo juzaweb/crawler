@@ -10,7 +10,9 @@
 
 namespace Juzaweb\Crawler\Support\Templates;
 
-abstract class CrawlerTemplate
+use Illuminate\Contracts\Support\Arrayable;
+
+abstract class CrawlerTemplate implements Arrayable
 {
     protected string $linkElement;
 
@@ -26,5 +28,14 @@ abstract class CrawlerTemplate
     public function getLinkElement(): string
     {
         return $this->linkElement;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'link_element' => $this->getLinkElement(),
+            'link_element_attribute' => $this->getLinkElementAttribute(),
+            'data' => $this->getDataElements(),
+        ];
     }
 }
