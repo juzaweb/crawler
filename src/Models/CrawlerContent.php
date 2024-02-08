@@ -82,6 +82,7 @@ class CrawlerContent extends Model implements CrawlerContentEntity
         'website_id',
         'status',
         'is_source',
+        'category_ids',
     ];
 
     public static function statuses(): array

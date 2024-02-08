@@ -161,6 +161,7 @@ class Crawler implements CrawlerContract
                         'lang' => $link->page->lang,
                         'status' => $status,
                         'website_id' => $link->website_id,
+                        'category_ids' => $link->page->category_ids,
                     ]
                 );
             }
