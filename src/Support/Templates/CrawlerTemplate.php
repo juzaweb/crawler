@@ -42,12 +42,11 @@ abstract class CrawlerTemplate implements Arrayable
                             function ($value, $name) {
                                 $value['name'] = $name;
                                 $value['selector'] = e($value['selector']);
+                                $value['value'] = $value['value'] ?? 'html';
                                 return $value;
                             }
                         )->values();
                     }
-
-
 
                     return $element;
                 }
