@@ -152,7 +152,7 @@ class Crawler implements CrawlerContract
                     return $content;
                 }
 
-                return CrawlerContent::create(
+                $content = CrawlerContent::create(
                     [
                         'components' => $data,
                         'is_source' => true,
@@ -161,9 +161,12 @@ class Crawler implements CrawlerContract
                         'lang' => $link->page->lang,
                         'status' => $status,
                         'website_id' => $link->website_id,
-                        'category_ids' => $link->page->category_ids,
                     ]
                 );
+
+                $content->categories()->sync($link->page->category_ids);
+
+                return $content;
             }
         );
     }

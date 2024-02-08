@@ -5,6 +5,7 @@ namespace Juzaweb\Crawler\Models;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Models\Model;
@@ -64,10 +65,6 @@ class CrawlerContent extends Model implements CrawlerContentEntity
     public const STATUS_POSTTING = 'posting';
     public const STATUS_REGET = 'reget';
 
-    public $casts = [
-        'components' => 'array',
-    ];
-
     protected $table = 'crawler_contents';
 
     protected string $fieldName = 'id';
@@ -82,7 +79,10 @@ class CrawlerContent extends Model implements CrawlerContentEntity
         'website_id',
         'status',
         'is_source',
-        'category_ids',
+    ];
+
+    public $casts = [
+        'components' => 'array',
     ];
 
     public static function statuses(): array
@@ -120,6 +120,18 @@ class CrawlerContent extends Model implements CrawlerContentEntity
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class, 'post_id', 'id');
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            CustomCategory::class,
+            'crawler_content_category',
+            'crawler_content_id',
+            'crawler_category_id',
+            'id',
+            'id'
+        );
     }
 
     public function reget(bool $sync = false): bool
