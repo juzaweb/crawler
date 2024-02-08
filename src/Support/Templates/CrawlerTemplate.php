@@ -41,6 +41,7 @@ abstract class CrawlerTemplate implements Arrayable
                         $element = collect($element)->map(
                             function ($value, $name) {
                                 $value['name'] = $name;
+                                $value['selector'] = e($value['selector']);
                                 return $value;
                             }
                         )->values();
