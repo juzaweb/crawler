@@ -35,7 +35,20 @@ abstract class CrawlerTemplate implements Arrayable
         return [
             'link_element' => $this->getLinkElement(),
             'link_element_attribute' => $this->getLinkElementAttribute(),
-            'data' => $this->getDataElements(),
+            'elements' => collect($this->getDataElements())->map(
+                function ($element, $key) {
+                    if ($key == 'data') {
+                        $element = collect($element)->map(
+                            function ($value, $name) {
+                                $value['name'] = $name;
+                                return $value;
+                            }
+                        )->values();
+                    }
+
+                    return $element;
+                }
+            ),
         ];
     }
 }
