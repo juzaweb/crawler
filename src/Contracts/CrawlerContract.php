@@ -29,7 +29,12 @@ interface CrawlerContract
      * @return bool|int
      * @see \Juzaweb\Crawler\Support\Crawler::crawPageLinks()
      */
-    public function crawPageLinks(CrawlerPageEntity $page, int $pageNumber, string|array|null $proxy = null): array;
+    public function crawPageLinks(
+        CrawlerPageEntity $page,
+        int $pageNumber,
+        string|array|null $proxy = null,
+        bool $crawlContents = true
+    ): array;
 
     /**
      * @param  string  $url
