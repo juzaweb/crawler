@@ -1,3 +1,19 @@
+### v1.0.1 
+* :+1: Filter content by categories
+* :+1: Translation logs
+* :+1: Crawler categories
+* :+1: Crawler schedule
+* :+1: Map website with template
+* :+1: Show notify message
+* :+1: Add translate website
+* :+1: Crawler contents api
+* :+1: Crawler translate contents
+* :+1: Crawler contents
+* :+1: Crawler service
+* :+1: Update modules
+* :+1: Crawler with resource
+* :+1: Move translate
+
 ### v1.0.0 
 * :+1: Import from cms
 * :+1: Network support
