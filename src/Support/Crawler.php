@@ -161,6 +161,7 @@ class Crawler implements CrawlerContract
                         'lang' => $link->page->lang,
                         'status' => $status,
                         'website_id' => $link->website_id,
+                        'created_by' => $link->website->created_by,
                     ]
                 );
 
@@ -252,8 +253,7 @@ class Crawler implements CrawlerContract
         array $items,
         CrawlerPageEntity $page,
         bool $crawlContents = true
-    ): array
-    {
+    ): array {
         $colection = collect($items)
             ->map(
                 fn ($item) => [

@@ -79,6 +79,7 @@ class CrawlerContent extends Model implements CrawlerContentEntity
         'website_id',
         'status',
         'is_source',
+        'created_by',
     ];
 
     public $casts = [
