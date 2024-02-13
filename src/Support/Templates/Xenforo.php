@@ -52,7 +52,7 @@ class Xenforo extends CrawlerTemplate implements CrawlerTemplateInterface
                 'tags' => [
                     'selector' => '.js-tagList a',
                     'value' => CrawlerElement::$VALUE_TEXT,
-                ]
+                ],
             ],
             'removes' => [
                 'script',
