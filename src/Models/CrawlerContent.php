@@ -13,6 +13,7 @@ use Juzaweb\CMS\Traits\ResourceModel;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
 use Juzaweb\CrawlerTranslate\Jobs\TranslateCrawlerContentJob;
+use Juzaweb\Scrawler\Support\Traits\GetContentAttr;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerContent
@@ -56,7 +57,7 @@ use Juzaweb\CrawlerTranslate\Jobs\TranslateCrawlerContentJob;
  */
 class CrawlerContent extends Model implements CrawlerContentEntity
 {
-    use ResourceModel;
+    use ResourceModel, GetContentAttr;
 
     public const STATUS_PENDING = 'pending';
     public const STATUS_DONE = 'done';

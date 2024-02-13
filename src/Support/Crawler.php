@@ -20,6 +20,7 @@ use Juzaweb\CMS\Contracts\HookActionContract;
 use Juzaweb\CMS\Contracts\PostImporterContract;
 use Juzaweb\CMS\Models\User;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
+use Juzaweb\Crawler\Events\ContentCreated;
 use Juzaweb\Crawler\Events\PostSuccess;
 use Juzaweb\Crawler\Exceptions\CrawContentLinkException;
 use Juzaweb\Crawler\Exceptions\CrawlerException;
@@ -133,7 +134,7 @@ class Crawler implements CrawlerContract
     ): CrawlerContentEntity {
         $data = $this->crawContentLinkWithoutSave($link, $proxy);
 
-        return DB::transaction(
+        $content = DB::transaction(
             function () use ($link, $data, $status) {
                 $content = CrawlerContent::where(['link_id' => $link->id, 'lang' => $link->page->lang])->first();
                 if ($content) {
@@ -170,6 +171,10 @@ class Crawler implements CrawlerContract
                 return $content;
             }
         );
+
+        event(new ContentCreated($content));
+
+        return $content;
     }
 
     public function savePost(CrawlerContent $content, CrawlerLinkEntity $link = null): Post|array
