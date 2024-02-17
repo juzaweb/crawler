@@ -15,5 +15,7 @@ return [
         'translate' => env('CRAWLER_TRANSLATE_QUEUE', 'default'),
 
         'translate_high' => env('CRAWLER_TRANSLATE_HIGH_QUEUE'),
+
+        'auto_post' => env('CRAWLER_AUTO_POST_QUEUE', 'default'),
     ]
 ];
