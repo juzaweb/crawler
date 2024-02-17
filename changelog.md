@@ -1,3 +1,9 @@
+### v1.0.2 
+* :+1: Auto post queue
+* :+1: Content event
+* :+1: Xenforo template
+* :+1: Add created_by to contents
+
 ### v1.0.1 
 * :+1: Filter content by categories
 * :+1: Translation logs
