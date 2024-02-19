@@ -37,13 +37,13 @@ class CrawlerAction extends Action
             ]
         );
 
-        $this->hookAction->registerCrawlerTemplate(
-            'rawstory',
-            [
-                'name' => 'Rawstory.com',
-                'class' => Rawstory::class,
-            ]
-        );
+        // $this->hookAction->registerCrawlerTemplate(
+        //     'rawstory',
+        //     [
+        //         'name' => 'Rawstory.com',
+        //         'class' => Rawstory::class,
+        //     ]
+        // );
 
         $templates = CrawlerTemplate::get();
 
