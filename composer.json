@@ -21,7 +21,8 @@
         "files": ["src/Helpers/helpers.php"]
     },
     "require": {
-        "juzaweb/proxies": "*"
+        "juzaweb/proxies": "*",
+        "laravel/horizon": "^5.22"
     },
     "require-dev": {
         "juzaweb/modules": "^1.0",

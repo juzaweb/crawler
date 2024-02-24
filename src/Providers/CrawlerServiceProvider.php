@@ -98,6 +98,8 @@ class CrawlerServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+        $this->app->register(HorizonServiceProvider::class);
+
         $this->mergeConfigFrom(__DIR__ . '/../../config/crawler.php', 'crawler');
 
         $this->app->singleton(
