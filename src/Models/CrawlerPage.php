@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\ResourceModel;
-use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
+use Juzaweb\Scrawler\Interfaces\CrawlerPageEntity;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerPage

@@ -10,12 +10,12 @@
 
 namespace Juzaweb\Crawler\Contracts;
 
-use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
-use Juzaweb\Crawler\Interfaces\CrawlerLinkEntity;
-use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerPage;
+use Juzaweb\Scrawler\Interfaces\CrawlerContentEntity;
+use Juzaweb\Scrawler\Interfaces\CrawlerLinkEntity;
+use Juzaweb\Scrawler\Interfaces\CrawlerPageEntity;
 
 /**
  * @see \Juzaweb\Crawler\Support\Crawler
