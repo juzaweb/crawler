@@ -6,6 +6,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Models\Model;
@@ -81,6 +82,7 @@ class CrawlerContent extends Model implements CrawlerContentEntity
         'status',
         'is_source',
         'created_by',
+        'source_content_id',
     ];
 
     public $casts = [
@@ -114,9 +116,9 @@ class CrawlerContent extends Model implements CrawlerContentEntity
         return $this->belongsTo(CrawlerPage::class, 'page_id', 'id');
     }
 
-    public function children(): BelongsTo
+    public function children(): HasMany
     {
-        return $this->belongsTo(__CLASS__, 'link_id', 'link_id');
+        return $this->hasMany(__CLASS__, 'source_content_id', 'id');
     }
 
     public function post(): BelongsTo
