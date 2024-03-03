@@ -41,6 +41,11 @@ use Kirschbaum\PowerJoins\PowerJoins;
  * @method static Builder|CrawlerLink whereUrlHash($value)
  * @method static Builder|CrawlerLink whereWebsiteId($value)
  * @mixin Eloquent
+ * @property int $site_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Crawler\Models\CrawlerContent> $contents
+ * @property-read int|null $contents_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerLink whereSiteId($value)
+ * @mixin \Eloquent
  */
 class CrawlerLink extends Model
 {

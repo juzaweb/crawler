@@ -18,7 +18,6 @@ use Juzaweb\CMS\Models\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Component whereElement($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Component whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Component whereTemplateId($value)
- * @mixin \Eloquent
  * @property string|null $attr
  * @property int|null $index
  * @method static \Illuminate\Database\Eloquent\Builder|Component whereAttr($value)
@@ -27,6 +26,7 @@ use Juzaweb\CMS\Models\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Component whereTrans($value)
  * @property int $to_bbcode
  * @method static \Illuminate\Database\Eloquent\Builder|Component whereToBbcode($value)
+ * @mixin \Eloquent
  */
 class Component extends Model
 {

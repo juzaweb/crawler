@@ -48,13 +48,16 @@ use Juzaweb\Scrawler\Interfaces\CrawlerPageEntity;
  * @method static Builder|CrawlerPage whereError($value)
  * @method static Builder|CrawlerPage whereIsResourcePage($value)
  * @method static Builder|CrawlerPage whereUrlHash($value)
- * @mixin \Eloquent
  * @property int|null $parent_post_id
  * @method static Builder|CrawlerPage whereParentPostId($value)
  * @property string $lang
  * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereLang($value)
  * @property int|null $max_page
  * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereMaxPage($value)
+ * @property int $site_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereFilter(array $params = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerPage whereSiteId($value)
+ * @mixin \Eloquent
  */
 class CrawlerPage extends Model implements CrawlerPageEntity
 {

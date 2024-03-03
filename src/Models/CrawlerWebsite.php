@@ -43,6 +43,24 @@ use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
  * @method static Builder|CrawlerWebsite whereTemplateClass($value)
  * @property array|null $translate_replaces
  * @method static Builder|CrawlerWebsite whereTranslateReplaces($value)
+ * @property int $site_id
+ * @property int|null $created_by
+ * @property string|null $link_element
+ * @property mixed|null $data_elements
+ * @property string $lang
+ * @property mixed|null $translations
+ * @property string $validate_status
+ * @property string|null $validate_error
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereDataElements($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereLang($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereLinkElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereQueue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereSiteId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereTranslations($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereValidateError($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerWebsite whereValidateStatus($value)
+ * @mixin \Eloquent
  */
 class CrawlerWebsite extends Model
 {

@@ -35,6 +35,7 @@ use Juzaweb\Crawler\Support\Templates\DatabaseTemplate;
  * @method static Builder|CrawlerTemplate whereName($value)
  * @method static Builder|CrawlerTemplate whereUpdatedAt($value)
  * @mixin Eloquent
+ * @mixin \Eloquent
  */
 class CrawlerTemplate extends Model
 {

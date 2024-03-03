@@ -35,6 +35,7 @@ use Juzaweb\CMS\Models\User;
  * @method static Builder|\Juzaweb\Scrawler\Models\CustomCategory whereUpdatedAt($value)
  * @method static Builder|\Juzaweb\Scrawler\Models\CustomCategory whereUserId($value)
  * @mixin Eloquent
+ * @mixin \Eloquent
  */
 class CustomCategory extends Model
 {

@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|CrawRemoveElement whereIndex($value)
  * @property int $type 1: Remove all, 2: Remove html
  * @method static Builder|CrawRemoveElement whereType($value)
+ * @mixin \Eloquent
  */
 class CrawRemoveElement extends Model
 {

@@ -55,6 +55,26 @@ use Juzaweb\Scrawler\Support\Traits\GetContentAttr;
  * @method static Builder|CrawlerContent whereWebsiteId($value)
  * @property-read Post|null $post
  * @method static Builder|CrawlerContent whereFilter($params = [])
+ * @property int $site_id
+ * @property string|null $deleted_at
+ * @property mixed|null $category_ids
+ * @property string $title
+ * @property int|null $created_by
+ * @property int|null $source_content_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Scrawler\Models\AutoPosts\AutoPostWebsite> $autoPostWebsites
+ * @property-read int|null $auto_post_websites_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Crawler\Models\CustomCategory> $categories
+ * @property-read int|null $categories_count
+ * @property-read int|null $children_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Scrawler\Models\TranslationLog> $translationLogs
+ * @property-read int|null $translation_logs_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereCategoryIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereSiteId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereSourceContentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereTitle($value)
+ * @mixin \Eloquent
  */
 class CrawlerContent extends Model implements CrawlerContentEntity
 {
