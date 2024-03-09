@@ -68,6 +68,16 @@ trait UseNoneReplace
         return $text;
     }
 
+    protected function parseNoneReplaceHtml($text): null|string
+    {
+        foreach ($this->noneReplace as $index => $item) {
+            $replace = $item['text'];
+            $text = str_replace('[none_replace-'. $index .'][/none_replace-'. $index .']', $replace, $text);
+        }
+
+        return $text;
+    }
+
     protected function parseCodeText(string $text): string
     {
         if ($this->isTextHtml($text)) {
