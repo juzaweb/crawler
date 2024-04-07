@@ -88,6 +88,6 @@ class ImportController extends BackendController
             app($template)
         );
 
-        return $this->success(['urls' => $results]);
+        return $this->success(['message' => "Crawling total: " . count($results) . " links", 'urls' => $results]);
     }
 }

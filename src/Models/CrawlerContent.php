@@ -4,6 +4,7 @@ namespace Juzaweb\Crawler\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,6 +16,8 @@ use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\CrawlerTranslate\Jobs\TranslateCrawlerContentJob;
 use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
 use Juzaweb\Crawler\Support\Traits\GetContentAttr;
+use Juzaweb\Scrawler\Models\AutoPosts\AutoPostWebsite;
+use Juzaweb\Scrawler\Models\TranslationLog;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerContent
@@ -61,20 +64,18 @@ use Juzaweb\Crawler\Support\Traits\GetContentAttr;
  * @property string $title
  * @property int|null $created_by
  * @property int|null $source_content_id
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Scrawler\Models\AutoPosts\AutoPostWebsite> $autoPostWebsites
  * @property-read int|null $auto_post_websites_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Crawler\Models\CustomCategory> $categories
+ * @property-read Collection<int, CustomCategory> $categories
  * @property-read int|null $categories_count
  * @property-read int|null $children_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Juzaweb\Scrawler\Models\TranslationLog> $translationLogs
  * @property-read int|null $translation_logs_count
- * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereCategoryIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereSiteId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereSourceContentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Juzaweb\Crawler\Models\CrawlerContent whereTitle($value)
- * @mixin \Eloquent
+ * @method static Builder|CrawlerContent whereCategoryIds($value)
+ * @method static Builder|CrawlerContent whereCreatedBy($value)
+ * @method static Builder|CrawlerContent whereDeletedAt($value)
+ * @method static Builder|CrawlerContent whereSiteId($value)
+ * @method static Builder|CrawlerContent whereSourceContentId($value)
+ * @method static Builder|CrawlerContent whereTitle($value)
+ * @mixin Eloquent
  */
 class CrawlerContent extends Model implements CrawlerContentEntity
 {
