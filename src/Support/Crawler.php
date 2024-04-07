@@ -14,6 +14,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Juzaweb\AutoCrawler\Jobs\AddCommentToPostJob;
+use Juzaweb\AutoCrawler\Jobs\Bus\ContentCrawlerJob;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\Backend\Models\Resource;
 use Juzaweb\CMS\Contracts\HookActionContract;
@@ -24,18 +26,16 @@ use Juzaweb\Crawler\Events\ContentCreated;
 use Juzaweb\Crawler\Events\PostSuccess;
 use Juzaweb\Crawler\Exceptions\CrawContentLinkException;
 use Juzaweb\Crawler\Exceptions\CrawlerException;
+use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
+use Juzaweb\Crawler\Interfaces\CrawlerLinkEntity;
+use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 use Juzaweb\Crawler\Interfaces\CrawlerTemplateInterface as CrawlerTemplate;
 use Juzaweb\Crawler\Interfaces\TemplateHasResource;
-use Juzaweb\Crawler\Jobs\AddCommentToPostJob;
-use Juzaweb\Crawler\Jobs\Bus\ContentCrawlerJob;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
 use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
-use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
-use Juzaweb\Crawler\Interfaces\CrawlerLinkEntity;
-use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 
 class Crawler implements CrawlerContract
 {

@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Log;
-
 if (!function_exists('remove_bbcode')) {
-    function remove_bbcode($text)
+    function remove_bbcode($text): string
     {
         /* Remove BBCode */
         $text = preg_replace('~\[img\](.*?)\[/img\]~s', '', $text);
@@ -29,7 +27,7 @@ function map_crawler_params($text, $params = [])
     return $text;
 }
 
-function clear_markvn($str)
+function clear_markvn($str): array|string|null
 {
     $unicode = array(
         'a'=>'á|à|ả|ã|ạ|ă|ắ|ặ|ằ|ẳ|ẵ|â|ấ|ầ|ẩ|ẫ|ậ',
@@ -57,8 +55,8 @@ function clear_markvn($str)
     }
 
     $str = strtolower(preg_replace('/[^a-zA-Z0-9\ ]/', '', $str));
-    $str = preg_replace('/\s\s+/', ' ', trim($str));
-    return $str;
+
+    return preg_replace('/\s\s+/', ' ', trim($str));
 }
 
 function base_domain($url): array|bool|string
