@@ -2,17 +2,13 @@
 
 namespace Juzaweb\Crawler\Providers;
 
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Collection;
 use Juzaweb\Backend\Models\Post;
 use Juzaweb\CMS\Facades\ActionRegister;
 use Juzaweb\CMS\Facades\MacroableModel;
 use Juzaweb\CMS\Support\HookAction;
 use Juzaweb\CMS\Support\ServiceProvider;
-use Juzaweb\Crawler\Actions\ConfigAction;
-use Juzaweb\Crawler\Actions\CrawlerAction;
 use Juzaweb\Crawler\Actions\ImportAction;
-use Juzaweb\Crawler\Commands;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\Crawler\Models\CrawlerContent;
 use Juzaweb\Crawler\Support\Crawler;
@@ -50,26 +46,8 @@ class CrawlerServiceProvider extends ServiceProvider
             }
         );
 
-        $this->commands(
-            [
-                Commands\Tester\TestLinkCrawlerCommand::class,
-                Commands\Tester\TestContentCrawlerCommand::class,
-                Commands\Crawler\AutoLinkCrawlerCommand::class,
-                Commands\Crawler\AutoContentCrawlerCommand::class,
-                Commands\Poster\AutoPostCommand::class,
-                Commands\FindLinkCommand::class,
-                Commands\Poster\AutoPublishPostCommand::class,
-                Commands\CrawlerLinkManualCommand::class,
-                Commands\ImportTemplateCommand::class,
-                Commands\Crawler\AutoContentCrawlerWithBusCommand::class,
-                Commands\MakeTemplateCommand::class,
-            ]
-        );
-
         ActionRegister::register(
             [
-                CrawlerAction::class,
-                ConfigAction::class,
                 ImportAction::class,
             ]
         );
@@ -83,25 +61,10 @@ class CrawlerServiceProvider extends ServiceProvider
                 'id'
             )
         );
-
-        $this->app->booted(
-            function () {
-                $schedule = $this->app->make(Schedule::class);
-                if (get_config('crawler_enable')) {
-                    $schedule->command(Commands\Crawler\AutoLinkCrawlerCommand::class)->everyFiveMinutes();
-                    $schedule->command(Commands\Crawler\AutoContentCrawlerWithBusCommand::class)->everyFiveMinutes();
-                    $schedule->command(Commands\Poster\AutoPublishPostCommand::class)->hourlyAt('12');
-                }
-            }
-        );
     }
 
     public function register(): void
     {
-        $this->app->register(HorizonServiceProvider::class);
-
-        $this->mergeConfigFrom(__DIR__ . '/../../config/crawler.php', 'crawler');
-
         $this->app->singleton(
             CrawlerContract::class,
             function ($app) {
