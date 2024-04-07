@@ -29,21 +29,21 @@ class CrawlerAction extends Action
 
     public function registerCrawlerTemplates(): void
     {
-        $this->hookAction->registerCrawlerTemplate(
-            'xenforo',
-            [
-                'name' => 'Xenforo Forum',
-                'class' => Xenforo::class,
-            ]
-        );
-
         // $this->hookAction->registerCrawlerTemplate(
-        //     'rawstory',
+        //     'xenforo',
         //     [
-        //         'name' => 'Rawstory.com',
-        //         'class' => Rawstory::class,
+        //         'name' => 'Xenforo Forum',
+        //         'class' => Xenforo::class,
         //     ]
         // );
+
+        $this->hookAction->registerCrawlerTemplate(
+            'rawstory',
+            [
+                'name' => 'Rawstory.com',
+                'class' => Rawstory::class,
+            ]
+        );
 
         $templates = CrawlerTemplate::get();
 

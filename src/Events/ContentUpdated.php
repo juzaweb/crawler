@@ -10,7 +10,7 @@
 
 namespace Juzaweb\Crawler\Events;
 
-use Juzaweb\Scrawler\Interfaces\CrawlerContentEntity;
+use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
 
 class ContentUpdated
 {

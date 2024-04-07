@@ -33,9 +33,9 @@ use Juzaweb\Crawler\Models\CrawlerLink;
 use Juzaweb\Crawler\Models\CrawlerPage;
 use Juzaweb\Crawler\Support\Crawlers\ContentCrawler;
 use Juzaweb\Crawler\Support\Crawlers\LinkCrawler;
-use Juzaweb\Scrawler\Interfaces\CrawlerContentEntity;
-use Juzaweb\Scrawler\Interfaces\CrawlerLinkEntity;
-use Juzaweb\Scrawler\Interfaces\CrawlerPageEntity;
+use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
+use Juzaweb\Crawler\Interfaces\CrawlerLinkEntity;
+use Juzaweb\Crawler\Interfaces\CrawlerPageEntity;
 
 class Crawler implements CrawlerContract
 {

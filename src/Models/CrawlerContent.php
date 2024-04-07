@@ -13,8 +13,8 @@ use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Traits\ResourceModel;
 use Juzaweb\Crawler\Contracts\CrawlerContract;
 use Juzaweb\CrawlerTranslate\Jobs\TranslateCrawlerContentJob;
-use Juzaweb\Scrawler\Interfaces\CrawlerContentEntity;
-use Juzaweb\Scrawler\Support\Traits\GetContentAttr;
+use Juzaweb\Crawler\Interfaces\CrawlerContentEntity;
+use Juzaweb\Crawler\Support\Traits\GetContentAttr;
 
 /**
  * Juzaweb\Crawler\Models\CrawlerContent
