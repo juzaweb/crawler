@@ -1,27 +1,31 @@
 {
     "name": "juzaweb/crawler",
-    "type": "juzaweb-plugin",
-    "description": "",
-    "extra": {
-        "juzaweb": {
-            "name": "Crawler",
-            "domain": "crawler",
-            "cms_min": "1.0",
-            "version": "1.0",
-            "providers": [
-                "Juzaweb\\Crawler\\Providers\\CrawlerServiceProvider"
-            ],
-            "networkable": true
-        }
+    "description": "Juzaweb CMS Crawler module",
+    "type": "juzaweb-module",
+    "keywords": [],
+    "license": "MIT",
+    "homepage": "https://juzaweb.com/cms",
+    "require": {
+        "php": "^8.2",
+        "juzaweb/core": "^5.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "psr-4": {
-            "Juzaweb\\Crawler\\": "src/"
-        },
-        "files": ["src/Helpers/helpers.php"]
+            "Juzaweb\\Modules\\Crawler\\": "src/",
+            "Juzaweb\\Modules\\Crawler\\Database\\Factories\\": "database/factories/"
+        }
     },
-    "require-dev": {
-        "juzaweb/modules": "^1.0",
-        "juzaweb/dev-tool": "^1.0"
+    "autoload-dev": {
+        "psr-4": {
+            "Juzaweb\\Modules\\Crawler\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "sort-packages": true
     }
 }

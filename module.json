@@ -1,0 +1,11 @@
+{
+    "name": "Crawler",
+    "alias": "crawler",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Juzaweb\\Modules\\Crawler\\Providers\\CrawlerServiceProvider"
+    ],
+    "files": []
+}
