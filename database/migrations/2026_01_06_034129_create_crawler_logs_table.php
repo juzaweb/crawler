@@ -34,10 +34,9 @@ return new class extends Migration
             $table->string('locale', 10)->index();
             $table->integer('attempt')->default(0);
             $table->nullableUuidMorphs('post');
-            $table->websiteId();
             $table->datetimes();
 
-            $table->unique(['url_hash', 'website_id']);
+            $table->unique(['url_hash']);
         });
     }
 

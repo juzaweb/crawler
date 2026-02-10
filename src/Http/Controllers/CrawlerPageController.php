@@ -12,11 +12,11 @@ use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerPagesDataTable;
 
 class CrawlerPageController extends AdminController
 {
-    public function index(CrawlerPagesDataTable $dataTable, string $websiteId, string $sourceId)
+    public function index(CrawlerPagesDataTable $dataTable, string $sourceId)
     {
         Breadcrumb::add(__('Crawler Pages'));
 
-        $createUrl = action([static::class, 'create'], [$websiteId, $sourceId]);
+        $createUrl = action([static::class, 'create'], [$sourceId]);
 
         return $dataTable
             ->setSourceId($sourceId)
@@ -26,46 +26,46 @@ class CrawlerPageController extends AdminController
             );
     }
 
-    public function create(string $websiteId, string $sourceId)
+    public function create(string $sourceId)
     {
-        Breadcrumb::add(__('Crawler Pages'), action([static::class, 'index'], [$websiteId, $sourceId]));
+        Breadcrumb::add(__('Crawler Pages'), action([static::class, 'index'], [$sourceId]));
 
         Breadcrumb::add(__('Create Crawler Page'));
 
-        $backUrl = action([static::class, 'index'], [$websiteId, $sourceId]);
+        $backUrl = action([static::class, 'index'], [$sourceId]);
         $model = new CrawlerPage(['source_id' => $sourceId]);
 
         return view(
             'crawler::crawler-page.form',
             [
                 'model' => $model,
-                'action' => action([static::class, 'store'], [$websiteId, $sourceId]),
+                'action' => action([static::class, 'store'], [$sourceId]),
                 'backUrl' => $backUrl,
             ]
         );
     }
 
-    public function edit(string $websiteId, string $sourceId, string $id)
+    public function edit(string $sourceId, string $id)
     {
         $model = CrawlerPage::where('source_id', $sourceId)->findOrFail($id);
 
-        Breadcrumb::add(__('Crawler Pages'), action([static::class, 'index'], [$websiteId, $sourceId]));
+        Breadcrumb::add(__('Crawler Pages'), action([static::class, 'index'], [$sourceId]));
 
         Breadcrumb::add(__('Edit Crawler Page'));
 
-        $backUrl = action([static::class, 'index'], [$websiteId, $sourceId]);
+        $backUrl = action([static::class, 'index'], [$sourceId]);
 
         return view(
             'crawler::crawler-page.form',
             [
-                'action' => action([static::class, 'update'], [$websiteId, $sourceId, $id]),
+                'action' => action([static::class, 'update'], [$sourceId, $id]),
                 'model' => $model,
                 'backUrl' => $backUrl,
             ]
         );
     }
 
-    public function store(CrawlerPageRequest $request, string $websiteId, string $sourceId)
+    public function store(CrawlerPageRequest $request, string $sourceId)
     {
         $model = DB::transaction(
             function () use ($request, $sourceId) {
@@ -77,12 +77,12 @@ class CrawlerPageController extends AdminController
         );
 
         return $this->success([
-            'redirect' => action([static::class, 'index'], [$websiteId, $sourceId]),
+            'redirect' => action([static::class, 'index'], [$sourceId]),
             'message' => __('CrawlerPage created successfully'),
         ]);
     }
 
-    public function update(CrawlerPageRequest $request, string $websiteId, string $sourceId, string $id)
+    public function update(CrawlerPageRequest $request, string $sourceId, string $id)
     {
         $model = CrawlerPage::where('source_id', $sourceId)->findOrFail($id);
 
@@ -97,12 +97,12 @@ class CrawlerPageController extends AdminController
         );
 
         return $this->success([
-            'redirect' => action([static::class, 'index'], [$websiteId, $sourceId]),
+            'redirect' => action([static::class, 'index'], [$sourceId]),
             'message' => __('CrawlerPage updated successfully'),
         ]);
     }
 
-    public function bulk(CrawlerPageActionsRequest $request, string $websiteId, string $sourceId)
+    public function bulk(CrawlerPageActionsRequest $request, string $sourceId)
     {
         $action = $request->input('action');
         $ids = $request->input('ids', []);
