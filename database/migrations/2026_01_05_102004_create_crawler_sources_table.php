@@ -28,7 +28,6 @@ return new class extends Migration
             $table->string('link_regex')->nullable();
             $table->json('components');
             $table->json('removes')->nullable();
-            $table->websiteId();
             $table->datetimes();
         });
     }

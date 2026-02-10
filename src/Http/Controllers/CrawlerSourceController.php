@@ -12,11 +12,11 @@ use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerSourcesDataTable;
 
 class CrawlerSourceController extends AdminController
 {
-    public function index(CrawlerSourcesDataTable $dataTable, string $websiteId)
+    public function index(CrawlerSourcesDataTable $dataTable)
     {
         Breadcrumb::add(__('Crawler Sources'));
 
-        $createUrl = action([static::class, 'create'], [$websiteId]);
+        $createUrl = action([static::class, 'create']);
 
         return $dataTable->render(
             'crawler::crawler-source.index',
@@ -24,44 +24,44 @@ class CrawlerSourceController extends AdminController
         );
     }
 
-    public function create(string $websiteId)
+    public function create()
     {
         Breadcrumb::add(__('Crawler Sources'), admin_url('crawlersources'));
 
         Breadcrumb::add(__('Create Crawler Source'));
 
-        $backUrl = action([static::class, 'index'], [$websiteId]);
+        $backUrl = action([static::class, 'index']);
 
         return view(
             'crawler::crawler-source.form',
             [
                 'model' => new CrawlerSource(),
-                'action' => action([static::class, 'store'], [$websiteId]),
+                'action' => action([static::class, 'store']),
                 'backUrl' => $backUrl,
             ]
         );
     }
 
-    public function edit(string $websiteId, string $id)
+    public function edit(string $id)
     {
         Breadcrumb::add(__('Crawler Sources'), admin_url('crawlersources'));
 
         Breadcrumb::add(__('Create Crawler Sources'));
 
         $model = CrawlerSource::findOrFail($id);
-        $backUrl = action([static::class, 'index'], [$websiteId]);
+        $backUrl = action([static::class, 'index']);
 
         return view(
             'crawler::crawler-source.form',
             [
-                'action' => action([static::class, 'update'], [$websiteId, $id]),
+                'action' => action([static::class, 'update'], [$id]),
                 'model' => $model,
                 'backUrl' => $backUrl,
             ]
         );
     }
 
-    public function store(CrawlerSourceRequest $request, string $websiteId)
+    public function store(CrawlerSourceRequest $request)
     {
         $model = DB::transaction(
             function () use ($request) {
@@ -72,12 +72,12 @@ class CrawlerSourceController extends AdminController
         );
 
         return $this->success([
-            'redirect' => action([static::class, 'index'], [$websiteId]),
+            'redirect' => action([static::class, 'index']),
             'message' => __('Source :name created successfully', ['name' => $model->name]),
         ]);
     }
 
-    public function update(CrawlerSourceRequest $request, string $websiteId, string $id)
+    public function update(CrawlerSourceRequest $request, string $id)
     {
         $model = CrawlerSource::findOrFail($id);
 
@@ -92,12 +92,12 @@ class CrawlerSourceController extends AdminController
         );
 
         return $this->success([
-            'redirect' => action([static::class, 'index'], [$websiteId]),
+            'redirect' => action([static::class, 'index']),
             'message' => __('CrawlerSource :name updated successfully', ['name' => $model->name]),
         ]);
     }
 
-    public function bulk(CrawlerSourceActionsRequest $request, string $websiteId)
+    public function bulk(CrawlerSourceActionsRequest $request)
     {
         $action = $request->input('action');
         $ids = $request->input('ids', []);

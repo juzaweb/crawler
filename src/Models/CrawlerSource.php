@@ -5,11 +5,10 @@ namespace Juzaweb\Modules\Crawler\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
-use Juzaweb\Modules\Core\Traits\Networkable;
 
 class CrawlerSource extends Model
 {
-    use HasAPI, HasUuids, Networkable;
+    use HasAPI, HasUuids;
 
     protected $table = 'crawler_sources';
 
