@@ -16,10 +16,10 @@ abstract class TestCase extends Orchestra
         $this->createMixManifest();
 
         // Create class aliases for backward compatibility
-        if (!class_exists('Juzaweb\Modules\Admin\Models\User')) {
+        if (!class_exists('Juzaweb\Modules\Core\Models\User')) {
             class_alias(
                 'Juzaweb\Modules\Core\Models\User',
-                'Juzaweb\Modules\Admin\Models\User'
+                'Juzaweb\Modules\Core\Models\User'
             );
         }
 

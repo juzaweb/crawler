@@ -2,7 +2,7 @@
 
 namespace Juzaweb\Modules\Crawler\Providers;
 
-use Juzaweb\Modules\Admin\Providers\ServiceProvider;
+use Juzaweb\Modules\Core\Providers\ServiceProvider;
 use Illuminate\Support\Facades\File;
 
 class CrawlerServiceProvider extends ServiceProvider

@@ -3,10 +3,10 @@
 namespace Juzaweb\Modules\Crawler\Http\DataTables;
 
 use Illuminate\Database\Eloquent\Model;
-use Juzaweb\Modules\Admin\DataTables\Action;
-use Juzaweb\Modules\Admin\DataTables\BulkAction;
-use Juzaweb\Modules\Admin\DataTables\Column;
-use Juzaweb\Modules\Admin\DataTables\DataTable;
+use Juzaweb\Modules\Core\DataTables\Action;
+use Juzaweb\Modules\Core\DataTables\BulkAction;
+use Juzaweb\Modules\Core\DataTables\Column;
+use Juzaweb\Modules\Core\DataTables\DataTable;
 use Illuminate\Database\Eloquent\Builder;
 use Juzaweb\Modules\Crawler\Models\CrawlerSource;
 
@@ -22,14 +22,14 @@ class CrawlerSourcesDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-			Column::checkbox(),
-			Column::id(),
-			Column::actions(),
-			Column::make('domain'),
-			Column::make('active'),
-			Column::make('data_type'),
-			Column::createdAt(),
-		];
+            Column::checkbox(),
+            Column::id(),
+            Column::actions(),
+            Column::make('domain'),
+            Column::make('active'),
+            Column::make('data_type'),
+            Column::createdAt(),
+        ];
     }
 
     public function actions(Model $model): array

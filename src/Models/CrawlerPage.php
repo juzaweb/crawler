@@ -3,8 +3,8 @@
 namespace Juzaweb\Modules\Crawler\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Juzaweb\Modules\Admin\Models\Model;
-use Juzaweb\Modules\Admin\Traits\HasAPI;
+use Juzaweb\Modules\Core\Models\Model;
+use Juzaweb\Modules\Core\Traits\HasAPI;
 
 class CrawlerPage extends Model
 {

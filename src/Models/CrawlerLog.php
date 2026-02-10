@@ -2,8 +2,8 @@
 
 namespace Juzaweb\Modules\Crawler\Models;
 
-use Juzaweb\Modules\Admin\Models\Model;
-use Juzaweb\Modules\Admin\Traits\HasAPI;
+use Juzaweb\Modules\Core\Models\Model;
+use Juzaweb\Modules\Core\Traits\HasAPI;
 
 class CrawlerLog extends Model
 {

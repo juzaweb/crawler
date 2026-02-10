@@ -4,7 +4,7 @@ namespace Juzaweb\Modules\Crawler\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-use Juzaweb\Modules\Admin\Facades\Locale;
+use Juzaweb\Modules\Core\Facades\Locale;
 
 class RouteServiceProvider extends ServiceProvider
 {
