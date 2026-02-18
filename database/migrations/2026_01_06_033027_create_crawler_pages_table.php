@@ -6,8 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-    protected $connection = 'mysql';
-
     /**
      * Run the migrations.
      *
@@ -15,11 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (Schema::connection('mysql')->hasTable('crawler_pages')) {
-            return;
-        }
-
-        Schema::connection('mysql')->create('crawler_pages', function (Blueprint $table) {
+        Schema::create('crawler_pages', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('source_id')->index()
                 ->constrained('crawler_sources')
@@ -58,6 +52,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('mysql')->dropIfExists('crawler_pages');
+        Schema::dropIfExists('crawler_page_category');
+        Schema::dropIfExists('crawler_pages');
     }
 };

@@ -15,11 +15,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (Schema::connection('mongodb')->hasTable('crawler_logs')) {
-            return;
-        }
-
-        Schema::connection('mongodb')->create('crawler_logs', function (Blueprint $table) {
+        Schema::create('crawler_logs', function (Blueprint $table) {
             $table->id();
             $table->string('url', 300);
             $table->string('url_hash', 64)->index();
@@ -47,6 +43,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('mongodb')->dropIfExists('crawler_logs');
+        Schema::dropIfExists('crawler_logs');
     }
 };

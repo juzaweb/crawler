@@ -15,11 +15,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (Schema::connection('mysql')->hasTable('crawler_sources')) {
-            return;
-        }
-
-        Schema::connection('mysql')->create('crawler_sources', function (Blueprint $table) {
+        Schema::create('crawler_sources', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('domain', 100)->unique();
             $table->boolean('active')->default(1)->index();
@@ -39,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('mysql')->dropIfExists('crawler_sources');
+        Schema::dropIfExists('crawler_sources');
     }
 };
