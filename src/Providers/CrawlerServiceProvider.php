@@ -9,8 +9,6 @@ class CrawlerServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        //
-
         $this->registerMenus();
     }
 
@@ -19,25 +17,21 @@ class CrawlerServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__ . '/../../Database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         $this->app->register(RouteServiceProvider::class);
     }
 
     protected function registerMenus(): void
     {
-        if (File::missing(storage_path('app/installed'))) {
-            return;
-        }
-
         //
     }
 
     protected function registerConfig(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/config.php' => config_path('crawler.php'),
+            __DIR__ . '/../../config/crawler.php' => config_path('crawler.php'),
         ], 'crawler-config');
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'crawler');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/crawler.php', 'crawler');
     }
 
     protected function registerTranslations(): void

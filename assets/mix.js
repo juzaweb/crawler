@@ -11,12 +11,12 @@ mix.options({
     terser: {extractComments: false}
 });
 
-mix.setPublicPath(`public/modules/$LOWER_NAME$`);
+mix.setPublicPath(`public/modules/crawler`);
 
 mix.styles([
     //
-], 'public/modules/$LOWER_NAME$/css/main.min.css');
+], 'public/modules/crawler/css/main.min.css');
 
 mix.combine([
     //
-], 'public/modules/$LOWER_NAME$/js/main.min.js');
+], 'public/modules/crawler/js/main.min.js');
