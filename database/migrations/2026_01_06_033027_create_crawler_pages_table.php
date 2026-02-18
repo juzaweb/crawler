@@ -28,21 +28,6 @@ return new class extends Migration
             $table->string('locale', 10)->index();
             $table->datetimes();
         });
-
-        Schema::create('crawler_page_category', function (Blueprint $table) {
-            $table->uuid('crawler_category_id');
-            $table->unsignedBigInteger('crawler_page_id');
-
-            $table->primary(['crawler_category_id', 'crawler_page_id']);
-            $table->foreign('crawler_page_id')
-                ->references('id')
-                ->on('crawler_pages')
-                ->onDelete('cascade');
-            $table->foreign('crawler_category_id')
-                ->references('id')
-                ->on('crawler_categories')
-                ->onDelete('cascade');
-        });
     }
 
     /**
@@ -52,7 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('crawler_page_category');
         Schema::dropIfExists('crawler_pages');
     }
 };
