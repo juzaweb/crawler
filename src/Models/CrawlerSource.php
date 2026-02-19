@@ -27,4 +27,9 @@ class CrawlerSource extends Model
         'components' => 'array',
         'removes' => 'array',
     ];
+
+    public function getDataType(): ?\Juzaweb\Modules\Crawler\Contracts\CrawlerDataType
+    {
+        return app(\Juzaweb\Modules\Crawler\CrawlerRepository::class)->getDataType($this->data_type);
+    }
 }

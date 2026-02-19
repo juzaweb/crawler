@@ -5,6 +5,7 @@ namespace Juzaweb\Modules\Crawler\Providers;
 use Juzaweb\Modules\Core\Facades\Menu;
 use Juzaweb\Modules\Core\Providers\ServiceProvider;
 use Illuminate\Support\Facades\File;
+use Juzaweb\Modules\Crawler\Contracts\Crawler;
 
 class CrawlerServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,12 @@ class CrawlerServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         $this->app->register(RouteServiceProvider::class);
+        $this->app->singleton(
+            Crawler::class,
+            function () {
+                return new \Juzaweb\Modules\Crawler\CrawlerRepository();
+            }
+        );
     }
 
     protected function registerMenus(): void
