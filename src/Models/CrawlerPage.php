@@ -29,4 +29,21 @@ class CrawlerPage extends Model
         'error' => 'array',
         'crawled_at' => 'datetime',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(
+            function ($model) {
+                if ($model->isDirty('url')) {
+                    $model->url_hash = sha1($model->url);
+                }
+
+                if (empty($model->locale)) {
+                    $model->locale = app()->getLocale();
+                }
+            }
+        );
+    }
 }
