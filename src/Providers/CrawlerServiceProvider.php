@@ -2,6 +2,7 @@
 
 namespace Juzaweb\Modules\Crawler\Providers;
 
+use Juzaweb\Modules\Core\Facades\Menu;
 use Juzaweb\Modules\Core\Providers\ServiceProvider;
 use Illuminate\Support\Facades\File;
 
@@ -23,7 +24,26 @@ class CrawlerServiceProvider extends ServiceProvider
 
     protected function registerMenus(): void
     {
-        //
+        Menu::make(
+            'crawler',
+            function () {
+                return [
+                    'title' => 'Crawler',
+                    'icon' => 'fa-solid fa-spider',
+                ];
+            }
+        );
+
+        Menu::make(
+            'crawler-sources',
+            function () {
+                return [
+                    'title' => __('Sources'),
+                    'icon' => 'fa-solid fa-spider',
+                    'parent' => 'crawler',
+                ];
+            }
+        );
     }
 
     protected function registerConfig(): void
