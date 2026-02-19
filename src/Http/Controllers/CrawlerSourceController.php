@@ -6,6 +6,7 @@ use Juzaweb\Modules\Core\Facades\Breadcrumb;
 use Juzaweb\Modules\Core\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Juzaweb\Modules\Crawler\Models\CrawlerPage;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceRequest;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceActionsRequest;
 use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerSourcesDataTable;
@@ -75,8 +76,14 @@ class CrawlerSourceController extends AdminController
         $model = DB::transaction(
             function () use ($request) {
                 $data = $request->validated();
+                $pages = $data['crawler_pages'] ?? [];
+                unset($data['crawler_pages']);
 
-                return CrawlerSource::create($data);
+                $model = CrawlerSource::create($data);
+
+                $this->syncCrawlerPages($model, $pages);
+
+                return $model;
             }
         );
 
@@ -93,8 +100,12 @@ class CrawlerSourceController extends AdminController
         $model = DB::transaction(
             function () use ($request, $model) {
                 $data = $request->validated();
+                $pages = $data['crawler_pages'] ?? [];
+                unset($data['crawler_pages']);
 
                 $model->update($data);
+
+                $this->syncCrawlerPages($model, $pages);
 
                 return $model;
             }
@@ -104,6 +115,23 @@ class CrawlerSourceController extends AdminController
             'redirect' => action([static::class, 'index']),
             'message' => __('CrawlerSource :name updated successfully', ['name' => $model->name]),
         ]);
+    }
+
+    private function syncCrawlerPages(CrawlerSource $model, array $pages): void
+    {
+        $requestIds = collect($pages)->pluck('id')->filter()->toArray();
+
+        $model->pages()->whereNotIn('id', $requestIds)->delete();
+
+        foreach ($pages as $page) {
+            $model->pages()->updateOrCreate(
+                ['id' => $page['id'] ?? null],
+                [
+                    'url' => $page['url'],
+                    'active' => $page['active'] ?? 0,
+                ]
+            );
+        }
     }
 
     public function bulk(CrawlerSourceActionsRequest $request)

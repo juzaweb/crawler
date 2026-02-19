@@ -30,6 +30,11 @@ class CrawlerSource extends Model
         'removes' => 'array',
     ];
 
+    public function pages(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CrawlerPage::class, 'source_id', 'id');
+    }
+
     public function getDataType(): ?CrawlerDataType
     {
         return Crawler::getDataType($this->data_type);

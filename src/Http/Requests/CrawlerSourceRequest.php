@@ -23,6 +23,10 @@ class CrawlerSourceRequest extends FormRequest
 			'link_regex' => ['nullable', 'string', 'max:200'],
 			'components' => ['required', 'array'],
 			'removes' => ['nullable', 'array'],
+            'crawler_pages' => ['nullable', 'array'],
+            'crawler_pages.*.id' => ['nullable', 'uuid'],
+            'crawler_pages.*.url' => ['required', 'string', 'max:190'],
+            'crawler_pages.*.active' => ['nullable', 'boolean'],
 		];
     }
 }
