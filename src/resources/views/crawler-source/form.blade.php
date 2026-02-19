@@ -21,18 +21,32 @@
         <div class="row mt-3">
             <div class="col-md-9">
                 <x-card title="{{ __('Information') }}">
-                    {{ Field::text(__('Domain'), 'domain', ['value' => $model->domain]) }}
+                    {{ Field::text(__('Name'), 'name', ['value' => $model->name]) }}
 
-					{{ Field::text(__('Data Type'), 'data_type', ['value' => $model->data_type]) }}
+					<div class="row">
+                        <div class="col-md-6">
+                            {{ Field::text(__('Link Element'), 'link_element', ['value' => $model->link_element]) }}
+                        </div>
 
-					{{ Field::text(__('Link Element'), 'link_element', ['value' => $model->link_element]) }}
+                        <div class="col-md-6">
+                            {{ Field::text(__('Link Regex'), 'link_regex', ['value' => $model->link_regex]) }}
+                        </div>
+                    </div>
+                </x-card>
 
-					{{ Field::text(__('Link Regex'), 'link_regex', ['value' => $model->link_regex]) }}
+                <x-card title="{{ __('Components') }}">
+                    <x-repeater
+                            name="components"
+                            :items="collect($model->components ?? [])->map(fn($item) => (object) $item)->toArray()"
+                            view="crawler::crawler-source.components.component-item"
+                        />
                 </x-card>
             </div>
 
             <div class="col-md-3">
                 {{ Field::checkbox(__('Active'), 'active', ['value' => $model->active]) }}
+
+                {{ Field::text(__('Data Type'), 'data_type', ['value' => $model->data_type]) }}
             </div>
         </div>
     </form>
