@@ -1,8 +1,14 @@
 <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-6">
         <div class="form-group">
             <label>{{ __('URL') }}</label>
             <input type="text" name="crawler_pages[{{ $marker }}][url]" class="form-control" value="{{ $item->url ?? '' }}" required>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label>{{ __('URL With Page') }}</label>
+            <input type="text" name="crawler_pages[{{ $marker }}][url_with_page]" class="form-control" value="{{ $item->url_with_page ?? '' }}">
         </div>
     </div>
     <div class="col-md-2">

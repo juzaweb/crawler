@@ -128,6 +128,7 @@ class CrawlerSourceController extends AdminController
                 ['id' => $page['id'] ?? null],
                 [
                     'url' => $page['url'],
+                    'url_with_page' => $page['url_with_page'] ?? null,
                     'active' => $page['active'] ?? 0,
                 ]
             );
