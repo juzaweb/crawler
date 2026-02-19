@@ -26,7 +26,7 @@ class CrawlerSourceController extends AdminController
 
     public function create()
     {
-        Breadcrumb::add(__('Crawler Sources'), admin_url('crawlersources'));
+        Breadcrumb::add(__('Crawler Sources'), admin_url('crawler-sources'));
 
         Breadcrumb::add(__('Create Crawler Source'));
 
@@ -44,7 +44,7 @@ class CrawlerSourceController extends AdminController
 
     public function edit(string $id)
     {
-        Breadcrumb::add(__('Crawler Sources'), admin_url('crawlersources'));
+        Breadcrumb::add(__('Crawler Sources'), admin_url('crawler-sources'));
 
         Breadcrumb::add(__('Create Crawler Sources'));
 
