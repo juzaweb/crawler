@@ -9,6 +9,7 @@ use Juzaweb\Modules\Crawler\Models\CrawlerSource;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceRequest;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceActionsRequest;
 use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerSourcesDataTable;
+use Juzaweb\Modules\Crawler\Contracts\Crawler;
 
 class CrawlerSourceController extends AdminController
 {
@@ -24,7 +25,7 @@ class CrawlerSourceController extends AdminController
         );
     }
 
-    public function create()
+    public function create(Crawler $crawler)
     {
         Breadcrumb::add(__('Crawler Sources'), admin_url('crawler-sources'));
 
@@ -38,11 +39,15 @@ class CrawlerSourceController extends AdminController
                 'model' => new CrawlerSource(),
                 'action' => action([static::class, 'store']),
                 'backUrl' => $backUrl,
+                'dataTypes' => array_merge(
+                    ['' => __('Select Data Type')],
+                    $crawler->getDataTypes()
+                ),
             ]
         );
     }
 
-    public function edit(string $id)
+    public function edit(Crawler $crawler, string $id)
     {
         Breadcrumb::add(__('Crawler Sources'), admin_url('crawler-sources'));
 
@@ -57,6 +62,10 @@ class CrawlerSourceController extends AdminController
                 'action' => action([static::class, 'update'], [$id]),
                 'model' => $model,
                 'backUrl' => $backUrl,
+                'dataTypes' => array_merge(
+                    ['' => __('Select Data Type')],
+                    $crawler->getDataTypes()
+                ),
             ]
         );
     }
@@ -121,5 +130,33 @@ class CrawlerSourceController extends AdminController
         return $this->success([
             'message' => __('Bulk action performed successfully'),
         ]);
+    }
+
+    public function getComponents(\Illuminate\Http\Request $request, Crawler $crawler)
+    {
+        $key = $request->input('data_type');
+        $dataType = $crawler->getDataType($key);
+
+        if (!$dataType) {
+            return response()->json(['html' => '']);
+        }
+
+        $components = collect($dataType->components())
+            ->map(
+                function ($item, $key) {
+                    return (object) [
+                        'name' => $key,
+                        'element' => '',
+                        'format' => $item['type'] ?? 'text',
+                    ];
+                }
+            );
+
+        $html = view(
+            'crawler::crawler-source.components.items',
+            ['items' => $components]
+        )->render();
+
+        return response()->json(['html' => $html]);
     }
 }

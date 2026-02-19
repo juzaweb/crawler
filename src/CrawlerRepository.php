@@ -2,9 +2,10 @@
 
 namespace Juzaweb\Modules\Crawler;
 
+use Juzaweb\Modules\Crawler\Contracts\Crawler;
 use Juzaweb\Modules\Crawler\Contracts\CrawlerDataType;
 
-class CrawlerRepository
+class CrawlerRepository implements Crawler
 {
     protected array $dataTypes = [];
 
@@ -22,5 +23,19 @@ class CrawlerRepository
         }
 
         return $callback();
+    }
+
+    public function getDataTypes(): array
+    {
+        return collect($this->dataTypes)
+            ->map(
+                function ($callback) {
+                    /** @var CrawlerDataType $dataType */
+                    $dataType = $callback();
+
+                    return $dataType->getLabel();
+                }
+            )
+            ->toArray();
     }
 }

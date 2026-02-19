@@ -35,18 +35,20 @@
                 </x-card>
 
                 <x-card title="{{ __('Components') }}">
-                    <x-repeater
-                            name="components"
-                            :items="collect($model->components ?? [])->map(fn($item) => (object) $item)->toArray()"
-                            view="crawler::crawler-source.components.component-item"
-                        />
+                    <div id="crawler-components">
+                        @foreach($model->components ?? [] as $key => $item)
+                            @include('crawler::crawler-source.components.component-item', ['marker' => $item['name'] ?? $key, 'item' => (object) $item])
+                        @endforeach
+                    </div>
                 </x-card>
             </div>
 
             <div class="col-md-3">
-                {{ Field::checkbox(__('Active'), 'active', ['value' => $model->active]) }}
+                <x-card title="{{ __('Settings') }}">
+                    {{ Field::checkbox(__('Active'), 'active', ['value' => $model->active]) }}
 
-                {{ Field::text(__('Data Type'), 'data_type', ['value' => $model->data_type]) }}
+                    {{ Field::select(__('Data Type'), 'data_type', ['options' => $dataTypes, 'value' => $model->data_type]) }}
+                </x-card>
             </div>
         </div>
     </form>
@@ -55,7 +57,16 @@
 @section('scripts')
     <script type="text/javascript" nonce="{{ csp_script_nonce() }}">
         $(function () {
-            //
+            $('select[name="data_type"]').on('change', function () {
+                let type = $(this).val();
+                $.ajax({
+                    url: "{{ route('admin.crawler.get-components') }}",
+                    data: {data_type: type},
+                    success: function (response) {
+                        $('#crawler-components').html(response.html);
+                    }
+                });
+            });
         });
     </script>
 @endsection

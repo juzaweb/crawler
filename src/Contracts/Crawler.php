@@ -12,5 +12,9 @@ namespace Juzaweb\Modules\Crawler\Contracts;
 
 interface Crawler
 {
+    public function registerDataType(string $key, callable $callback): void;
 
+    public function getDataType(string $key): ?CrawlerDataType;
+
+    public function getDataTypes(): array;
 }

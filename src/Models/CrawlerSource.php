@@ -5,6 +5,8 @@ namespace Juzaweb\Modules\Crawler\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
+use Juzaweb\Modules\Crawler\Contracts\CrawlerDataType;
+use Juzaweb\Modules\Crawler\Facades\Crawler;
 
 class CrawlerSource extends Model
 {
@@ -28,8 +30,8 @@ class CrawlerSource extends Model
         'removes' => 'array',
     ];
 
-    public function getDataType(): ?\Juzaweb\Modules\Crawler\Contracts\CrawlerDataType
+    public function getDataType(): ?CrawlerDataType
     {
-        return app(\Juzaweb\Modules\Crawler\CrawlerRepository::class)->getDataType($this->data_type);
+        return Crawler::getDataType($this->data_type);
     }
 }

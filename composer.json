@@ -22,7 +22,10 @@
     "autoload-dev": {
         "psr-4": {
             "Juzaweb\\Modules\\Crawler\\Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "helpers/helpers.php"
+        ]
     },
     "minimum-stability": "dev",
     "config": {
