@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('crawler_sources', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('domain', 100)->unique();
+            $table->string('name', 100);
             $table->boolean('active')->default(1)->index();
             $table->string('data_type', 50)->index();
             $table->string('link_element')->nullable();

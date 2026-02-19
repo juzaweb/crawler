@@ -13,7 +13,7 @@ class CrawlerSource extends Model
     protected $table = 'crawler_sources';
 
     protected $fillable = [
-        'domain',
+        'name',
         'active',
         'data_type',
         'link_element',

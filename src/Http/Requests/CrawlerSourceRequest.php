@@ -16,11 +16,11 @@ class CrawlerSourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'domain' => ['required'],
+			'name' => ['required', 'string', 'max:100'],
 			'active' => ['required', 'boolean'],
 			'data_type' => ['required', 'in:posts'],
-			'link_element' => ['nullable'],
-			'link_regex' => ['nullable'],
+			'link_element' => ['nullable', 'string', 'max:200'],
+			'link_regex' => ['nullable', 'string', 'max:200'],
 			'components' => ['required', 'array'],
 			'removes' => ['nullable', 'array'],
 		];

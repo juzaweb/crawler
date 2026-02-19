@@ -29,7 +29,8 @@ class CrawlerServiceProvider extends ServiceProvider
             function () {
                 return [
                     'title' => 'Crawler',
-                    'icon' => 'fa-solid fa-spider',
+                    'icon' => 'fas fa-solid fa-spider',
+                    'priority' => 60,
                 ];
             }
         );
@@ -39,7 +40,6 @@ class CrawlerServiceProvider extends ServiceProvider
             function () {
                 return [
                     'title' => __('Sources'),
-                    'icon' => 'fa-solid fa-spider',
                     'parent' => 'crawler',
                 ];
             }
