@@ -34,6 +34,10 @@
                     </div>
                 </x-card>
 
+                <x-card title="{{ __('Pages') }}">
+                    <x-repeater name="crawler_pages" view="crawler::crawler-source.components.page-item" :items="$model->pages" />
+                </x-card>
+
                 <x-card title="{{ __('Components') }}">
                     <div id="crawler-components">
                         @foreach($model->components ?? [] as $key => $item)
