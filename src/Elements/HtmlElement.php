@@ -7,10 +7,10 @@
  * @link       https://larabiz.com
  */
 
-namespace JuzawebModulesCrawler\Elements;
+namespace Juzaweb\Modules\Crawler\Elements;
 
 use Illuminate\Support\Arr;
-use JuzawebModulesCrawler\Contracts\Element;
+use Juzaweb\Modules\Crawler\Contracts\Element;
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 
 class HtmlElement extends BaseElement implements Element

@@ -7,7 +7,7 @@
  * @link       https://larabiz.com
  */
 
-namespace JuzawebModulesCrawler\Elements;
+namespace Juzaweb\Modules\Crawler\Elements;
 
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 
