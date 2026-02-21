@@ -3,6 +3,7 @@
 namespace Juzaweb\Modules\Crawler\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
 use Juzaweb\Modules\Crawler\Contracts\CrawlerDataType;
@@ -30,7 +31,7 @@ class CrawlerSource extends Model
         'removes' => 'array',
     ];
 
-    public function pages(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function pages(): HasMany
     {
         return $this->hasMany(CrawlerPage::class, 'source_id', 'id');
     }

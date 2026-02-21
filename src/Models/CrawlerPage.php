@@ -3,6 +3,7 @@
 namespace Juzaweb\Modules\Crawler\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
 
@@ -45,5 +46,19 @@ class CrawlerPage extends Model
                 }
             }
         );
+    }
+
+    public function source(): BelongsTo
+    {
+        return $this->belongsTo(CrawlerSource::class, 'source_id');
+    }
+
+    public function getCurrentPageUrl()
+    {
+        if (isset($this->url_with_page) && $this->next_page > 1) {
+            return str_replace(':page', $this->next_page, $this->url_with_page);
+        }
+
+        return $this->url;
     }
 }
