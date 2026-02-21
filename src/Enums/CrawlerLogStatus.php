@@ -20,4 +20,32 @@ enum CrawlerLogStatus: string
     case CRAWLED = 'crawled';
     case POSTING = 'posting';
     case FAILED_POSTING = 'failed_posting';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::PENDING => 'Pending',
+            self::PROCESSING => 'Processing',
+            self::COMPLETED => 'Completed',
+            self::FAILED => 'Failed',
+            self::RETRYING => 'Retrying',
+            self::CRAWLED => 'Crawled',
+            self::POSTING => 'Posting',
+            self::FAILED_POSTING => 'Failed Posting',
+        };
+    }
+
+    public function color(): string
+    {
+        return match ($this) {
+            self::PENDING => 'secondary',
+            self::PROCESSING => 'info',
+            self::COMPLETED => 'success',
+            self::FAILED => 'danger',
+            self::RETRYING => 'warning',
+            self::CRAWLED => 'primary',
+            self::POSTING => 'info',
+            self::FAILED_POSTING => 'danger',
+        };
+    }
 }

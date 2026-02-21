@@ -3,6 +3,7 @@
 namespace Juzaweb\Modules\Crawler\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
@@ -21,6 +22,8 @@ class CrawlerLog extends Model
         'status',
         'error',
         'content_json',
+        'post_type',
+        'post_id',
     ];
 
     protected $casts = [
@@ -37,5 +40,10 @@ class CrawlerLog extends Model
     public function page(): BelongsTo
     {
         return $this->belongsTo(CrawlerPage::class, 'page_id');
+    }
+
+    public function post(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

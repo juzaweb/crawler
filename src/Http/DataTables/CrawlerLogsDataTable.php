@@ -16,7 +16,28 @@ class CrawlerLogsDataTable extends DataTable
 
     public function query(CrawlerLog $model): Builder
     {
-        return $model->newQuery()->with(['source']);
+        return $model->newQuery()->with(['source', 'post']);
+    }
+
+    public function dataTable($query)
+    {
+        $dataTable = parent::dataTable($query);
+
+        $dataTable->editColumn('status', function ($row) {
+            return '<span class="badge badge-' . $row->status->color() . '">' . $row->status->label() . '</span>';
+        });
+
+        $dataTable->editColumn('url', function ($row) {
+            return '<a href="' . $row->url . '" target="_blank">' . $row->url . '</a>';
+        });
+
+        $dataTable->addColumn('post', function ($row) {
+            return $row->post?->title ?? $row->post?->name ?? '';
+        });
+
+        $dataTable->rawColumns(['status', 'url', 'actions', 'checkbox']);
+
+        return $dataTable;
     }
 
     public function getColumns(): array
@@ -27,6 +48,7 @@ class CrawlerLogsDataTable extends DataTable
             Column::actions(),
             Column::make('url'),
             Column::make('source.name'),
+            Column::make('post'),
             Column::make('status'),
             Column::createdAt(),
         ];
