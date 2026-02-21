@@ -66,6 +66,7 @@ class CrawlLinkCommand extends Command
                     }
 
                     $link->update(['status' => CrawlerLogStatus::COMPLETED, 'content_json' => $result]);
+                    $successIds[] = $link->id;
 
                     $this->info("Crawled {$link->url}");
                 }
