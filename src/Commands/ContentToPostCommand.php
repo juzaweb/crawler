@@ -13,7 +13,6 @@ namespace Juzaweb\Modules\Crawler\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
-use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -43,8 +42,6 @@ class ContentToPostCommand extends Command
                         return false;
                     }
 
-                    // dispatch(new PostJob($content));
-
                     try {
                         DB::transaction(
                             function () use ($content) {
@@ -59,11 +56,13 @@ class ContentToPostCommand extends Command
 
                         $this->info("Creating post {$content->id} from content {$content->id}");
                     } catch (\Exception $e) {
+                        report($e);
                         $content->update([
                             'status' => CrawlerLogStatus::FAILED_POSTING,
                             'error' => get_error_by_exception($e),
                         ]);
-                        continue;
+
+                        $this->error("Failed to create post from content {$content->id}: " . $e->getMessage());
                     }
 
                     $total++;
