@@ -21,7 +21,6 @@ class CrawlerPageRequest extends FormRequest
 			'next_page' => ['required'],
 			'active' => ['required'],
 			'locale' => ['required'],
-			'categories' => ['nullable', 'array'],
 		];
     }
 }
