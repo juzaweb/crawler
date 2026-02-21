@@ -50,6 +50,16 @@ class CrawlerServiceProvider extends ServiceProvider
         );
 
         Menu::make(
+            'crawler-logs',
+            function () {
+                return [
+                    'title' => __('Crawler Logs'),
+                    'parent' => 'crawler',
+                ];
+            }
+        );
+
+        Menu::make(
             'crawler-sources',
             function () {
                 return [
