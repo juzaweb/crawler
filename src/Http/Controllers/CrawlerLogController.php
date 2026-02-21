@@ -47,6 +47,11 @@ class CrawlerLogController extends AdminController
         foreach ($models as $model) {
             if ($action === 'delete') {
                 $model->delete();
+            } elseif ($action === 'retry') {
+                $model->update([
+                    'status' => CrawlerLogStatus::PENDING,
+                    'error' => null,
+                ]);
             }
         }
 

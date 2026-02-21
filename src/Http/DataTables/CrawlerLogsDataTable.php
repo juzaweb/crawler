@@ -49,6 +49,10 @@ class CrawlerLogsDataTable extends DataTable
     {
         return [
             BulkAction::delete()->can('crawler-logs.delete'),
+            BulkAction::make(__('Retry'))
+                ->action('retry')
+                ->icon('fas fa-redo')
+                ->can('crawler-logs.edit'),
         ];
     }
 
