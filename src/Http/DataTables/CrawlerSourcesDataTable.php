@@ -25,7 +25,7 @@ class CrawlerSourcesDataTable extends DataTable
             Column::checkbox(),
             Column::id(),
             Column::actions(),
-            Column::make('domain'),
+            Column::make('name'),
             Column::make('active'),
             Column::make('data_type'),
             Column::createdAt(),

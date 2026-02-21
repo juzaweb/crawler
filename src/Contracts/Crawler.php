@@ -10,6 +10,9 @@
 
 namespace Juzaweb\Modules\Crawler\Contracts;
 
+/**
+ * @see \Juzaweb\Modules\Crawler\CrawlerRepository
+ */
 interface Crawler
 {
     public function registerDataType(string $key, callable $callback): void;
