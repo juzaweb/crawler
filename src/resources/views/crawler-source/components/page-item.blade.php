@@ -14,7 +14,13 @@
     <div class="col-md-2">
         <div class="form-group">
             <label>{{ __('Locale') }}</label>
-            <input type="text" name="crawler_pages[{{ $marker }}][locale]" class="form-control" value="{{ $item->locale ?? app()->getLocale() }}">
+            <select name="crawler_pages[{{ $marker }}][locale]" class="form-control select2-default">
+                @foreach($locales as $code => $locale)
+                    <option value="{{ $code }}" {{ ($item->locale ?? app()->getLocale()) == $code ? 'selected' : '' }}>
+                        {{ $locale['name'] }}
+                    </option>
+                @endforeach
+            </select>
         </div>
     </div>
     <div class="col-md-2">
