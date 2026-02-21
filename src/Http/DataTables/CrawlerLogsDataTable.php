@@ -8,6 +8,7 @@ use Juzaweb\Modules\Core\DataTables\Action;
 use Juzaweb\Modules\Core\DataTables\BulkAction;
 use Juzaweb\Modules\Core\DataTables\Column;
 use Juzaweb\Modules\Core\DataTables\DataTable;
+use Juzaweb\Modules\Core\DataTables\HtmlBuilder;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 
 class CrawlerLogsDataTable extends DataTable
