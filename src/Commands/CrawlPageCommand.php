@@ -81,6 +81,7 @@ class CrawlPageCommand extends Command
                                 'url_hash' => sha1($link),
                                 'source_id' => $page->source_id,
                                 'page_id' => $page->id,
+                                'locale' => 'en',
                                 'created_at' => now(),
                                 'updated_at' => now(),
                             ];
