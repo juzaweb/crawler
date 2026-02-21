@@ -15,4 +15,6 @@ interface CrawlerDataType
     public function getModel(): string;
 
     public function getLabel(): string;
+
+    public function getCategoryClass(): ?string;
 }
