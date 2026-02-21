@@ -35,6 +35,7 @@ class CrawlerSourcesDataTable extends DataTable
     public function actions(Model $model): array
     {
         return [
+            Action::make(__('Pages'), admin_url("crawler-sources/{$model->id}/pages"), 'fas fa-file-alt')->can('crawler-sources.edit'),
             Action::edit(admin_url("crawler-sources/{$model->id}/edit"))->can('crawler-sources.edit'),
             Action::delete()->can('crawler-sources.delete'),
         ];

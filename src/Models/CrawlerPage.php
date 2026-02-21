@@ -53,6 +53,16 @@ class CrawlerPage extends Model
         return $this->belongsTo(CrawlerSource::class, 'source_id');
     }
 
+    public function taxonomies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(
+            CrawlerTaxonomy::class,
+            'crawler_taxonomies',
+            'page_id',
+            'taxonomy_id'
+        );
+    }
+
     public function getCurrentPageUrl()
     {
         if (isset($this->url_with_page) && $this->next_page > 1) {

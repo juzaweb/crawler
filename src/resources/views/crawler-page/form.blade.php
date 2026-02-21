@@ -28,7 +28,9 @@
 
                     {{ Field::text(__('Next Page'), 'next_page', ['value' => $model->next_page]) }}
 
-                    {{ Field::text(__('Locale'), 'locale', ['value' => $model->locale]) }}
+                    {{ Field::select(__('Locale'), 'locale', ['options' => collect($locales)->map(fn($item) => $item['name'])->toArray(), 'value' => $model->locale ?? app()->getLocale()]) }}
+
+                    {{ Field::select(__('Categories'), 'categories[]', ['options' => $categories, 'value' => $model->taxonomies->pluck('id')->toArray(), 'multiple' => true, 'class' => 'select2']) }}
                 </x-card>
             </div>
 

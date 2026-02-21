@@ -6,6 +6,7 @@ use Juzaweb\Modules\Core\Facades\Breadcrumb;
 use Juzaweb\Modules\Core\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Models\CrawlerPage;
+use Juzaweb\Modules\Crawler\Models\CrawlerTaxonomy;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerPageRequest;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerPageActionsRequest;
 use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerPagesDataTable;
@@ -35,12 +36,17 @@ class CrawlerPageController extends AdminController
         $backUrl = action([static::class, 'index'], [$sourceId]);
         $model = new CrawlerPage(['source_id' => $sourceId]);
 
+        $locales = config('locales');
+        $categories = CrawlerTaxonomy::where('taxonomy', '=', 'categories')->pluck('name', 'id')->toArray();
+
         return view(
             'crawler::crawler-page.form',
             [
                 'model' => $model,
                 'action' => action([static::class, 'store'], [$sourceId]),
                 'backUrl' => $backUrl,
+                'locales' => $locales,
+                'categories' => $categories,
             ]
         );
     }
@@ -54,6 +60,8 @@ class CrawlerPageController extends AdminController
         Breadcrumb::add(__('Edit Crawler Page'));
 
         $backUrl = action([static::class, 'index'], [$sourceId]);
+        $locales = config('locales');
+        $categories = CrawlerTaxonomy::where('taxonomy', '=', 'categories')->pluck('name', 'id')->toArray();
 
         return view(
             'crawler::crawler-page.form',
@@ -61,6 +69,8 @@ class CrawlerPageController extends AdminController
                 'action' => action([static::class, 'update'], [$sourceId, $id]),
                 'model' => $model,
                 'backUrl' => $backUrl,
+                'locales' => $locales,
+                'categories' => $categories,
             ]
         );
     }
@@ -70,9 +80,15 @@ class CrawlerPageController extends AdminController
         $model = DB::transaction(
             function () use ($request, $sourceId) {
                 $data = $request->validated();
+                $categories = $data['categories'] ?? [];
+                unset($data['categories']);
+
                 $data['source_id'] = $sourceId;
 
-                return CrawlerPage::create($data);
+                $model = CrawlerPage::create($data);
+                $model->taxonomies()->sync($categories);
+
+                return $model;
             }
         );
 
@@ -89,8 +105,11 @@ class CrawlerPageController extends AdminController
         $model = DB::transaction(
             function () use ($request, $model) {
                 $data = $request->validated();
+                $categories = $data['categories'] ?? [];
+                unset($data['categories']);
 
                 $model->update($data);
+                $model->taxonomies()->sync($categories);
 
                 return $model;
             }
