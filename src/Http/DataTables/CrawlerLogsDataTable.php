@@ -8,6 +8,7 @@ use Juzaweb\Modules\Core\DataTables\Action;
 use Juzaweb\Modules\Core\DataTables\BulkAction;
 use Juzaweb\Modules\Core\DataTables\Column;
 use Juzaweb\Modules\Core\DataTables\DataTable;
+use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Yajra\DataTables\EloquentDataTable;
 
@@ -56,7 +57,15 @@ class CrawlerLogsDataTable extends DataTable
         $dataTable = parent::renderColumns($builder);
 
         $dataTable->editColumn('status', function ($row) {
-            return '<span class="badge badge-' . $row->status->color() . '">' . $row->status->label() . '</span>';
+            $content = '<span class="badge badge-' . $row->status->color();
+
+            if (in_array($row->status, [CrawlerLogStatus::FAILED, CrawlerLogStatus::FAILED_POSTING])) {
+                $content .= ' show-log-error" style="cursor: pointer" data-error="' . e(json_encode($row->error));
+            }
+
+            $content .= '">' . $row->status->label() . '</span>';
+
+            return $content;
         });
 
         $dataTable->editColumn('url', function ($row) {
