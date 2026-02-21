@@ -9,10 +9,7 @@ use Juzaweb\Modules\Core\DataTables\BulkAction;
 use Juzaweb\Modules\Core\DataTables\Column;
 use Juzaweb\Modules\Core\DataTables\DataTable;
 use Juzaweb\Modules\Core\DataTables\HtmlBuilder;
-use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
-use Juzaweb\Modules\Crawler\Models\CrawlerPage;
-use Juzaweb\Modules\Crawler\Models\CrawlerSource;
 
 class CrawlerLogsDataTable extends DataTable
 {
@@ -48,15 +45,7 @@ class CrawlerLogsDataTable extends DataTable
             ->orderBy($this->orderBy)
             ->selectStyleSingle()
             ->actionUrl($this->getActionUrl())
-            ->bulkActions($this->bulkActions())
-            ->ajax([
-                'url' => $this->getActionUrl(),
-                'data' => 'function(d) {
-                    d.source_id = $("select[name=source_id]").val();
-                    d.page_id = $("select[name=page_id]").val();
-                    d.status = $("select[name=status]").val();
-                }',
-            ]);
+            ->bulkActions($this->bulkActions());
     }
 
     public function getColumns(): array
