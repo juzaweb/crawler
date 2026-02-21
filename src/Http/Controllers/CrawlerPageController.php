@@ -35,12 +35,15 @@ class CrawlerPageController extends AdminController
         $backUrl = action([static::class, 'index'], [$sourceId]);
         $model = new CrawlerPage(['source_id' => $sourceId]);
 
+        $locales = config('locales');
+
         return view(
             'crawler::crawler-page.form',
             [
                 'model' => $model,
                 'action' => action([static::class, 'store'], [$sourceId]),
                 'backUrl' => $backUrl,
+                'locales' => $locales,
             ]
         );
     }
@@ -54,6 +57,7 @@ class CrawlerPageController extends AdminController
         Breadcrumb::add(__('Edit Crawler Page'));
 
         $backUrl = action([static::class, 'index'], [$sourceId]);
+        $locales = config('locales');
 
         return view(
             'crawler::crawler-page.form',
@@ -61,6 +65,7 @@ class CrawlerPageController extends AdminController
                 'action' => action([static::class, 'update'], [$sourceId, $id]),
                 'model' => $model,
                 'backUrl' => $backUrl,
+                'locales' => $locales,
             ]
         );
     }

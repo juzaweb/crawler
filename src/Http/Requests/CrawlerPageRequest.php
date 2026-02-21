@@ -20,7 +20,7 @@ class CrawlerPageRequest extends FormRequest
 			'url_with_page' => ['required'],
 			'next_page' => ['required'],
 			'active' => ['required'],
-			'locale' => ['required']
+			'locale' => ['required'],
 		];
     }
 }
