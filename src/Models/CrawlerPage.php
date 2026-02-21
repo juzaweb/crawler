@@ -4,6 +4,7 @@ namespace Juzaweb\Modules\Crawler\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
 
@@ -51,6 +52,11 @@ class CrawlerPage extends Model
     public function source(): BelongsTo
     {
         return $this->belongsTo(CrawlerSource::class, 'source_id');
+    }
+
+    public function taxonomies(): HasMany
+    {
+        return $this->hasMany(CrawlerTaxonomy::class, 'crawler_page_id', 'id');
     }
 
     public function getCurrentPageUrl()
