@@ -17,15 +17,15 @@
         "psr-4": {
             "Juzaweb\\Modules\\Crawler\\": "src/",
             "Juzaweb\\Modules\\Crawler\\Database\\Factories\\": "database/factories/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Juzaweb\\Modules\\Crawler\\Tests\\": "tests/"
         },
         "files": [
             "helpers/helpers.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Juzaweb\\Modules\\Crawler\\Tests\\": "tests/"
+        }
     },
     "minimum-stability": "dev",
     "config": {

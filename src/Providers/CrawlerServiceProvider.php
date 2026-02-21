@@ -12,6 +12,12 @@ class CrawlerServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerMenus();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \Juzaweb\Modules\Crawler\Commands\CrawlPageCommand::class,
+            ]);
+        }
     }
 
     public function register(): void

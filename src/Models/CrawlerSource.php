@@ -40,4 +40,24 @@ class CrawlerSource extends Model
     {
         return Crawler::getDataType($this->data_type);
     }
+
+    public function getLinkElement(): string
+    {
+        return $this->link_element;
+    }
+
+    public function getLinkRegex(): ?string
+    {
+        return $this->link_regex;
+    }
+
+    public function getComponents(): array
+    {
+        return $this->components ?? [];
+    }
+
+    public function getRemoves(): array
+    {
+        return $this->removes ?? [];
+    }
 }

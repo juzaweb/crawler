@@ -2,6 +2,7 @@
 
 namespace Juzaweb\Modules\Crawler\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
 
@@ -28,12 +29,12 @@ class CrawlerLog extends Model
         'content_json' => 'array',
     ];
 
-    public function source()
+    public function source(): BelongsTo
     {
         return $this->belongsTo(CrawlerSource::class, 'source_id');
     }
 
-    public function page()
+    public function page(): BelongsTo
     {
         return $this->belongsTo(CrawlerPage::class, 'page_id');
     }

@@ -13,7 +13,7 @@ class Link
 {
     public array $result = [];
 
-    public function __construct(protected string $url, protected array $elements = [])
+    public function __construct(public string $url, public array $elements = [])
     {
     }
 

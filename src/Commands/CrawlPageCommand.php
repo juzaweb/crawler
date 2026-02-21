@@ -32,12 +32,12 @@ class CrawlPageCommand extends Command
                         fn ($q3) => $q3->whereNull('crawler_pages.url_with_page')
                             ->orWhere('crawler_pages.next_page', '<=', 1)
                     )
-                        ->where('crawler_date', '<=', now()->subHours(2))
+                        ->where('crawled_at', '<=', now()->subHours(2))
                 )
                     ->orWhere(
                         fn ($q2) => $q2->whereNotNull('crawler_pages.url_with_page')
                             ->where('crawler_pages.next_page', '>', 1)
-                            ->where('crawler_date', '<=', now()->subMinutes(10))
+                            ->where('crawled_at', '<=', now()->subMinutes(10))
                     )
             )
             ->limit($limit)
@@ -89,7 +89,7 @@ class CrawlPageCommand extends Command
             );
         }
 
-        $exists = DB::table('crawler_links')
+        $exists = DB::table('crawler_logs')
             ->whereIn('url_hash', $inserts->pluck('url_hash'))
             ->get(['url_hash'])
             ->pluck('url_hash')
@@ -101,8 +101,8 @@ class CrawlPageCommand extends Command
             function () use ($inserts, $pages) {
                 DB::table('crawler_pages')
                     ->whereIn('id', $pages->pluck('id')->toArray())
-                    ->update(['crawler_date' => now()]);
-                DB::table('crawler_links')->insert($inserts->toArray());
+                    ->update(['crawled_at' => now()]);
+                DB::table('crawler_logs')->insert($inserts->toArray());
 
                 $pages->each(function (CrawlerPage $p) {
                     if ($p->next_page > 1) {
