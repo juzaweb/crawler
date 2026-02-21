@@ -1,0 +1,57 @@
+<?php
+/**
+ * JUZAWEB CMS - Laravel CMS for Your Project
+ *
+ * @package    juzaweb/cms
+ * @author     The Anh Dang
+ * @link       https://cms.juzaweb.com
+ * @license    GNU V2
+ */
+
+namespace Juzaweb\Modules\Crawler\Commands;
+
+use Illuminate\Console\Command;
+use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
+use Juzaweb\Modules\Crawler\Jobs\PostJob;
+use Juzaweb\Modules\Crawler\Models\CrawlerLog;
+use Symfony\Component\Console\Input\InputOption;
+
+class ContentToPostCommand extends Command
+{
+    protected $name = 'crawl:content-to-post';
+
+    protected $description = 'Create posts from contents crawled.';
+
+    public function handle(): int
+    {
+        $limit = $this->option('limit');
+        $total = 0;
+
+        CrawlerLog::with([
+            'page',
+        ])
+            ->whereNull('post_id')
+            ->where(['status' => CrawlerLogStatus::CRAWLED])
+            ->chunkById(100, function ($contents) use (&$total, $limit) {
+                foreach ($contents as $content) {
+                    if ($limit && $total >= $limit) {
+                        return false;
+                    }
+
+                    dispatch(new PostJob($content));
+                    $total++;
+                    $content->update(['status' => CrawlerLogStatus::POSTING]);
+                    $this->info("Creating post {$content->id} from content {$content->id}");
+                }
+            });
+
+        return Command::SUCCESS;
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['limit', null, InputOption::VALUE_OPTIONAL, 'The number of contents to process.', 10],
+        ];
+    }
+}

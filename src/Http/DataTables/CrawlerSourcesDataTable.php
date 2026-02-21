@@ -25,7 +25,7 @@ class CrawlerSourcesDataTable extends DataTable
             Column::checkbox(),
             Column::id(),
             Column::actions(),
-            Column::make('name'),
+            Column::editLink('name', 'crawler-sources/{id}/edit', __('Name')),
             Column::make('active'),
             Column::make('data_type'),
             Column::createdAt(),

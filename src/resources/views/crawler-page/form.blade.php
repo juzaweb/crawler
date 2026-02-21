@@ -28,12 +28,11 @@
 
                     {{ Field::text(__('Next Page'), 'next_page', ['value' => $model->next_page]) }}
 
-                    {{ Field::select(__('Locale'), 'locale', ['options' => collect($locales)->map(fn($item) => $item['name'])->toArray(), 'value' => $model->locale ?? app()->getLocale()]) }}
+                    {{ Field::select(__('Locale'), 'locale', ['options' => collect($locales)->map(fn($item) => $item['name'])->toArray(), 'value' => $model->locale ?? app()->getLocale()])->autocomplete() }}
                 </x-card>
             </div>
 
             <div class="col-md-3">
-
                 {{ Field::checkbox(__('Active'), 'active', ['value' => $model->active]) }}
             </div>
         </div>
