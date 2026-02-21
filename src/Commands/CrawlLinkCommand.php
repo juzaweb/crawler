@@ -65,7 +65,13 @@ class CrawlLinkCommand extends Command
                         continue;
                     }
 
-                    $link->update(['status' => CrawlerLogStatus::CRAWLED, 'content_json' => $result]);
+                    unset($result['error']);
+
+                    $link->update([
+                        'status' => CrawlerLogStatus::CRAWLED,
+                        'content_json' => $result,
+                        'error' => null,
+                    ]);
                     $successIds[] = $link->id;
 
                     $this->info("Crawled {$link->url}");
