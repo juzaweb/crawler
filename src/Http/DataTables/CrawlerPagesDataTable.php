@@ -44,7 +44,8 @@ class CrawlerPagesDataTable extends DataTable
     public function actions(Model $model): array
     {
         return [
-            Action::edit(admin_url("crawler-sources/{$this->sourceId}/pages/{$model->id}/edit"))->can('crawler-pages.edit'),
+            Action::edit(admin_url("crawler-sources/{$this->sourceId}/pages/{$model->id}/edit"))
+                ->can('crawler-pages.edit'),
             Action::delete()->can('crawler-pages.delete'),
         ];
     }
