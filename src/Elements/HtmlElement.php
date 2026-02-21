@@ -49,7 +49,7 @@ class HtmlElement extends BaseElement implements Element
                 function ($node) {
                     /** @var DomCrawler $node */
                     $href = $node->attr('href');
-                    if (!$href || is_internal_url($href, $this->baseUrl)) {
+                    if (!$href || cr_is_internal_url($href, $this->baseUrl)) {
                         // $html = fix_html($node->html());
                         /** @var \DOMNode $element */
                         $element = $node->getNode(0);

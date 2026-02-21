@@ -69,3 +69,22 @@ function fix_html(string $html): string
 
     return str_replace(['<body>', '</body>'], '', $html);
 }
+
+function cr_is_internal_url(?string $url, string $baseUrl): bool
+{
+    if ($url === null) {
+        return true;
+    }
+
+    if (!str_starts_with($url, 'https://')
+        && !str_starts_with($url, 'http://')
+        && !str_starts_with($url, '//')
+        && !str_starts_with($url, '#')
+    ) {
+        return true;
+    }
+
+    $domain = get_domain_by_url($baseUrl, true);
+
+    return ($domain == get_domain_by_url($url, true));
+}
