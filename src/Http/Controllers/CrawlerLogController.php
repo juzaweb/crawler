@@ -4,9 +4,12 @@ namespace Juzaweb\Modules\Crawler\Http\Controllers;
 
 use Juzaweb\Modules\Core\Facades\Breadcrumb;
 use Juzaweb\Modules\Core\Http\Controllers\AdminController;
+use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerLogsDataTable;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerLogActionsRequest;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
+use Juzaweb\Modules\Crawler\Models\CrawlerPage;
+use Juzaweb\Modules\Crawler\Models\CrawlerSource;
 
 class CrawlerLogController extends AdminController
 {
@@ -14,7 +17,14 @@ class CrawlerLogController extends AdminController
     {
         Breadcrumb::add(__('Crawler Logs'));
 
-        return $dataTable->render('crawler::crawler-log.index');
+        $sources = CrawlerSource::pluck('name', 'id')->toArray();
+        $pages = CrawlerPage::pluck('url', 'id')->toArray();
+        $statuses = CrawlerLogStatus::cases();
+
+        return $dataTable->render(
+            'crawler::crawler-log.index',
+            compact('sources', 'pages', 'statuses')
+        );
     }
 
     public function edit(string $id)

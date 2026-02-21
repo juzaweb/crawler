@@ -8,6 +8,7 @@ use Juzaweb\Modules\Core\DataTables\Action;
 use Juzaweb\Modules\Core\DataTables\BulkAction;
 use Juzaweb\Modules\Core\DataTables\Column;
 use Juzaweb\Modules\Core\DataTables\DataTable;
+use Juzaweb\Modules\Core\DataTables\HtmlBuilder;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Juzaweb\Modules\Crawler\Models\CrawlerPage;
@@ -19,36 +20,43 @@ class CrawlerLogsDataTable extends DataTable
 
     public function query(CrawlerLog $model): Builder
     {
-        return $model->newQuery()->with(['source']);
+        $query = $model->newQuery()->with(['source']);
+
+        if ($sourceId = request()->get('source_id')) {
+            $query->where('source_id', $sourceId);
+        }
+
+        if ($pageId = request()->get('page_id')) {
+            $query->where('page_id', $pageId);
+        }
+
+        if ($status = request()->get('status')) {
+            $query->where('status', $status);
+        }
+
+        return $query;
     }
 
-    public function searchFields(): array
+    public function html(): HtmlBuilder
     {
-        return [
-            'keyword' => [
-                'type' => 'text',
-                'label' => trans('crawler::app.keyword'),
-                'placeholder' => trans('crawler::app.keyword'),
-            ],
-            'source_id' => [
-                'type' => 'select',
-                'width' => '100px',
-                'label' => trans('crawler::app.source'),
-                'options' => CrawlerSource::pluck('name', 'id')->toArray(),
-            ],
-            'page_id' => [
-                'type' => 'select',
-                'width' => '100px',
-                'label' => trans('crawler::app.page'),
-                'options' => CrawlerPage::pluck('url', 'id')->toArray(),
-            ],
-            'status' => [
-                'type' => 'select',
-                'width' => '100px',
-                'label' => trans('crawler::app.status'),
-                'options' => collect(CrawlerLogStatus::cases())->mapWithKeys(fn($item) => [$item->value => strtoupper($item->value)])->toArray(),
-            ],
-        ];
+        return $this->builder()
+            ->dom($this->dom)
+            ->addTableClass($this->tableClass)
+            ->setTableId($this->id)
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->orderBy($this->orderBy)
+            ->selectStyleSingle()
+            ->actionUrl($this->getActionUrl())
+            ->bulkActions($this->bulkActions())
+            ->ajax([
+                'url' => $this->getActionUrl(),
+                'data' => 'function(d) {
+                    d.source_id = $("select[name=source_id]").val();
+                    d.page_id = $("select[name=page_id]").val();
+                    d.status = $("select[name=status]").val();
+                }',
+            ]);
     }
 
     public function getColumns(): array
