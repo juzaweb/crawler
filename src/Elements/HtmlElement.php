@@ -116,7 +116,15 @@ class HtmlElement extends BaseElement implements Element
         $dom->filter('figure')->each(
             function ($node) {
                 $imgNode = $node->filter('img');
-                $imgUrl = $imgNode->attr('data-src') ?? $imgNode->attr('src') ?? $imgNode->attr('data-lazy-src') ?? '';
+                $imgUrl = $this->escUrl($imgNode->attr('src'));
+
+                if ($imgNode->attr('data-src') !== null && is_url($imgNode->attr('data-src'))) {
+                    $imgUrl = $imgNode->attr('data-src');
+                }
+
+                if ($imgNode->attr('data-lazy-src') !== null && is_url($imgNode->attr('data-lazy-src'))) {
+                    $imgUrl = $imgNode->attr('data-lazy-src');
+                }
 
                 if (str_contains($imgUrl, '/proxy.php')) {
                     parse_str(parse_url($imgUrl, \PHP_URL_QUERY), $urlParse);
