@@ -9,14 +9,17 @@ use Juzaweb\Modules\Core\DataTables\Column;
 use Juzaweb\Modules\Core\DataTables\DataTable;
 use Illuminate\Database\Eloquent\Builder;
 use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Yajra\DataTables\EloquentDataTable;
 
 class CrawlerSourcesDataTable extends DataTable
 {
     protected string $actionUrl = 'crawler-sources/bulk';
 
+    protected array $rawColumns = ['pages_count', 'actions', 'checkbox'];
+
     public function query(CrawlerSource $model): Builder
     {
-        return $model->newQuery();
+        return $model->newQuery()->withCount('pages');
     }
 
     public function getColumns(): array
@@ -26,16 +29,23 @@ class CrawlerSourcesDataTable extends DataTable
             Column::id(),
             Column::actions(),
             Column::editLink('name', 'crawler-sources/{id}/edit', __('Name')),
+            Column::make('pages_count')->title(__('Pages'))->width('10%')->addClass('text-center')->orderable(false)->searchable(false),
             Column::make('active'),
             Column::make('data_type'),
             Column::createdAt(),
         ];
     }
 
+    public function renderColumns(EloquentDataTable $builder): EloquentDataTable
+    {
+        return $builder->editColumn('pages_count', function ($row) {
+            return '<a href="'. admin_url("crawler-sources/{$row->id}/pages") .'">'. $row->pages_count .'</a>';
+        });
+    }
+
     public function actions(Model $model): array
     {
         return [
-            Action::make(__('Pages'), admin_url("crawler-sources/{$model->id}/pages"), 'fas fa-file-alt')->can('crawler-sources.edit'),
             Action::edit(admin_url("crawler-sources/{$model->id}/edit"))->can('crawler-sources.edit'),
             Action::delete()->can('crawler-sources.delete'),
         ];
