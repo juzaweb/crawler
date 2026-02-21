@@ -50,6 +50,14 @@
                         @endforeach
                     </div>
                 </x-card>
+
+                <x-card title="{{ __('Removes') }}">
+                    <x-repeater
+                            name="removes"
+                            view="crawler::crawler-source.components.remove-item"
+                            :items="$model->removes ?? []"
+                    />
+                </x-card>
             </div>
 
             <div class="col-md-3">
