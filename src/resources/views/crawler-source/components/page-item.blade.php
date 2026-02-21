@@ -1,14 +1,20 @@
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-5">
         <div class="form-group">
             <label>{{ __('URL') }}</label>
             <input type="text" name="crawler_pages[{{ $marker }}][url]" class="form-control" value="{{ $item->url ?? '' }}" required>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-group">
             <label>{{ __('URL With Page') }}</label>
             <input type="text" name="crawler_pages[{{ $marker }}][url_with_page]" class="form-control" value="{{ $item->url_with_page ?? '' }}">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group">
+            <label>{{ __('Locale') }}</label>
+            <input type="text" name="crawler_pages[{{ $marker }}][locale]" class="form-control" value="{{ $item->locale ?? app()->getLocale() }}">
         </div>
     </div>
     <div class="col-md-2">

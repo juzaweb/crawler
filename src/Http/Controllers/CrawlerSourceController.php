@@ -130,6 +130,7 @@ class CrawlerSourceController extends AdminController
                 [
                     'url' => $page['url'],
                     'url_with_page' => $page['url_with_page'] ?? null,
+                    'locale' => $page['locale'] ?? app()->getLocale(),
                     'active' => $page['active'] ?? 0,
                 ]
             );
