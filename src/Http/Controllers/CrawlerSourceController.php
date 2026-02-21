@@ -34,6 +34,7 @@ class CrawlerSourceController extends AdminController
         Breadcrumb::add(__('Create Crawler Source'));
 
         $backUrl = action([static::class, 'index']);
+        $locales = config('locales');
 
         return view(
             'crawler::crawler-source.form',
@@ -45,6 +46,7 @@ class CrawlerSourceController extends AdminController
                     ['' => __('Select Data Type')],
                     $crawler->getDataTypes()
                 ),
+                'locales' => $locales,
             ]
         );
     }
@@ -57,6 +59,7 @@ class CrawlerSourceController extends AdminController
 
         $model = CrawlerSource::findOrFail($id);
         $backUrl = action([static::class, 'index']);
+        $locales = config('locales');
 
         return view(
             'crawler::crawler-source.form',
@@ -68,6 +71,7 @@ class CrawlerSourceController extends AdminController
                     ['' => __('Select Data Type')],
                     $crawler->getDataTypes()
                 ),
+                'locales' => $locales,
             ]
         );
     }
@@ -130,6 +134,7 @@ class CrawlerSourceController extends AdminController
                 [
                     'url' => $page['url'],
                     'url_with_page' => $page['url_with_page'] ?? null,
+                    'locale' => $page['locale'] ?? app()->getLocale(),
                     'active' => $page['active'] ?? 0,
                 ]
             );

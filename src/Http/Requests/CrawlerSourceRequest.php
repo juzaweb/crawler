@@ -31,6 +31,7 @@ class CrawlerSourceRequest extends FormRequest
             'crawler_pages.*.id' => ['nullable', 'uuid'],
             'crawler_pages.*.url' => ['required', 'string', 'max:190'],
             'crawler_pages.*.url_with_page' => ['nullable', 'string', 'max:190'],
+            'crawler_pages.*.locale' => ['nullable', 'string', 'max:10'],
             'crawler_pages.*.active' => ['nullable', 'boolean'],
 		];
     }
