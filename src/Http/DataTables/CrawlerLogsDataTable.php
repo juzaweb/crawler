@@ -17,35 +17,28 @@ class CrawlerLogsDataTable extends DataTable
 
     public function query(CrawlerLog $model): Builder
     {
-        $query = $model->newQuery()->with(['source']);
-
-        if ($sourceId = request()->get('source_id')) {
-            $query->where('source_id', $sourceId);
-        }
-
-        if ($pageId = request()->get('page_id')) {
-            $query->where('page_id', $pageId);
-        }
-
-        if ($status = request()->get('status')) {
-            $query->where('status', $status);
-        }
-
-        return $query;
+        return $model->newQuery()->with(['source', 'post']);
     }
 
-    public function html(): HtmlBuilder
+    public function dataTable($query)
     {
-        return $this->builder()
-            ->dom($this->dom)
-            ->addTableClass($this->tableClass)
-            ->setTableId($this->id)
-            ->columns($this->getColumns())
-            ->minifiedAjax()
-            ->orderBy($this->orderBy)
-            ->selectStyleSingle()
-            ->actionUrl($this->getActionUrl())
-            ->bulkActions($this->bulkActions());
+        $dataTable = parent::dataTable($query);
+
+        $dataTable->editColumn('status', function ($row) {
+            return '<span class="badge badge-' . $row->status->color() . '">' . $row->status->label() . '</span>';
+        });
+
+        $dataTable->editColumn('url', function ($row) {
+            return '<a href="' . $row->url . '" target="_blank">' . $row->url . '</a>';
+        });
+
+        $dataTable->addColumn('post', function ($row) {
+            return $row->post?->title ?? $row->post?->name ?? '';
+        });
+
+        $dataTable->rawColumns(['status', 'url', 'actions', 'checkbox']);
+
+        return $dataTable;
     }
 
     public function getColumns(): array
@@ -56,6 +49,7 @@ class CrawlerLogsDataTable extends DataTable
             Column::actions(),
             Column::make('url'),
             Column::make('source.name'),
+            Column::make('post'),
             Column::make('status'),
             Column::createdAt(),
         ];
