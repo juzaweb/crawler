@@ -17,6 +17,7 @@ class CrawlerServiceProvider extends ServiceProvider
             $this->commands([
                 \Juzaweb\Modules\Crawler\Commands\CrawlPageCommand::class,
                 \Juzaweb\Modules\Crawler\Commands\CrawlLinkCommand::class,
+                \Juzaweb\Modules\Crawler\Commands\ContentToPostCommand::class,
             ]);
         }
     }
@@ -50,20 +51,20 @@ class CrawlerServiceProvider extends ServiceProvider
         );
 
         Menu::make(
-            'crawler-logs',
+            'crawler-sources',
             function () {
                 return [
-                    'title' => __('Crawler Logs'),
+                    'title' => __('Sources'),
                     'parent' => 'crawler',
                 ];
             }
         );
 
         Menu::make(
-            'crawler-sources',
+            'crawler-logs',
             function () {
                 return [
-                    'title' => __('Sources'),
+                    'title' => __('Crawler Logs'),
                     'parent' => 'crawler',
                 ];
             }

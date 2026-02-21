@@ -19,4 +19,5 @@ enum CrawlerLogStatus: string
     case RETRYING = 'retrying';
     case CRAWLED = 'crawled';
     case POSTING = 'posting';
+    case FAILED_POSTING = 'failed_posting';
 }

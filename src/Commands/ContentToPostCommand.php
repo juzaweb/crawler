@@ -11,6 +11,7 @@
 namespace Juzaweb\Modules\Crawler\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
@@ -29,19 +30,43 @@ class ContentToPostCommand extends Command
 
         CrawlerLog::with([
             'page',
+            'source',
         ])
             ->whereNull('post_id')
             ->where(['status' => CrawlerLogStatus::CRAWLED])
             ->chunkById(100, function ($contents) use (&$total, $limit) {
+                /**
+                 * @var CrawlerLog $content
+                 */
                 foreach ($contents as $content) {
                     if ($limit && $total >= $limit) {
                         return false;
                     }
 
-                    dispatch(new PostJob($content));
+                    // dispatch(new PostJob($content));
+
+                    try {
+                        DB::transaction(
+                            function () use ($content) {
+                                $post = $content->source->getDataType()?->save($content);
+                                $content->update([
+                                    'status' => CrawlerLogStatus::COMPLETED,
+                                    'post_id' => $post->id,
+                                    'post_type' => $post->getMorphClass(),
+                                ]);
+                            }
+                        );
+
+                        $this->info("Creating post {$content->id} from content {$content->id}");
+                    } catch (\Exception $e) {
+                        $content->update([
+                            'status' => CrawlerLogStatus::FAILED_POSTING,
+                            'error' => get_error_by_exception($e),
+                        ]);
+                        continue;
+                    }
+
                     $total++;
-                    $content->update(['status' => CrawlerLogStatus::POSTING]);
-                    $this->info("Creating post {$content->id} from content {$content->id}");
                 }
             });
 

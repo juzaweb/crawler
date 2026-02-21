@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('url_hash', 64)->index();
             $table->uuid('source_id')->index();
             $table->uuid('page_id')->index();
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'retrying', 'crawled', 'posting'])
+            $table->string('status', 20)
                 ->default('pending')
                 ->index();
             $table->jsonb('content_json')->nullable();

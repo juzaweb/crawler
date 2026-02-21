@@ -60,7 +60,7 @@ class CrawlLinkCommand extends Command
                 foreach ($results as $key => $result) {
                     $link = $links[$key];
                     if (isset($result['error'])) {
-                        $link->update(['status' => CrawlerLogStatus::FAILED, 'error' => $result['error']]);
+                        $link->update(['status' => CrawlerLogStatus::FAILED, 'error' => ['message' => $result['error']]]);
                         $this->error($result['error']);
                         continue;
                     }
