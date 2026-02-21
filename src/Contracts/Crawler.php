@@ -10,6 +10,9 @@
 
 namespace Juzaweb\Modules\Crawler\Contracts;
 
+use Illuminate\Support\Collection;
+use Juzaweb\Modules\Crawler\PoolCrawler;
+
 /**
  * @see \Juzaweb\Modules\Crawler\CrawlerRepository
  */
@@ -20,4 +23,6 @@ interface Crawler
     public function getDataType(string $key): ?CrawlerDataType;
 
     public function getDataTypes(): array;
+
+    public function crawl(Collection $pages): PoolCrawler;
 }

@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
 use Juzaweb\Modules\Crawler\Contracts\CrawlerDataType;
+use Juzaweb\Modules\Crawler\Elements\ArrayStringElement;
+use Juzaweb\Modules\Crawler\Elements\HtmlElement;
+use Juzaweb\Modules\Crawler\Elements\StringElement;
 use Juzaweb\Modules\Crawler\Facades\Crawler;
+use function PHPUnit\Framework\matches;
 
 class CrawlerSource extends Model
 {
@@ -59,5 +63,23 @@ class CrawlerSource extends Model
     public function getRemoves(): array
     {
         return $this->removes ?? [];
+    }
+
+    public function mapComponentsWithElements(string $url): array
+    {
+        $result = [];
+
+        foreach ($this->components as $key => $component) {
+            $result[$key] = match ($component['format']) {
+                'text' => StringElement::make($component['element'], $component['attr'] ?? null),
+                'html' => HtmlElement::make($component['element'], $component['attr'] ?? null)
+                    ->removeInternalLinks($url)
+                    ->removeElements($this->getRemoves()),
+                'array_text' => ArrayStringElement::make($component['element'], $component['attr'] ?? null),
+                default => null,
+            };
+        }
+
+        return $result;
     }
 }

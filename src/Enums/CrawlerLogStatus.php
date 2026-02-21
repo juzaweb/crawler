@@ -13,6 +13,8 @@ namespace Juzaweb\Modules\Crawler\Enums;
 enum CrawlerLogStatus: string
 {
     case PENDING = 'pending';
-    case CRAWLED = 'crawled';
-    case ERROR = 'error';
+    case PROCESSING = 'processing';
+    case COMPLETED = 'completed';
+    case FAILED = 'failed';
+    case RETRYING = 'retrying';
 }

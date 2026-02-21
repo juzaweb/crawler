@@ -24,7 +24,6 @@ return new class extends Migration
                 ->index();
             $table->jsonb('content_json')->nullable();
             $table->json('error')->nullable();
-            $table->boolean('active')->default(1)->index();
             $table->string('locale', 10)->index();
             $table->integer('attempt')->default(0);
             $table->nullableUuidMorphs('post');

@@ -5,6 +5,7 @@ namespace Juzaweb\Modules\Crawler\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Juzaweb\Modules\Core\Models\Model;
 use Juzaweb\Modules\Core\Traits\HasAPI;
+use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 
 class CrawlerLog extends Model
 {
@@ -20,13 +21,12 @@ class CrawlerLog extends Model
         'status',
         'error',
         'content_json',
-        'active',
     ];
 
     protected $casts = [
-        'active' => 'boolean',
         'error' => 'array',
         'content_json' => 'array',
+        'status' => CrawlerLogStatus::class,
     ];
 
     public function source(): BelongsTo

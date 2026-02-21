@@ -16,6 +16,7 @@ class CrawlerServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 \Juzaweb\Modules\Crawler\Commands\CrawlPageCommand::class,
+                \Juzaweb\Modules\Crawler\Commands\CrawlLinkCommand::class,
             ]);
         }
     }
