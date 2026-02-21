@@ -70,6 +70,10 @@ class CrawlerSource extends Model
         $result = [];
 
         foreach ($this->components as $key => $component) {
+            if (! isset($component['element'])) {
+                continue;
+            }
+
             $result[$key] = match ($component['format']) {
                 'text' => StringElement::make($component['element'], $component['attr'] ?? null),
                 'html' => HtmlElement::make($component['element'], $component['attr'] ?? null)
