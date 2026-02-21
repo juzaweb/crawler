@@ -35,6 +35,7 @@ class CrawlerLogsDataTable extends DataTable
     public function actions(Model $model): array
     {
         return [
+            Action::edit(admin_url("crawler-logs/{$model->id}/edit"))->can('crawler-logs.edit'),
             Action::delete()->can('crawler-logs.delete'),
         ];
     }

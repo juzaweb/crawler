@@ -17,6 +17,16 @@ class CrawlerLogController extends AdminController
         return $dataTable->render('crawler::crawler-log.index');
     }
 
+    public function edit(string $id)
+    {
+        $model = CrawlerLog::findOrFail($id);
+
+        Breadcrumb::add(__('Crawler Logs'), admin_url('crawler-logs'));
+        Breadcrumb::add(__('View Crawler Log'));
+
+        return view('crawler::crawler-log.form', compact('model'));
+    }
+
     public function bulk(CrawlerLogActionsRequest $request)
     {
         $action = $request->input('action');
