@@ -50,6 +50,7 @@ class ContentToPostCommand extends Command
                                     'status' => CrawlerLogStatus::COMPLETED,
                                     'post_id' => $post->id,
                                     'post_type' => $post->getMorphClass(),
+                                    'error' => null,
                                 ]);
                             }
                         );
