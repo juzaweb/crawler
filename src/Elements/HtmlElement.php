@@ -113,6 +113,27 @@ class HtmlElement extends BaseElement implements Element
             }
         );
 
+        $dom->filter('figure')->each(
+            function ($node) {
+                $imgNode = $node->filter('img');
+                $imgUrl = $imgNode->attr('data-src') ?? $imgNode->attr('src') ?? $imgNode->attr('data-lazy-src') ?? '';
+
+                if (str_contains($imgUrl, '/proxy.php')) {
+                    parse_str(parse_url($imgUrl, \PHP_URL_QUERY), $urlParse);
+                    if ($img = Arr::get($urlParse, 'image')) {
+                        $imgUrl = $img;
+                    }
+                }
+
+                $element = $node->getNode(0);
+
+                $newElement = $element->ownerDocument->createElement('img');
+                $newElement->setAttribute('src', $imgUrl);
+
+                $element->parentNode->replaceChild($newElement, $element);
+            }
+        );
+
         $dom->filter('img')->each(
             function ($node) {
                 /** @var DomCrawler $node */
