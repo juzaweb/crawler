@@ -30,10 +30,8 @@ class StringElement extends BaseElement implements Element
             $text = $crawler->filter($this->element)->eq($this->index)->text();
         }
 
-        $text = str_replace('&nbsp;', ' ', $text);
+        $text = str_replace(['&nbsp;', '&nbsp'], ' ', $text);
 
-        $text = str_replace('&nbsp', ' ', $text);
-
-        return remove_zero_width_space_string($text);
+        return trim(remove_zero_width_space_string($text));
     }
 }

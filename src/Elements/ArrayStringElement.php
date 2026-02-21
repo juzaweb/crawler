@@ -39,10 +39,10 @@ class ArrayStringElement extends BaseElement implements Element
                 }
 
                 if ($this->format == 'html') {
-                    return $this->replateHtmlCharacters($node->html());
+                    return trim($this->replateHtmlCharacters($node->html()));
                 }
 
-                return $node->text();
+                return trim($node->text());
             }
         );
     }

@@ -69,7 +69,7 @@ class HtmlElement extends BaseElement implements Element
             );
         }
 
-        return $this->replateHtmlCharacters($dom->html());
+        return trim($this->replateHtmlCharacters($dom->html()));
     }
 
     public function removeInternalLinks(string $baseUrl): static
