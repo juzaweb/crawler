@@ -23,6 +23,7 @@ class CrawlPageCommand extends Command
 
         $links = collect();
         $pages = CrawlerPage::with(['source'])
+            ->select(['crawler_pages.*'])
             ->join('crawler_sources', 'crawler_sources.id', '=', 'crawler_pages.source_id')
             ->where('crawler_sources.active', 1)
             ->where('crawler_pages.active', true)
@@ -41,7 +42,7 @@ class CrawlPageCommand extends Command
                     )
             )
             ->limit($limit)
-            ->get(['crawler_pages.*']);
+            ->get();
 
         if ($pages->isEmpty()) {
             $this->info('No pages to crawl.');
