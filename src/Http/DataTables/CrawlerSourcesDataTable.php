@@ -55,6 +55,14 @@ class CrawlerSourcesDataTable extends DataTable
     {
         return [
             BulkAction::delete()->can('crawler-sources.delete'),
+            BulkAction::make(__('Activate'))
+                ->action('activate')
+                ->icon('fa fa-check')
+                ->can('crawler-sources.edit'),
+            BulkAction::make(__('Deactivate'))
+                ->action('deactivate')
+                ->icon('fa fa-times')
+                ->can('crawler-sources.edit'),
         ];
     }
 }
