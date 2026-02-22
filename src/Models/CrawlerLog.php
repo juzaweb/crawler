@@ -32,6 +32,13 @@ class CrawlerLog extends Model
         'status' => CrawlerLogStatus::class,
     ];
 
+    public $filterable = [
+        'source_id',
+        'page_id',
+        'status',
+        'post_type',
+    ];
+
     public function source(): BelongsTo
     {
         return $this->belongsTo(CrawlerSource::class, 'source_id');

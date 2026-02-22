@@ -11,7 +11,6 @@ use Juzaweb\Modules\Crawler\Elements\ArrayStringElement;
 use Juzaweb\Modules\Crawler\Elements\HtmlElement;
 use Juzaweb\Modules\Crawler\Elements\StringElement;
 use Juzaweb\Modules\Crawler\Facades\Crawler;
-use function PHPUnit\Framework\matches;
 
 class CrawlerSource extends Model
 {
@@ -33,6 +32,11 @@ class CrawlerSource extends Model
         'active' => 'boolean',
         'components' => 'array',
         'removes' => 'array',
+    ];
+
+    public $filterable = [
+        'name',
+        'active',
     ];
 
     public function pages(): HasMany

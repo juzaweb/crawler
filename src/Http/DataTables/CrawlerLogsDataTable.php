@@ -20,7 +20,7 @@ class CrawlerLogsDataTable extends DataTable
 
     public function query(CrawlerLog $model): Builder
     {
-        return $model->newQuery()->with(['source', 'post']);
+        return $model->newQuery()->with(['source', 'post'])->filter($this->request()->all());
     }
 
     public function getColumns(): array
