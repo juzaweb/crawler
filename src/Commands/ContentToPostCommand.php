@@ -13,6 +13,7 @@ namespace Juzaweb\Modules\Crawler\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
+use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -43,17 +44,7 @@ class ContentToPostCommand extends Command
                     }
 
                     try {
-                        DB::transaction(
-                            function () use ($content) {
-                                $post = $content->source->getDataType()?->save($content);
-                                $content->update([
-                                    'status' => CrawlerLogStatus::COMPLETED,
-                                    'post_id' => $post->id,
-                                    'post_type' => $post->getMorphClass(),
-                                    'error' => null,
-                                ]);
-                            }
-                        );
+                        PostJob::dispatchSync($content);
 
                         $this->info("Creating post {$content->id} from content {$content->id}");
                     } catch (\Exception $e) {

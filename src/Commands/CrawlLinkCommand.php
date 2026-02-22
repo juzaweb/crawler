@@ -13,6 +13,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Facades\Crawler;
+use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Link;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Symfony\Component\Console\Input\InputOption;
@@ -72,6 +73,7 @@ class CrawlLinkCommand extends Command
                         'content_json' => $result,
                         'error' => null,
                     ]);
+
                     $successIds[] = $link->id;
 
                     $this->info("Crawled {$link->url}");
@@ -80,6 +82,22 @@ class CrawlLinkCommand extends Command
                 return $successIds;
             }
         );
+
+        try {
+            $posts = CrawlerLog::whereIn('id', $successIds)->get();
+            DB::transaction(
+                function () use ($posts, $successIds) {
+                    foreach ($posts as $post) {
+                        PostJob::dispatch($post);
+                    }
+
+                    CrawlerLog::whereIn('id', $successIds)->update(['status' => CrawlerLogStatus::POSTING]);
+                }
+            );
+        } catch (\Exception $e) {
+            report($e);
+            $this->error("Failed to create post from contents: " . $e->getMessage());
+        }
 
         $this->info("Inserted " . count($successIds) . " contents");
 
