@@ -24,6 +24,7 @@ class CrawlerLog extends Model
         'content_json',
         'post_type',
         'post_id',
+        'locale',
     ];
 
     protected $casts = [
