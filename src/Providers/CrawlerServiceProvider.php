@@ -19,6 +19,12 @@ class CrawlerServiceProvider extends ServiceProvider
                 \Juzaweb\Modules\Crawler\Commands\CrawlLinkCommand::class,
                 \Juzaweb\Modules\Crawler\Commands\ContentToPostCommand::class,
             ]);
+
+            $this->app->booted(function () {
+                $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
+                $schedule->command('crawl:pages')->everyTenMinutes();
+                $schedule->command('crawl:links')->everyMinute();
+            });
         }
     }
 
