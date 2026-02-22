@@ -121,7 +121,7 @@ class ProductDataType implements CrawlerDataType
         $data = $crawlerLog->content_json;
 
         // Logic to save data to your Product model
-        $product = new \App\Models\Product();
+        $product = $crawlerLog->post ?: new \App\Models\Product();
         $product->name = $data['title'];
         $product->price = $data['price'];
         $product->description = $data['content'];
