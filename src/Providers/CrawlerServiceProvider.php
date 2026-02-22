@@ -2,10 +2,11 @@
 
 namespace Juzaweb\Modules\Crawler\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Juzaweb\Modules\Core\Facades\Menu;
 use Juzaweb\Modules\Core\Providers\ServiceProvider;
-use Illuminate\Support\Facades\File;
 use Juzaweb\Modules\Crawler\Contracts\Crawler;
+use Juzaweb\Modules\Crawler\CrawlerRepository;
 
 class CrawlerServiceProvider extends ServiceProvider
 {
@@ -19,13 +20,13 @@ class CrawlerServiceProvider extends ServiceProvider
                 \Juzaweb\Modules\Crawler\Commands\CrawlLinkCommand::class,
                 \Juzaweb\Modules\Crawler\Commands\ContentToPostCommand::class,
             ]);
-
-            $this->app->booted(function () {
-                $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
-                $schedule->command('crawl:pages')->everyTenMinutes();
-                $schedule->command('crawl:links')->everyMinute();
-            });
         }
+
+        $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->command('crawl:pages')->hourly();
+            $schedule->command('crawl:links')->everyTenMinutes();
+        });
     }
 
     public function register(): void
@@ -38,7 +39,7 @@ class CrawlerServiceProvider extends ServiceProvider
         $this->app->singleton(
             Crawler::class,
             function () {
-                return new \Juzaweb\Modules\Crawler\CrawlerRepository();
+                return new CrawlerRepository();
             }
         );
     }
