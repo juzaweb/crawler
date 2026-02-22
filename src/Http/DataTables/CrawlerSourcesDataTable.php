@@ -39,7 +39,7 @@ class CrawlerSourcesDataTable extends DataTable
     public function renderColumns(EloquentDataTable $builder): EloquentDataTable
     {
         return $builder->editColumn('pages_count', function ($row) {
-            return '<a href="'. admin_url("crawler-sources/{$row->id}/pages") .'" class="btn btn-info btn-sm"><i class="fas fa-list-alt"></i> '. $row->pages_count .'</a>';
+            return '<a rel="nofollow noopener noreferrer" href="'. admin_url("crawler-sources/{$row->id}/pages") .'" class="btn btn-info btn-sm"><i class="fas fa-list-alt"></i> '. $row->pages_count .'</a>';
         });
     }
 
