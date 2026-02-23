@@ -55,7 +55,7 @@ class CrawlerLogController extends AdminController
                 ]);
             } elseif ($action === 'repost') {
                 $model->update([
-                    'status' => CrawlerLogStatus::CRAWLED,
+                    'status' => CrawlerLogStatus::POSTING,
                     'error' => null,
                 ]);
 

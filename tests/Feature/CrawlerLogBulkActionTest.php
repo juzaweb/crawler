@@ -67,7 +67,7 @@ class CrawlerLogBulkActionTest extends TestCase
 
         // 6. Assert Status Updated
         $log->refresh();
-        $this->assertEquals(CrawlerLogStatus::CRAWLED, $log->status);
+        $this->assertEquals(CrawlerLogStatus::POSTING, $log->status);
         $this->assertNull($log->error);
 
         // 7. Assert Job Dispatched
