@@ -153,7 +153,7 @@ class CrawlerSourceController extends AdminController
                 $model->update(['active' => true]);
             }
 
-            if ($action === 'deactivate') {
+            if ($action === 'inactive') {
                 $model->update(['active' => false]);
             }
 

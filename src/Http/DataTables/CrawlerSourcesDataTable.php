@@ -59,8 +59,8 @@ class CrawlerSourcesDataTable extends DataTable
                 ->action('activate')
                 ->icon('fa fa-check')
                 ->can('crawler-sources.edit'),
-            BulkAction::make(__('Deactivate'))
-                ->action('deactivate')
+            BulkAction::make(__('Inactive'))
+                ->action('inactive')
                 ->icon('fa fa-times')
                 ->can('crawler-sources.edit'),
         ];

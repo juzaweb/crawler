@@ -49,7 +49,7 @@ class CrawlerSourceBulkActionTest extends TestCase
         ]);
     }
 
-    public function test_bulk_deactivate()
+    public function test_bulk_inactive()
     {
         $source = new CrawlerSource();
         $source->id = Str::uuid();
@@ -60,7 +60,7 @@ class CrawlerSourceBulkActionTest extends TestCase
         $source->save();
 
         $response = $this->postJson('admin/crawler-sources/bulk', [
-            'action' => 'deactivate',
+            'action' => 'inactive',
             'ids' => [$source->id],
         ]);
 
@@ -96,6 +96,6 @@ class CrawlerSourceBulkActionTest extends TestCase
         }
 
         $this->assertContains('activate', $actionKeys, 'Activate bulk action missing');
-        $this->assertContains('deactivate', $actionKeys, 'Deactivate bulk action missing');
+        $this->assertContains('inactive', $actionKeys, 'Inactive bulk action missing');
     }
 }
