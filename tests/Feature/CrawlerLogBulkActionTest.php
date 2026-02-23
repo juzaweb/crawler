@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Str;
 use Juzaweb\Modules\Core\Models\User;
 use Juzaweb\Modules\Crawler\Jobs\PostJob;
+use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Juzaweb\Modules\Crawler\Models\CrawlerPage;
 use Juzaweb\Modules\Crawler\Models\CrawlerSource;
@@ -13,7 +14,7 @@ use Juzaweb\Modules\Crawler\Tests\TestCase;
 
 class CrawlerLogBulkActionTest extends TestCase
 {
-    public function test_repost_bulk_action_dispatches_post_job()
+    public function test_repost_bulk_action_dispatches_post_job_and_updates_status()
     {
         Bus::fake();
 
@@ -51,7 +52,8 @@ class CrawlerLogBulkActionTest extends TestCase
         $log->url_hash = hash('sha256', 'http://example.com/post');
         $log->source_id = $source->id;
         $log->page_id = $page->id;
-        $log->status = 'completed'; // or whatever
+        $log->status = CrawlerLogStatus::FAILED;
+        $log->error = ['msg' => 'Test Error'];
         $log->locale = 'en';
         $log->save();
 
@@ -63,7 +65,12 @@ class CrawlerLogBulkActionTest extends TestCase
 
         $response->assertStatus(200);
 
-        // 6. Assert Job Dispatched
+        // 6. Assert Status Updated
+        $log->refresh();
+        $this->assertEquals(CrawlerLogStatus::CRAWLED, $log->status);
+        $this->assertNull($log->error);
+
+        // 7. Assert Job Dispatched
         Bus::assertDispatched(PostJob::class, function ($job) use ($log) {
             // Using reflection to access protected property if needed,
             // or relying on public property if it is one.

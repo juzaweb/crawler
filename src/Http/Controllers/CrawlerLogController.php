@@ -54,6 +54,11 @@ class CrawlerLogController extends AdminController
                     'error' => null,
                 ]);
             } elseif ($action === 'repost') {
+                $model->update([
+                    'status' => CrawlerLogStatus::CRAWLED,
+                    'error' => null,
+                ]);
+
                 PostJob::dispatch($model);
             }
         }
