@@ -53,6 +53,10 @@ class CrawlerLogsDataTable extends DataTable
                 ->action('retry')
                 ->icon('fas fa-redo')
                 ->can('crawler-logs.edit'),
+            BulkAction::make(__('Repost'))
+                ->action('repost')
+                ->icon('fa fa-sync')
+                ->can('crawler-logs.edit'),
         ];
     }
 

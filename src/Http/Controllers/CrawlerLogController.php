@@ -7,6 +7,7 @@ use Juzaweb\Modules\Core\Http\Controllers\AdminController;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerLogsDataTable;
 use Juzaweb\Modules\Crawler\Http\Requests\CrawlerLogActionsRequest;
+use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Juzaweb\Modules\Crawler\Models\CrawlerPage;
 use Juzaweb\Modules\Crawler\Models\CrawlerSource;
@@ -52,6 +53,13 @@ class CrawlerLogController extends AdminController
                     'status' => CrawlerLogStatus::PENDING,
                     'error' => null,
                 ]);
+            } elseif ($action === 'repost') {
+                $model->update([
+                    'status' => CrawlerLogStatus::POSTING,
+                    'error' => null,
+                ]);
+
+                PostJob::dispatch($model);
             }
         }
 
