@@ -3,11 +3,23 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            @can('Crawler Sources.create')
-                <a href="{{ $createUrl }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> {{ __('Add Crawler Source') }}
-                </a>
-            @endcan
+            <div class="btn-group">
+                @can('Crawler Sources.create')
+                    <a href="{{ $createUrl }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> {{ __('Add Crawler Source') }}
+                    </a>
+
+                    <a href="{{ route('admin.crawler-sources.import') }}" class="btn btn-success">
+                        <i class="fas fa-upload"></i> {{ __('Import') }}
+                    </a>
+                @endcan
+
+                @can('Crawler Sources.index')
+                    <a href="{{ route('admin.crawler-sources.export') }}" class="btn btn-info">
+                        <i class="fas fa-download"></i> {{ __('Export') }}
+                    </a>
+                @endcan
+            </div>
         </div>
     </div>
 
