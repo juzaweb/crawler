@@ -9,7 +9,7 @@
                         <i class="fas fa-plus"></i> {{ __('Add Crawler Source') }}
                     </a>
 
-                    <a href="{{ route('admin.crawler-sources.import') }}" class="btn btn-success">
+                    <a href="javascript:void(0)" class="btn btn-success" data-toggle="modal" data-target="#import-modal">
                         <i class="fas fa-upload"></i> {{ __('Import') }}
                     </a>
                 @endcan
@@ -36,6 +36,32 @@
             <x-card title="{{ __('Crawler Sources') }}">
                 {{ $dataTable->table() }}
             </x-card>
+        </div>
+    </div>
+
+    <div class="modal fade" id="import-modal" tabindex="-1" role="dialog" aria-labelledby="import-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('admin.crawler-sources.import') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="import-modal-label">{{ __('Import Crawler Sources') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="file" class="form-label">{{ __('XML File') }}</label>
+                            <input type="file" name="file" id="file" class="form-control" accept=".xml" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Import') }}</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @endsection

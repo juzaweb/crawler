@@ -86,16 +86,7 @@ class CrawlerSourceExportImportTest extends TestCase
 
         $file = UploadedFile::fake()->createWithContent('import.xml', $xml);
 
-        // POST request to the import route (which maps to importData)
-        // Since both GET and POST share URL 'admin/crawler-sources/import' but method differs.
         $url = route('admin.crawler-sources.import');
-        // Note: route() generates URL based on name.
-        // If I named GET route 'admin.crawler-sources.import', it generates that URL.
-        // POST route shares same URL pattern likely if I used same path.
-        // In routes file:
-        // Route::get('crawler-sources/import', ...)->name('admin.crawler-sources.import');
-        // Route::post('crawler-sources/import', ...);
-        // So the URL is the same.
 
         $response = $this->post($url, [
             'file' => $file,
