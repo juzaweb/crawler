@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
+use Throwable;
 
 class PostJob implements ShouldQueue
 {
@@ -34,5 +35,13 @@ class PostJob implements ShouldQueue
                 ]);
             }
         );
+    }
+
+    public function failed(Throwable $exception): void
+    {
+        $this->crawlerLog->update([
+            'status' => CrawlerLogStatus::FAILED_POSTING,
+            'error' => get_error_by_exception($exception),
+        ]);
     }
 }
