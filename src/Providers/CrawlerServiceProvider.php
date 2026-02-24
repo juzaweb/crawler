@@ -24,7 +24,7 @@ class CrawlerServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
-            $schedule->command('crawl:pages')->hourly();
+            $schedule->command('crawl:pages')->everyFifteenMinutes();
             $schedule->command('crawl:links')->everyTenMinutes();
         });
     }
