@@ -38,7 +38,7 @@
                     <x-repeater
                             name="crawler_pages"
                             view="crawler::crawler-source.components.page-item"
-                            :items="$model->pages"
+                            :items="$model->pages->toArray()"
                             :params="['locales' => $locales]"
                     />
                 </x-card>

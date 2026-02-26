@@ -29,7 +29,7 @@
         <div class="form-group">
             <label>{{ __('Locale') }}</label>
             <select name="crawler_pages[{{ $marker }}][locale]" class="form-control select2">
-                @foreach($locales as $code => $locale)
+                @foreach(config('locales') as $code => $locale)
                     <option value="{{ $code }}" {{ ($item->locale ?? app()->getLocale()) == $code ? 'selected' : '' }}>
                         {{ $locale['name'] }}
                     </option>
