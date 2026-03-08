@@ -43,7 +43,8 @@ function reformat_html(string $html): string
     $dom = new DOMDocument('1.0', 'UTF-8');
     $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
 
-    $wrappedHtml = "<div id='wrapper-html-jw-wrapped'>{$html}</div>";
+    $wrappedHtml = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
+        . "<div id='wrapper-html-jw-wrapped'>{$html}</div>";
 
     // Load and auto-fix HTML
     $dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
