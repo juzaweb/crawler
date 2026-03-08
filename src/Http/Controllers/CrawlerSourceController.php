@@ -202,37 +202,43 @@ class CrawlerSourceController extends AdminController
 
         foreach ($sources as $source) {
             $sourceNode = $xml->addChild('source');
-            $sourceNode->addChild('name', $source->name);
-            $sourceNode->addChild('active', $source->active);
-            $sourceNode->addChild('data_type', $source->data_type);
-            $sourceNode->addChild('link_element', $source->link_element);
-            $sourceNode->addChild('link_regex', $source->link_regex);
+            $sourceNode->addChild('name', (string) $source->name);
+            $sourceNode->addChild('active', (string) $source->active);
+            $sourceNode->addChild('data_type', (string) $source->data_type);
+            $sourceNode->addChild('link_element', (string) $source->link_element);
+            $sourceNode->addChild('link_regex', (string) $source->link_regex);
 
             // Components
             $componentsNode = $sourceNode->addChild('components');
             foreach ($source->components ?? [] as $key => $component) {
                 $compNode = $componentsNode->addChild('component');
-                $compNode->addAttribute('key', $key);
-                $compNode->addChild('name', $component['name'] ?? '');
-                $compNode->addChild('element', $component['element'] ?? '');
-                $compNode->addChild('attr', $component['attr'] ?? '');
-                $compNode->addChild('format', $component['format'] ?? '');
+                $compNode->addAttribute('key', (string) $key);
+                $compNode->addChild('name', (string) ($component['name'] ?? ''));
+                $compNode->addChild('element', (string) ($component['element'] ?? ''));
+                $compNode->addChild('attr', is_array($component['attr'] ?? '') ? json_encode($component['attr']) : (string) ($component['attr'] ?? ''));
+                $compNode->addChild('format', (string) ($component['format'] ?? ''));
             }
 
             // Removes
             $removesNode = $sourceNode->addChild('removes');
             foreach ($source->removes ?? [] as $remove) {
-                $removesNode->addChild('remove', $remove);
+                if (is_array($remove)) {
+                    $removeNode = $removesNode->addChild('remove');
+                    $removeNode->addChild('element', (string) ($remove['element'] ?? ''));
+                    $removeNode->addChild('index', (string) ($remove['index'] ?? ''));
+                } else {
+                    $removesNode->addChild('remove', (string) $remove);
+                }
             }
 
             // Pages
             $pagesNode = $sourceNode->addChild('pages');
             foreach ($source->pages as $page) {
                 $pageNode = $pagesNode->addChild('page');
-                $pageNode->addChild('url', $page->url);
-                $pageNode->addChild('url_with_page', $page->url_with_page);
-                $pageNode->addChild('locale', $page->locale);
-                $pageNode->addChild('active', $page->active);
+                $pageNode->addChild('url', (string) $page->url);
+                $pageNode->addChild('url_with_page', (string) $page->url_with_page);
+                $pageNode->addChild('locale', (string) $page->locale);
+                $pageNode->addChild('active', (string) $page->active);
             }
         }
 
@@ -272,7 +278,14 @@ class CrawlerSourceController extends AdminController
                 $removes = [];
                 if (isset($sourceNode->removes->remove)) {
                     foreach ($sourceNode->removes->remove as $removeNode) {
-                        $removes[] = (string) $removeNode;
+                        if (isset($removeNode->element) || isset($removeNode->index)) {
+                            $removes[] = [
+                                'element' => (string) ($removeNode->element ?? ''),
+                                'index' => (string) ($removeNode->index ?? ''),
+                            ];
+                        } else {
+                            $removes[] = (string) $removeNode;
+                        }
                     }
                 }
 
