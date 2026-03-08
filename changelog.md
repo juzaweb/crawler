@@ -1,3 +1,8 @@
+### v2.0.1 
+* fix(form): pass model pages directly to repeater component
+* Add function existence checks for reformat_html and fix_html
+* Add meta tag for content type in wrapped HTML
+
 ### v2.0.0 
 * Refactor(crawler): remove category field from page-item component
 * feat: add XML export/import for crawler sources with modal UI
