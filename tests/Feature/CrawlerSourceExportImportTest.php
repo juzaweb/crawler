@@ -33,7 +33,7 @@ class CrawlerSourceExportImportTest extends TestCase
             'active' => 1,
             'data_type' => 'post',
             'components' => [],
-            'removes' => [],
+            'removes' => [ ['element' => '.ads', 'index' => 1] ],
         ]);
 
         $source->pages()->create([
