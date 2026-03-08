@@ -10,11 +10,8 @@
 namespace Juzaweb\Modules\Crawler\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
-use Juzaweb\Modules\Crawler\Facades\Crawler;
-use Juzaweb\Modules\Crawler\Jobs\PostJob;
-use Juzaweb\Modules\Crawler\Link;
+use Juzaweb\Modules\Crawler\Jobs\CrawlLinkJob;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -41,65 +38,12 @@ class CrawlLinkCommand extends Command
             ->limit($limit)
             ->get();
 
-        $crawlLinks = collect();
-        $links->each(
-            function (CrawlerLog $link) use ($crawlLinks) {
-                $linkCrawler = new Link(
-                    $link->url,
-                    $link->source->mapComponentsWithElements($link->url),
-                );
-
-                $crawlLinks->push($linkCrawler);
-            }
-        );
-
-        $results = Crawler::crawl($crawlLinks)->getResult();
-
-        $successIds = DB::transaction(
-            function () use ($results, $links) {
-                $successIds = [];
-                foreach ($results as $key => $result) {
-                    $link = $links[$key];
-                    if (isset($result['error'])) {
-                        $link->update(['status' => CrawlerLogStatus::FAILED, 'error' => ['message' => $result['error']]]);
-                        $this->error($result['error']);
-                        continue;
-                    }
-
-                    unset($result['error']);
-
-                    $link->update([
-                        'status' => CrawlerLogStatus::CRAWLED,
-                        'content_json' => $result,
-                        'error' => null,
-                    ]);
-
-                    $successIds[] = $link->id;
-
-                    $this->info("Crawled {$link->url}");
-                }
-
-                return $successIds;
-            }
-        );
-
-        try {
-            $posts = CrawlerLog::whereIn('id', $successIds)->get();
-            DB::transaction(
-                function () use ($posts, $successIds) {
-                    foreach ($posts as $post) {
-                        PostJob::dispatch($post);
-                    }
-
-                    CrawlerLog::whereIn('id', $successIds)->update(['status' => CrawlerLogStatus::POSTING]);
-                }
-            );
-        } catch (\Exception $e) {
-            report($e);
-            $this->error("Failed to create post from contents: " . $e->getMessage());
+        foreach ($links as $link) {
+            $link->update(['status' => CrawlerLogStatus::PROCESSING]);
+            CrawlLinkJob::dispatch($link);
         }
 
-        $this->info("Inserted " . count($successIds) . " contents");
+        $this->info("Dispatched " . $links->count() . " jobs.");
 
         return self::SUCCESS;
     }
