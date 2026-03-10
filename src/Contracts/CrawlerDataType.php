@@ -7,7 +7,7 @@ use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 
 interface CrawlerDataType
 {
-    public function save(CrawlerLog $crawlerLog): Model;
+    public function save(CrawlerLog $crawlerLog): ?Model;
 
     public function components(): array;
 
