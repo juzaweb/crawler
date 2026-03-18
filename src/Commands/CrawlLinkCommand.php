@@ -1,9 +1,10 @@
 <?php
+
 /**
  * LARABIZ CMS - Full SPA Laravel CMS
  *
- * @package    larabizcms/larabiz
  * @author     The Anh Dang
+ *
  * @link       https://larabiz.com
  */
 
@@ -63,6 +64,7 @@ class CrawlLinkCommand extends Command
                     if (isset($result['error'])) {
                         $link->update(['status' => CrawlerLogStatus::FAILED, 'error' => ['message' => $result['error']]]);
                         $this->error($result['error']);
+
                         continue;
                     }
 
@@ -96,10 +98,10 @@ class CrawlLinkCommand extends Command
             );
         } catch (\Exception $e) {
             report($e);
-            $this->error("Failed to create post from contents: " . $e->getMessage());
+            $this->error('Failed to create post from contents: '.$e->getMessage());
         }
 
-        $this->info("Inserted " . count($successIds) . " contents");
+        $this->info('Inserted '.count($successIds).' contents');
 
         return self::SUCCESS;
     }

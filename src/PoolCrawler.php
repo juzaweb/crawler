@@ -1,10 +1,12 @@
 <?php
+
 /**
  * JUZAWEB CMS - Laravel CMS for Your Project
  *
- * @package    juzaweb/cms
  * @author     The Anh Dang
+ *
  * @link       https://cms.juzaweb.com
+ *
  * @license    GNU V2
  */
 
@@ -24,9 +26,7 @@ class PoolCrawler
 
     protected int $concurrency = 5;
 
-    public function __construct(protected Collection $pages)
-    {
-    }
+    public function __construct(protected Collection $pages) {}
 
     public function crawl(): static
     {
@@ -78,7 +78,7 @@ class PoolCrawler
             'connect_timeout' => 10,
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
-                    . '(KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+                    .'(KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
             ],
         ]);
     }

@@ -1,9 +1,10 @@
 <?php
+
 /**
  * LARABIZ CMS - Full SPA Laravel CMS
  *
- * @package    larabizcms/larabiz
  * @author     The Anh Dang
+ *
  * @link       https://larabiz.com
  */
 
@@ -49,7 +50,7 @@ class HtmlElement extends BaseElement implements Element
                 function ($node) {
                     /** @var DomCrawler $node */
                     $href = $node->attr('href');
-                    if (!$href || cr_is_internal_url($href, $this->baseUrl)) {
+                    if (! $href || cr_is_internal_url($href, $this->baseUrl)) {
                         // $html = fix_html($node->html());
                         /** @var \DOMNode $element */
                         $element = $node->getNode(0);
@@ -102,7 +103,7 @@ class HtmlElement extends BaseElement implements Element
                 $urlSrc = $node->filter('source')->attr('srcset') ?? $node->filter('source')->attr('data-srcset') ?? '';
                 $imgUrls = array_map(fn ($item) => trim($item), explode(',', $urlSrc));
                 $imgUrl = trim(explode(' ', $imgUrls[count($imgUrls) - 1])[0]);
-                $imgUrl = str_replace(array('.jpg.webp', '.png.webp'), array('.jpg', '.png'), $imgUrl);
+                $imgUrl = str_replace(['.jpg.webp', '.png.webp'], ['.jpg', '.png'], $imgUrl);
 
                 $element = $node->getNode(0);
 
@@ -210,10 +211,10 @@ class HtmlElement extends BaseElement implements Element
         );
     }
 
-    protected function escUrl(?string $url): null|string
+    protected function escUrl(?string $url): ?string
     {
         $url = trim($url);
 
-        return str_replace(["\n", "\t", " "], '', $url);
+        return str_replace(["\n", "\t", ' '], '', $url);
     }
 }

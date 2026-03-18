@@ -1,9 +1,10 @@
 <?php
+
 /**
  * LARABIZ CMS - Full SPA Laravel CMS
  *
- * @package    larabizcms/larabiz
  * @author     The Anh Dang
+ *
  * @link       https://larabiz.com
  */
 
@@ -13,9 +14,7 @@ class Link
 {
     public array $result = [];
 
-    public function __construct(public string $url, public array $elements = [])
-    {
-    }
+    public function __construct(public string $url, public array $elements = []) {}
 
     public function getValueFrom(string $html): array
     {

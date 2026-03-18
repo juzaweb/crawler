@@ -2,12 +2,12 @@
 
 namespace Juzaweb\Modules\Crawler\Http\DataTables;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Juzaweb\Modules\Core\DataTables\Action;
 use Juzaweb\Modules\Core\DataTables\BulkAction;
 use Juzaweb\Modules\Core\DataTables\Column;
 use Juzaweb\Modules\Core\DataTables\DataTable;
-use Illuminate\Database\Eloquent\Builder;
 use Juzaweb\Modules\Crawler\Models\CrawlerSource;
 use Yajra\DataTables\EloquentDataTable;
 
@@ -39,7 +39,7 @@ class CrawlerSourcesDataTable extends DataTable
     public function renderColumns(EloquentDataTable $builder): EloquentDataTable
     {
         return $builder->editColumn('pages_count', function ($row) {
-            return '<a rel="nofollow noopener noreferrer" href="'. admin_url("crawler-sources/{$row->id}/pages") .'" class="btn btn-info btn-sm"><i class="fas fa-list-alt"></i> '. $row->pages_count .'</a>';
+            return '<a rel="nofollow noopener noreferrer" href="'.admin_url("crawler-sources/{$row->id}/pages").'" class="btn btn-info btn-sm"><i class="fas fa-list-alt"></i> '.$row->pages_count.'</a>';
         });
     }
 

@@ -5,6 +5,9 @@ namespace Juzaweb\Modules\Crawler\Providers;
 use Illuminate\Console\Scheduling\Schedule;
 use Juzaweb\Modules\Core\Facades\Menu;
 use Juzaweb\Modules\Core\Providers\ServiceProvider;
+use Juzaweb\Modules\Crawler\Commands\ContentToPostCommand;
+use Juzaweb\Modules\Crawler\Commands\CrawlLinkCommand;
+use Juzaweb\Modules\Crawler\Commands\CrawlPageCommand;
 use Juzaweb\Modules\Crawler\Contracts\Crawler;
 use Juzaweb\Modules\Crawler\CrawlerRepository;
 
@@ -16,9 +19,9 @@ class CrawlerServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                \Juzaweb\Modules\Crawler\Commands\CrawlPageCommand::class,
-                \Juzaweb\Modules\Crawler\Commands\CrawlLinkCommand::class,
-                \Juzaweb\Modules\Crawler\Commands\ContentToPostCommand::class,
+                CrawlPageCommand::class,
+                CrawlLinkCommand::class,
+                ContentToPostCommand::class,
             ]);
         }
 
@@ -34,12 +37,12 @@ class CrawlerServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         $this->app->register(RouteServiceProvider::class);
         $this->app->singleton(
             Crawler::class,
             function () {
-                return new CrawlerRepository();
+                return new CrawlerRepository;
             }
         );
     }
@@ -81,25 +84,25 @@ class CrawlerServiceProvider extends ServiceProvider
     protected function registerConfig(): void
     {
         $this->publishes([
-            __DIR__ . '/../../config/crawler.php' => config_path('crawler.php'),
+            __DIR__.'/../../config/crawler.php' => config_path('crawler.php'),
         ], 'crawler-config');
-        $this->mergeConfigFrom(__DIR__ . '/../../config/crawler.php', 'crawler');
+        $this->mergeConfigFrom(__DIR__.'/../../config/crawler.php', 'crawler');
     }
 
     protected function registerTranslations(): void
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'crawler');
-        $this->loadJsonTranslationsFrom(__DIR__ . '/../resources/lang');
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'crawler');
+        $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
     }
 
     protected function registerViews(): void
     {
         $viewPath = resource_path('views/modules/crawler');
 
-        $sourcePath = __DIR__ . '/../resources/views';
+        $sourcePath = __DIR__.'/../resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], ['views', 'crawler-module-views']);
 
         $this->loadViewsFrom($sourcePath, 'crawler');

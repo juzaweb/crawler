@@ -5,8 +5,8 @@ namespace Juzaweb\Modules\Crawler\Tests\Feature;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Str;
 use Juzaweb\Modules\Core\Models\User;
-use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
+use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Juzaweb\Modules\Crawler\Models\CrawlerPage;
 use Juzaweb\Modules\Crawler\Models\CrawlerSource;
@@ -19,7 +19,7 @@ class CrawlerLogBulkActionTest extends TestCase
         Bus::fake();
 
         // 1. Create Admin User
-        $user = new User();
+        $user = new User;
         $user->name = 'Admin';
         $user->email = 'admin@test.com';
         $user->password = bcrypt('password');
@@ -30,7 +30,7 @@ class CrawlerLogBulkActionTest extends TestCase
         $this->actingAs($user);
 
         // 2. Create Source
-        $source = new CrawlerSource();
+        $source = new CrawlerSource;
         $source->id = Str::uuid();
         $source->name = 'Test Source';
         $source->data_type = 'post';
@@ -38,7 +38,7 @@ class CrawlerLogBulkActionTest extends TestCase
         $source->save();
 
         // 3. Create Page
-        $page = new CrawlerPage();
+        $page = new CrawlerPage;
         $page->id = Str::uuid();
         $page->source_id = $source->id;
         $page->url = 'http://example.com';
@@ -47,7 +47,7 @@ class CrawlerLogBulkActionTest extends TestCase
         $page->save();
 
         // 4. Create Log
-        $log = new CrawlerLog();
+        $log = new CrawlerLog;
         $log->url = 'http://example.com/post';
         $log->url_hash = hash('sha256', 'http://example.com/post');
         $log->source_id = $source->id;

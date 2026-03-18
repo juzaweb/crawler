@@ -2,13 +2,13 @@
 
 namespace Juzaweb\Modules\Crawler\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Core\Facades\Breadcrumb;
 use Juzaweb\Modules\Core\Http\Controllers\AdminController;
-use Illuminate\Support\Facades\DB;
-use Juzaweb\Modules\Crawler\Models\CrawlerPage;
-use Juzaweb\Modules\Crawler\Http\Requests\CrawlerPageRequest;
-use Juzaweb\Modules\Crawler\Http\Requests\CrawlerPageActionsRequest;
 use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerPagesDataTable;
+use Juzaweb\Modules\Crawler\Http\Requests\CrawlerPageActionsRequest;
+use Juzaweb\Modules\Crawler\Http\Requests\CrawlerPageRequest;
+use Juzaweb\Modules\Crawler\Models\CrawlerPage;
 
 class CrawlerPageController extends AdminController
 {

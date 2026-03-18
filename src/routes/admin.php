@@ -1,8 +1,8 @@
 <?php
 
-use Juzaweb\Modules\Crawler\Http\Controllers\CrawlerSourceController;
-use Juzaweb\Modules\Crawler\Http\Controllers\CrawlerPageController;
 use Juzaweb\Modules\Crawler\Http\Controllers\CrawlerLogController;
+use Juzaweb\Modules\Crawler\Http\Controllers\CrawlerPageController;
+use Juzaweb\Modules\Crawler\Http\Controllers\CrawlerSourceController;
 
 Route::admin('crawler-logs', CrawlerLogController::class);
 

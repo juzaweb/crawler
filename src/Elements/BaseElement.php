@@ -1,9 +1,10 @@
 <?php
+
 /**
  * LARABIZ CMS - Full SPA Laravel CMS
  *
- * @package    larabizcms/larabiz
  * @author     The Anh Dang
+ *
  * @link       https://larabiz.com
  */
 
@@ -20,9 +21,7 @@ abstract class BaseElement
         return new static($element, $attribute, $index);
     }
 
-    public function __construct(public string $element, public ?string $attribute = null, public int $index = 0)
-    {
-    }
+    public function __construct(public string $element, public ?string $attribute = null, public int $index = 0) {}
 
     public function replateHtmlCharacters(string $html): string
     {

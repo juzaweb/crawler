@@ -2,12 +2,14 @@
 
 namespace Juzaweb\Modules\Crawler\Tests\Feature;
 
-use Juzaweb\Modules\Crawler\Tests\TestCase;
+use Illuminate\Database\Eloquent\Model;
 use Juzaweb\Modules\Core\Models\User;
-use Juzaweb\Modules\Crawler\Models\CrawlerSource;
 use Juzaweb\Modules\Crawler\Contracts\Crawler;
 use Juzaweb\Modules\Crawler\Contracts\CrawlerDataType;
+use Juzaweb\Modules\Crawler\Http\Controllers\CrawlerSourceController;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
+use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Juzaweb\Modules\Crawler\Tests\TestCase;
 
 class CrawlerSourceTest extends TestCase
 {
@@ -26,23 +28,35 @@ class CrawlerSourceTest extends TestCase
 
         // Register dummy data type
         app(Crawler::class)->registerDataType('post', function () {
-            return new class implements CrawlerDataType {
-                public function save(CrawlerLog $crawlerLog): \Illuminate\Database\Eloquent\Model {
-                    return new User();
+            return new class implements CrawlerDataType
+            {
+                public function save(CrawlerLog $crawlerLog): Model
+                {
+                    return new User;
                 }
-                public function components(): array {
+
+                public function components(): array
+                {
                     return [];
                 }
-                public function rules(): array {
+
+                public function rules(): array
+                {
                     return [];
                 }
-                public function getModel(): string {
+
+                public function getModel(): string
+                {
                     return User::class;
                 }
-                public function getLabel(): string {
+
+                public function getLabel(): string
+                {
                     return 'Post';
                 }
-                public function getCategoryClass(): ?string {
+
+                public function getCategoryClass(): ?string
+                {
                     return null;
                 }
             };
@@ -69,14 +83,14 @@ class CrawlerSourceTest extends TestCase
             'name' => 'Test Source',
             'data_type' => 'post',
             'components' => [
-                ['name' => 'title', 'element' => 'h1', 'format' => 'text']
+                ['name' => 'title', 'element' => 'h1', 'format' => 'text'],
             ],
             'crawler_pages' => [],
             'active' => 1,
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect(action([\Juzaweb\Modules\Crawler\Http\Controllers\CrawlerSourceController::class, 'index']));
+        $response->assertRedirect(action([CrawlerSourceController::class, 'index']));
 
         $this->assertDatabaseHas('crawler_sources', [
             'name' => 'Test Source',
@@ -112,14 +126,14 @@ class CrawlerSourceTest extends TestCase
             'name' => 'Updated Source',
             'data_type' => 'post',
             'components' => [
-                 ['name' => 'title', 'element' => 'h1', 'format' => 'text']
+                ['name' => 'title', 'element' => 'h1', 'format' => 'text'],
             ],
             'crawler_pages' => [],
             'active' => 1,
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect(action([\Juzaweb\Modules\Crawler\Http\Controllers\CrawlerSourceController::class, 'index']));
+        $response->assertRedirect(action([CrawlerSourceController::class, 'index']));
 
         $this->assertDatabaseHas('crawler_sources', [
             'id' => $source->id,

@@ -3,10 +3,10 @@
 namespace Juzaweb\Modules\Crawler\Tests\Feature;
 
 use Illuminate\Support\Str;
-use Juzaweb\Modules\Crawler\Tests\TestCase;
-use Juzaweb\Modules\Crawler\Models\CrawlerSource;
-use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerSourcesDataTable;
 use Juzaweb\Modules\Core\Models\User;
+use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerSourcesDataTable;
+use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Juzaweb\Modules\Crawler\Tests\TestCase;
 
 class CrawlerSourceBulkActionTest extends TestCase
 {
@@ -15,7 +15,7 @@ class CrawlerSourceBulkActionTest extends TestCase
         parent::setUp();
 
         // Create a super admin user
-        $user = new User();
+        $user = new User;
         $user->name = 'Admin';
         $user->email = 'admin@test.com';
         $user->password = bcrypt('password');
@@ -28,7 +28,7 @@ class CrawlerSourceBulkActionTest extends TestCase
 
     public function test_bulk_activate()
     {
-        $source = new CrawlerSource();
+        $source = new CrawlerSource;
         $source->id = Str::uuid();
         $source->name = 'Test Source Inactive';
         $source->data_type = 'post';
@@ -51,7 +51,7 @@ class CrawlerSourceBulkActionTest extends TestCase
 
     public function test_bulk_inactive()
     {
-        $source = new CrawlerSource();
+        $source = new CrawlerSource;
         $source->id = Str::uuid();
         $source->name = 'Test Source Active';
         $source->data_type = 'post';
@@ -74,25 +74,25 @@ class CrawlerSourceBulkActionTest extends TestCase
 
     public function test_datatable_has_bulk_actions()
     {
-        $dataTable = new CrawlerSourcesDataTable();
+        $dataTable = new CrawlerSourcesDataTable;
         $bulkActions = $dataTable->bulkActions();
 
         $actionKeys = [];
         foreach ($bulkActions as $action) {
-             if (method_exists($action, 'toArray')) {
-                 $data = $action->toArray();
-                 if (isset($data['action'])) {
-                     $actionKeys[] = $data['action'];
-                 }
-             } else {
-                 // Try to get protected property via reflection
-                 $reflection = new \ReflectionClass($action);
-                 if ($reflection->hasProperty('action')) {
-                     $property = $reflection->getProperty('action');
-                     $property->setAccessible(true);
-                     $actionKeys[] = $property->getValue($action);
-                 }
-             }
+            if (method_exists($action, 'toArray')) {
+                $data = $action->toArray();
+                if (isset($data['action'])) {
+                    $actionKeys[] = $data['action'];
+                }
+            } else {
+                // Try to get protected property via reflection
+                $reflection = new \ReflectionClass($action);
+                if ($reflection->hasProperty('action')) {
+                    $property = $reflection->getProperty('action');
+                    $property->setAccessible(true);
+                    $actionKeys[] = $property->getValue($action);
+                }
+            }
         }
 
         $this->assertContains('activate', $actionKeys, 'Activate bulk action missing');

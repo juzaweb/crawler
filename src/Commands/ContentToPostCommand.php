@@ -1,17 +1,18 @@
 <?php
+
 /**
  * JUZAWEB CMS - Laravel CMS for Your Project
  *
- * @package    juzaweb/cms
  * @author     The Anh Dang
+ *
  * @link       https://cms.juzaweb.com
+ *
  * @license    GNU V2
  */
 
 namespace Juzaweb\Modules\Crawler\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Jobs\PostJob;
 use Juzaweb\Modules\Crawler\Models\CrawlerLog;
@@ -54,7 +55,7 @@ class ContentToPostCommand extends Command
                             'error' => get_error_by_exception($e),
                         ]);
 
-                        $this->error("Failed to create post from content {$content->id}: " . $e->getMessage());
+                        $this->error("Failed to create post from content {$content->id}: ".$e->getMessage());
                     }
 
                     $total++;
