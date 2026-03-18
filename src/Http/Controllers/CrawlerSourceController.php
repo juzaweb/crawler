@@ -4,14 +4,14 @@ namespace Juzaweb\Modules\Crawler\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Juzaweb\Modules\Core\Facades\Breadcrumb;
 use Juzaweb\Modules\Core\Http\Controllers\AdminController;
-use Illuminate\Support\Facades\DB;
-use Juzaweb\Modules\Crawler\Models\CrawlerSource;
-use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceRequest;
-use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceActionsRequest;
-use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerSourcesDataTable;
 use Juzaweb\Modules\Crawler\Contracts\Crawler;
+use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerSourcesDataTable;
+use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceActionsRequest;
+use Juzaweb\Modules\Crawler\Http\Requests\CrawlerSourceRequest;
+use Juzaweb\Modules\Crawler\Models\CrawlerSource;
 
 class CrawlerSourceController extends AdminController
 {
@@ -39,7 +39,7 @@ class CrawlerSourceController extends AdminController
         return view(
             'crawler::crawler-source.form',
             [
-                'model' => new CrawlerSource(),
+                'model' => new CrawlerSource,
                 'action' => action([static::class, 'store']),
                 'backUrl' => $backUrl,
                 'dataTypes' => array_merge(
@@ -172,7 +172,7 @@ class CrawlerSourceController extends AdminController
         $key = $request->input('data_type');
         $dataType = $crawler->getDataType($key);
 
-        if (!$dataType) {
+        if (! $dataType) {
             return response()->json(['html' => '']);
         }
 
@@ -257,6 +257,7 @@ class CrawlerSourceController extends AdminController
 
         if ($xml === false) {
             libxml_clear_errors();
+
             return back()->withErrors(['file' => __('Invalid XML file')]);
         }
 

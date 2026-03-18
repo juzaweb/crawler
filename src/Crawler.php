@@ -1,17 +1,18 @@
 <?php
+
 /**
  * LARABIZ CMS - Full SPA Laravel CMS
  *
- * @package    larabizcms/larabiz
  * @author     The Anh Dang
+ *
  * @link       https://larabiz.com
  */
 
 namespace Juzaweb\Modules\Crawler;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -25,12 +26,11 @@ class Crawler
 
     public static function make(): static
     {
-        return new static();
+        return new static;
     }
 
     /**
      * @param  Collection<int, Link>  $pages
-     * @return static
      */
     public function crawl(Collection $pages): static
     {
@@ -81,7 +81,7 @@ class Crawler
             'connect_timeout' => 10,
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
-                . '(KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+                .'(KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
             ],
         ]);
     }

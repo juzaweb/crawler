@@ -24,7 +24,7 @@ class CrawlerRepository implements Crawler
     {
         $callback = $this->dataTypes[$key] ?? null;
 
-        if (!$callback) {
+        if (! $callback) {
             return null;
         }
 

@@ -2,17 +2,19 @@
 
 namespace Juzaweb\Modules\Crawler\Tests\Feature;
 
-use Juzaweb\Modules\Crawler\Tests\TestCase;
 use Juzaweb\Modules\Core\Models\User;
-use Juzaweb\Modules\Crawler\Models\CrawlerSource;
-use Juzaweb\Modules\Crawler\Models\CrawlerPage;
-use Juzaweb\Modules\Crawler\Models\CrawlerLog;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
+use Juzaweb\Modules\Crawler\Models\CrawlerLog;
+use Juzaweb\Modules\Crawler\Models\CrawlerPage;
+use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Juzaweb\Modules\Crawler\Tests\TestCase;
 
 class CrawlerLogTest extends TestCase
 {
     protected $admin;
+
     protected $source;
+
     protected $page;
 
     protected function setUp(): void

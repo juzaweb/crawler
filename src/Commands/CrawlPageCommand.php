@@ -46,6 +46,7 @@ class CrawlPageCommand extends Command
 
         if ($pages->isEmpty()) {
             $this->info('No pages to crawl.');
+
             return self::SUCCESS;
         }
 
@@ -56,7 +57,7 @@ class CrawlPageCommand extends Command
                     'links' => new ArrayStringElement(
                         $page->source->getLinkElement(),
                         'href'
-                    )
+                    ),
                 ]
             );
             $links->push($link);

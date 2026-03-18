@@ -65,19 +65,19 @@ class CrawlerLogsDataTable extends DataTable
         $dataTable = parent::renderColumns($builder);
 
         $dataTable->editColumn('status', function ($row) {
-            $content = '<span class="badge badge-' . $row->status->color();
+            $content = '<span class="badge badge-'.$row->status->color();
 
             if (in_array($row->status, [CrawlerLogStatus::FAILED, CrawlerLogStatus::FAILED_POSTING])) {
-                $content .= ' show-log-error" style="cursor: pointer" data-error="' . e(json_encode($row->error));
+                $content .= ' show-log-error" style="cursor: pointer" data-error="'.e(json_encode($row->error));
             }
 
-            $content .= '">' . $row->status->label() . '</span>';
+            $content .= '">'.$row->status->label().'</span>';
 
             return $content;
         });
 
         $dataTable->editColumn('url', function ($row) {
-            return '<a href="' . $row->url . '" target="_blank">' . $row->url . '</a>';
+            return '<a href="'.$row->url.'" target="_blank">'.$row->url.'</a>';
         });
 
         $dataTable->addColumn('post', function ($row) {

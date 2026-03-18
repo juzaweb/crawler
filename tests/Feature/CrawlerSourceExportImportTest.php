@@ -14,7 +14,7 @@ class CrawlerSourceExportImportTest extends TestCase
         parent::setUp();
 
         // Create user
-        $user = new User();
+        $user = new User;
         $user->forceFill([
             'name' => 'Admin',
             'email' => 'admin@test.com',
@@ -33,7 +33,7 @@ class CrawlerSourceExportImportTest extends TestCase
             'active' => 1,
             'data_type' => 'post',
             'components' => [],
-            'removes' => [ ['element' => '.ads', 'index' => 1] ],
+            'removes' => [['element' => '.ads', 'index' => 1]],
         ]);
 
         $source->pages()->create([

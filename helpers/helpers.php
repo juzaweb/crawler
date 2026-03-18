@@ -14,7 +14,7 @@ if (! function_exists('replace_media_in_content')) {
                 /** @var Crawler $node */
                 $src = $node->attr('src');
 
-                if (!is_url($src)) {
+                if (! is_url($src)) {
                     return;
                 }
 
@@ -42,10 +42,10 @@ if (! function_exists('reformat_html')) {
     {
         libxml_use_internal_errors(true);
         $dom = new DOMDocument('1.0', 'UTF-8');
-        $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
         $wrappedHtml = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
-            . "<div id='wrapper-html-jw-wrapped'>{$html}</div>";
+            ."<div id='wrapper-html-jw-wrapped'>{$html}</div>";
 
         // Load and auto-fix HTML
         $dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -81,15 +81,15 @@ function cr_is_internal_url(?string $url, string $baseUrl): bool
         return true;
     }
 
-    if (!str_starts_with($url, 'https://')
-        && !str_starts_with($url, 'http://')
-        && !str_starts_with($url, '//')
-        && !str_starts_with($url, '#')
+    if (! str_starts_with($url, 'https://')
+        && ! str_starts_with($url, 'http://')
+        && ! str_starts_with($url, '//')
+        && ! str_starts_with($url, '#')
     ) {
         return true;
     }
 
     $domain = get_domain_by_url($baseUrl, true);
 
-    return ($domain == get_domain_by_url($url, true));
+    return $domain == get_domain_by_url($url, true);
 }

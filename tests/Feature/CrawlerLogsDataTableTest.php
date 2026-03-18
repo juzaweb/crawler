@@ -3,12 +3,12 @@
 namespace Juzaweb\Modules\Crawler\Tests\Feature;
 
 use Illuminate\Support\Str;
-use Juzaweb\Modules\Crawler\Tests\TestCase;
-use Juzaweb\Modules\Crawler\Models\CrawlerLog;
-use Juzaweb\Modules\Crawler\Models\CrawlerSource;
-use Juzaweb\Modules\Crawler\Models\CrawlerPage;
 use Juzaweb\Modules\Crawler\Enums\CrawlerLogStatus;
 use Juzaweb\Modules\Crawler\Http\DataTables\CrawlerLogsDataTable;
+use Juzaweb\Modules\Crawler\Models\CrawlerLog;
+use Juzaweb\Modules\Crawler\Models\CrawlerPage;
+use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Juzaweb\Modules\Crawler\Tests\TestCase;
 use Yajra\DataTables\Facades\DataTables;
 
 class CrawlerLogsDataTableTest extends TestCase
@@ -16,7 +16,7 @@ class CrawlerLogsDataTableTest extends TestCase
     public function test_render_columns_with_error_status()
     {
         // 1. Create Source
-        $source = new CrawlerSource();
+        $source = new CrawlerSource;
         $source->id = Str::uuid();
         $source->name = 'Test Source';
         $source->data_type = 'post';
@@ -24,7 +24,7 @@ class CrawlerLogsDataTableTest extends TestCase
         $source->save();
 
         // 2. Create Page
-        $page = new CrawlerPage();
+        $page = new CrawlerPage;
         $page->id = Str::uuid();
         $page->source_id = $source->id;
         $page->url = 'http://example.com';
@@ -33,7 +33,7 @@ class CrawlerLogsDataTableTest extends TestCase
         $page->save();
 
         // 3. Create Log with FAILED status and error
-        $log = new CrawlerLog();
+        $log = new CrawlerLog;
         $log->url = 'http://example.com/post';
         $log->url_hash = hash('sha256', 'http://example.com/post');
         $log->source_id = $source->id;
@@ -44,7 +44,7 @@ class CrawlerLogsDataTableTest extends TestCase
         $log->save();
 
         // 4. Instantiate DataTable
-        $dataTable = new CrawlerLogsDataTable();
+        $dataTable = new CrawlerLogsDataTable;
 
         // 5. Query
         $query = $dataTable->query($log);
@@ -72,7 +72,7 @@ class CrawlerLogsDataTableTest extends TestCase
     public function test_render_columns_with_success_status()
     {
         // 1. Create Source
-        $source = new CrawlerSource();
+        $source = new CrawlerSource;
         $source->id = Str::uuid();
         $source->name = 'Test Source 2';
         $source->data_type = 'post';
@@ -80,7 +80,7 @@ class CrawlerLogsDataTableTest extends TestCase
         $source->save();
 
         // 2. Create Page
-        $page = new CrawlerPage();
+        $page = new CrawlerPage;
         $page->id = Str::uuid();
         $page->source_id = $source->id;
         $page->url = 'http://example.com/2';
@@ -89,7 +89,7 @@ class CrawlerLogsDataTableTest extends TestCase
         $page->save();
 
         // 3. Create Log with COMPLETED status
-        $log = new CrawlerLog();
+        $log = new CrawlerLog;
         $log->url = 'http://example.com/post/2';
         $log->url_hash = hash('sha256', 'http://example.com/post/2');
         $log->source_id = $source->id;
@@ -100,7 +100,7 @@ class CrawlerLogsDataTableTest extends TestCase
         $log->save();
 
         // 4. Instantiate DataTable
-        $dataTable = new CrawlerLogsDataTable();
+        $dataTable = new CrawlerLogsDataTable;
 
         $query = $dataTable->query($log);
         $eloquentDataTable = DataTables::eloquent($query);

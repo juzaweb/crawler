@@ -2,15 +2,16 @@
 
 namespace Juzaweb\Modules\Crawler\Tests\Feature;
 
-use Juzaweb\Modules\Crawler\Tests\TestCase;
 use Juzaweb\Modules\Core\Models\User;
-use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Juzaweb\Modules\Crawler\Http\Controllers\CrawlerPageController;
 use Juzaweb\Modules\Crawler\Models\CrawlerPage;
-use Illuminate\Support\Str;
+use Juzaweb\Modules\Crawler\Models\CrawlerSource;
+use Juzaweb\Modules\Crawler\Tests\TestCase;
 
 class CrawlerPageTest extends TestCase
 {
     protected $admin;
+
     protected $source;
 
     protected function setUp(): void
@@ -58,7 +59,7 @@ class CrawlerPageTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect(action([\Juzaweb\Modules\Crawler\Http\Controllers\CrawlerPageController::class, 'index'], [$this->source->id]));
+        $response->assertRedirect(action([CrawlerPageController::class, 'index'], [$this->source->id]));
 
         $this->assertDatabaseHas('crawler_pages', [
             'url' => 'http://example.com/page',
@@ -99,7 +100,7 @@ class CrawlerPageTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect(action([\Juzaweb\Modules\Crawler\Http\Controllers\CrawlerPageController::class, 'index'], [$this->source->id]));
+        $response->assertRedirect(action([CrawlerPageController::class, 'index'], [$this->source->id]));
 
         $this->assertDatabaseHas('crawler_pages', [
             'id' => $page->id,

@@ -1,9 +1,10 @@
 <?php
+
 /**
  * JUZAWEB CMS - Laravel CMS for Your Project
  *
- * @package    juzaweb/cms
  * @author     The Anh Dang
+ *
  * @link       https://cms.juzaweb.com
  */
 
@@ -16,11 +17,11 @@ class CrawlerPageRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'url' => ['required'],
-			'url_with_page' => ['required'],
-			'next_page' => ['required'],
-			'active' => ['required'],
-			'locale' => ['required'],
-		];
+            'url' => ['required'],
+            'url_with_page' => ['required'],
+            'next_page' => ['required'],
+            'active' => ['required'],
+            'locale' => ['required'],
+        ];
     }
 }
